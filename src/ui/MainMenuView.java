@@ -29,10 +29,14 @@ public class MainMenuView extends BaseView {
 
     private void loadBackgroundImage() {
         try {
+             
             backgroundImage = ImageIO.read(new File("src/assets/mainMenuBackground.jpg"));
-        } catch (IOException e) {
+            
+}
+         catch (IOException e) {
             backgroundImage = null; // Handle image load failure gracefully
         }
+
     }
 
     private void createComponents() {
@@ -48,11 +52,16 @@ public class MainMenuView extends BaseView {
         JButton helpButton = createStyledButton("Help");
         JButton exitButton = createStyledButton("Exit");
 
-        startButton.setBounds(490, 300, 300, 50);
-        helpButton.setBounds(490, 400, 300, 50);
-        exitButton.setBounds(490, 500, 300, 50);
+        startButton.setBounds(480, 250, 300, 50);
+        helpButton.setBounds(480, 350, 300, 50);
+        exitButton.setBounds(480, 450, 300, 50);
 
-        startButton.addActionListener(e -> JOptionPane.showMessageDialog(frame, "Starting the game..."));
+        startButton.addActionListener(e -> {
+            BuildModeView buildModeView = new BuildModeView();
+            buildModeView.showFrame();
+            buildModeView.startGameThread();
+        });
+        
         helpButton.addActionListener(e -> new HelpScreenView().showFrame());
         exitButton.addActionListener(e -> System.exit(0));
 

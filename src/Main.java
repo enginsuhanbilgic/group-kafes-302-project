@@ -6,7 +6,9 @@ public class Main {
         // Use SwingUtilities to ensure thread safety
         SwingUtilities.invokeLater(() -> {
             // Create and display the main menu view
-            new MainMenuView().showFrame();
+            MainMenuView mainMenu = new MainMenuView();
+            mainMenu.showFrame();
+
         });
     }
 }
