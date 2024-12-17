@@ -1,5 +1,6 @@
 package tr.edu.ku.comp302.domain.controllers;
 
+import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.Tile;
 
 import javax.imageio.ImageIO;
@@ -16,15 +17,15 @@ public class TilesController {
 
     private Tile[][] tileGrid; //2D array representing the grid of tiles
     
+    private final int tileSize = GameConfig.TILE_SIZE; // Size of a single tile in pixels
+
     // Dimensions of the screen (calculated from screen resolution and tile size)
-    private final int maxRows=(int)1080/48; // Number of rows based on screen height
-    private final int maxCols=(int)1920/48; // Number of columns based on screen width
+    private final int maxRows=(int)GameConfig.RES_VERTICAL/tileSize; // Number of rows based on screen height
+    private final int maxCols=(int)GameConfig.RES_HORIZONTAL/tileSize; // Number of columns based on screen width
 
     // Dimensions for the "kafes" (hall or inner grid)
-    private final int kafesRows; // Number of rows for the inner area
-    private final int kafesCols; // Number of columns for the inner area
-
-    private final int tileSize; // Size of a single tile in pixels
+    private final int kafesRows = GameConfig.NUM_HALL_ROWS; // Number of rows for the inner area
+    private final int kafesCols = GameConfig.NUM_HALL_COLS; // Number of columns for the inner area
 
     /**
      * Constructor: Initializes the TilesController with dimensions for the kafes area.
@@ -33,11 +34,7 @@ public class TilesController {
      * @param cols     Number of columns for the "kafes" (inner grid area)
      * @param tileSize Size of a single tile in pixels
      */
-    public TilesController(int rows, int cols, int tileSize) {
-        this.kafesRows = rows;
-        this.kafesCols = cols;
-        this.tileSize = tileSize;
-
+    public TilesController() {
         // Initialize the grid with the maximum screen rows and columns
         tileGrid = new Tile[maxRows][maxCols]; // Initialize the grid
     }

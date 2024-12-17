@@ -3,63 +3,38 @@ package tr.edu.ku.comp302.ui;
 import tr.edu.ku.comp302.domain.controllers.KeyHandler;
 import tr.edu.ku.comp302.domain.controllers.NavigationController;
 import tr.edu.ku.comp302.domain.controllers.PlayModeController;
-import tr.edu.ku.comp302.domain.controllers.PlayerController;
-import tr.edu.ku.comp302.domain.controllers.TilesController;
-import tr.edu.ku.comp302.domain.models.Player;
-
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
- * PlayModeView is responsible for rendering the Play Mode screen,
- * handling game logic updates, and displaying the player, tiles, and game environment.
- * This class runs a game loop to ensure consistent rendering and updating at 60 FPS.
+ * PlayModeView renders the Play Mode screen and handles the game loop.
+ * It interacts only with the PlayModeController.
  */
-public class PlayModeView extends JPanel implements Runnable{
-    
-    // Tile and Screen Configurations
-    final int originalTileSize = 16;
-    final int scale = 3;
-    final int tileSize = originalTileSize * scale;
-    final int maxScreenCol = 16;
-    final int maxScreenRow = 16;
+public class PlayModeView extends JPanel implements Runnable {
 
-    // Game Thread for running the game loop    
     private Thread gameThread;
-
-    // Game Controllers
-    private final TilesController tilesController;
-    private final PlayerController playerController;
     private final PlayModeController playModeController;
     private final KeyHandler keyHandler;
 
     /**
      * Constructor: Initializes the PlayModeView.
-     * Sets up controllers, models, and input handling.
      *
-     * @param navControl The NavigationController for view transitions.
+     * @param navControl NavigationController for managing views.
      */
     public PlayModeView(NavigationController navControl) {
-        // Enable double buffering for smooth rendering
         this.setDoubleBuffered(true);
 
-        // Initialize KeyHandler
+        // Initialize KeyHandler and PlayModeController
         keyHandler = new KeyHandler();
+        playModeController = new PlayModeController();
 
-        // Initialize models and controllers
-        Player player = new Player(100, 100, 4);
-        playerController = new PlayerController(player);
-        tilesController = new TilesController(maxScreenRow, maxScreenCol, tileSize);
-        playModeController = new PlayModeController(playerController, tilesController);
-
-        // Add KeyHandler to listen for keyboard inputs
+        // Add KeyHandler for input
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
-        this.requestFocusInWindow(); // Ensure focus for key events
+        this.requestFocusInWindow();
 
-        // Add a listener to regain focus when the view is displayed
+        // Regain focus when hierarchy changes
         this.addHierarchyListener(e -> {
             if (isShowing()) {
                 this.requestFocusInWindow();
@@ -68,7 +43,7 @@ public class PlayModeView extends JPanel implements Runnable{
     }
 
     /**
-     * Starts the game thread, which runs the game loop.
+     * Starts the game thread for the game loop.
      */
     public void startGameThread() {
         if (gameThread == null) {
@@ -78,62 +53,46 @@ public class PlayModeView extends JPanel implements Runnable{
     }
 
     /**
-     * The game loop: Handles updating game logic and repainting the screen at 60 FPS.
+     * The game loop: Handles updates and rendering at 60 FPS.
      */
     @Override
     public void run() {
-        long lastTime = System.nanoTime(); // Önceki zaman
-        double drawInterval = 1000000000.0 / 60.0; // 60 FPS için her frame süresi (nanoseconds)
+        long lastTime = System.nanoTime();
+        double drawInterval = 1000000000.0 / 60.0;
         double delta = 0;
-        long currentTime;
-        long timer =0;
-        int drawCount = 0;
 
-    
         while (gameThread != null) {
-            currentTime = System.nanoTime();
-
-            // Calculate delta to determine when to update
-            delta += (currentTime - lastTime) / drawInterval; // Delta hesabı
-            timer += (currentTime - lastTime);
+            long currentTime = System.nanoTime();
+            delta += (currentTime - lastTime) / drawInterval;
             lastTime = currentTime;
-           
-            // Update and repaint when enough time has passed
+
             if (delta >= 1) {
-                update();       // Oyun mantığını güncelle
-                repaint(); // Oyunu yeniden çiz
+                update();
+                repaint();
                 delta--;
-                drawCount++;
-            }
-            
-            // Print FPS every second for debugging purposes
-            if(timer >= 1000000000) {
-                System.out.println("FPS:"+drawCount);
-                drawCount =0;
-                timer = 0;
             }
         }
     }
 
     /**
-     * Updates the game logic, such as player movement and tile states.
+     * Updates game logic via PlayModeController.
      */
     public void update() {
         playModeController.update(keyHandler);
     }
 
     /**
-     * Renders the game screen, including tiles and the player.
+     * Renders game components via PlayModeController.
      *
-     * @param g The Graphics object for drawing.
+     * @param g Graphics object for rendering.
      */
-    public void paintComponent(Graphics g){
+    @Override
+    protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
-        // Delegate drawing to PlayModeController
-        playModeController.draw(g2, tileSize);
+        playModeController.draw(g2);
 
-        g2.dispose(); // Clean up Graphics2D resources
+        g2.dispose();
     }
 }
