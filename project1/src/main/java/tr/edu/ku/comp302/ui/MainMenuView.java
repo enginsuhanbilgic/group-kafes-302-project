@@ -25,16 +25,16 @@ public class MainMenuView extends JPanel {
 
         // Set MigLayout as the layout manager
         setLayout(new MigLayout(
-            "fill, insets 0",     // Layout constraints: fill panel, no insets
+            "fill, insets 10, debug",     // Layout constraints: fill panel, no insets
             "[center]",           // Column constraints: center components horizontally
             "[]push[]20[]15[]15[]push" // Row constraints: vertical spacing and centering
         ));
 
         // Title Label
-        JLabel titleLabel = new JLabel("Welcome to Kafes Game");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 48));
-        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        add(titleLabel, "growx, wrap"); // Allow title to grow horizontally and move to next row
+        //JLabel titleLabel = new JLabel("Welcome to Kafes Game");
+        //titleLabel.setFont(new Font("Arial", Font.BOLD, 48));
+        JPanel titlePanel = createOutlinedTextPanel("Welcome to Kafes game", 48);
+        add(titlePanel, "growx, wrap");
 
         // Buttons
         JButton startButton = createStyledButton("Start Game");
@@ -70,30 +70,48 @@ public class MainMenuView extends JPanel {
         }
     }
 
-    //TO DO: This causes the label to not stay in the middle of the screen.
-    //Label leans to the most left of the screen.
-    private JLabel createOutlinedLabel(String text, int fontSize) {
-        return new JLabel(text) {
+    private JPanel createOutlinedTextPanel(String text, int fontSize) {
+        JPanel panel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
+    
+                Font font = new Font("Arial", Font.BOLD, fontSize);
+                g2d.setFont(font);
+    
+                // Measure text size
+                FontMetrics metrics = g2d.getFontMetrics();
+                int textWidth = metrics.stringWidth(text);
+                int textHeight = metrics.getHeight();
+    
+                int x = (getWidth() - textWidth) / 2; // Center horizontally
+                int y = (getHeight() - textHeight) / 2 + metrics.getAscent(); // Center vertically
+    
                 // Draw black outline
-                g2d.setFont(new Font("Arial", Font.BOLD, fontSize));
                 g2d.setColor(Color.BLACK);
-                g2d.drawString(text, 5 - 1, 40 - 1);
-                g2d.drawString(text, 5 - 1, 40 + 1);
-                g2d.drawString(text, 5 + 1, 40 - 1);
-                g2d.drawString(text, 5 + 1, 40 + 1);
-
+                g2d.drawString(text, x - 1, y - 1);
+                g2d.drawString(text, x + 1, y - 1);
+                g2d.drawString(text, x - 1, y + 1);
+                g2d.drawString(text, x + 1, y + 1);
+    
                 // Draw white text
                 g2d.setColor(Color.WHITE);
-                g2d.drawString(text, 5, 40);
+                g2d.drawString(text, x, y);
+            }
+    
+            @Override
+            public Dimension getPreferredSize() {
+                // Provide default size for the panel
+                return new Dimension(500, 100);
             }
         };
+    
+        panel.setOpaque(false); // Set the panel to be transparent
+        return panel;           // Return the panel
     }
-
+    
     private JButton createStyledButton(String text) {
         JButton button = new JButton(text);
         button.setFont(new Font("Arial", Font.PLAIN, 18));
