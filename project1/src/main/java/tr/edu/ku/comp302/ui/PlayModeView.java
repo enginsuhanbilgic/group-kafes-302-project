@@ -6,7 +6,6 @@ import tr.edu.ku.comp302.domain.controllers.PlayModeController;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
 /**
  * PlayModeView renders the Play Mode screen and handles the game loop.
@@ -117,9 +116,13 @@ public class PlayModeView extends JPanel implements Runnable {
                     this.requestFocusInWindow();
                 },
                 e -> { // Help Menu Action
-                    keyHandler.escPressed = !keyHandler.escPressed; // Toggle pause state
-                    pauseMenuShown = false; // Reset flag
-                    navigationController.showHelpMenu();
+                    pauseMenuShown = true; // Reset flag
+                    navigationController.showHelpMenu(evt -> {
+                        pauseMenuShown = false;
+                        keyHandler.escPressed = !keyHandler.escPressed;
+                        navigationController.showPlayMode(this);
+                        this.requestFocusInWindow();
+                    });
                 },
                 e -> { // Return to Main Menu Action
                     keyHandler.escPressed = !keyHandler.escPressed; // Toggle pause state

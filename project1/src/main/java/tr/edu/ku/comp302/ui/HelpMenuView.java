@@ -6,6 +6,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +17,7 @@ import java.io.InputStream;
 public class HelpMenuView extends JPanel {
     private BufferedImage backgroundImage;
 
-    public HelpMenuView(NavigationController controller) {
+    public HelpMenuView(JFrame parentFrame, ActionListener onBack) {
         // Load the background image
         loadBackgroundImage();
 
@@ -28,7 +29,7 @@ public class HelpMenuView extends JPanel {
         ));
 
         // Add components to the panel
-        createComponents(controller);
+        createComponents(onBack);
 
         setOpaque(false); // Allow background painting
     }
@@ -47,7 +48,7 @@ public class HelpMenuView extends JPanel {
         }
     }
 
-    private void createComponents(NavigationController controller) {
+    private void createComponents(ActionListener onBack) {
         // Help Label
         JLabel helpLabel = new JLabel("<html><center>Welcome to the Help Menu!<br>"
                 + "Learn how to play Kafes Game.<br>Good Luck!</center></html>");
@@ -59,12 +60,13 @@ public class HelpMenuView extends JPanel {
         // Back Button
         JButton backButton = createStyledButton("Back");
         backButton.setPreferredSize(new Dimension(400, 30));
-        backButton.addActionListener(e -> controller.showMainMenu());
+        backButton.addActionListener(onBack);
         add(backButton, "align center");
     }
 
     private JButton createStyledButton(String text) {
         JButton button = new JButton(text);
+        
         button.setFont(new Font("Arial", Font.PLAIN, 18));
         button.setForeground(Color.WHITE);
         button.setOpaque(false);
