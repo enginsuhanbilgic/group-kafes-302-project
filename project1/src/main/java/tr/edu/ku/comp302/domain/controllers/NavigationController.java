@@ -31,33 +31,43 @@ public class NavigationController {
         this.frame = frame;
         this.cardLayout = new CardLayout();
         this.cardPanel = new JPanel(cardLayout);
+        this.playModeView = null;
 
         // Initialize views
         cardPanel.add(new MainMenuView(this), MAIN_MENU);
         cardPanel.add(new BuildModeView(this), BUILD_MODE);
         cardPanel.add(new HelpMenuView(this), HELP_MENU);
 
-        playModeView = new PlayModeView(this);
-        cardPanel.add(playModeView, PLAY_MODE);
-
         this.frame.getContentPane().add(cardPanel, BorderLayout.CENTER);
     }
 
     // Navigation methods
     public void showMainMenu() {
+        if (playModeView != null) {
+            playModeView.stopGameThread(); // Stop the game thread
+        }
         cardLayout.show(cardPanel, MAIN_MENU);
     }
 
     public void showBuildMode() {
-        cardLayout.show(cardPanel, BUILD_MODE);
+        if (playModeView != null) {
+            playModeView.stopGameThread(); // Stop the game thread
+        }    
+        cardLayout.show(cardPanel, BUILD_MODE);        
     }
 
     public void showHelpMenu() {
+        if (playModeView != null) {
+            playModeView.stopGameThread(); // No longer blocks
+        }
         cardLayout.show(cardPanel, HELP_MENU);
     }
 
-    //Start the game thread and then switch to Play Mode View
+    //Creates a new PlayModeView object and adds it to the cardPanel
+    //Ensures when clicked to start game, game starts from the beginning.
     public void showPlayMode() {
+        playModeView = new PlayModeView(this, frame);
+        cardPanel.add(playModeView, PLAY_MODE);
         playModeView.startGameThread();
         cardLayout.show(cardPanel, PLAY_MODE);
         playModeView.requestFocusInWindow();

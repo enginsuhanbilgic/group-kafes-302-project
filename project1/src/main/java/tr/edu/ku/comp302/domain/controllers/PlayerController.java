@@ -1,5 +1,6 @@
 package tr.edu.ku.comp302.domain.controllers;
 
+import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.Player;
 
 import javax.imageio.ImageIO;
@@ -95,9 +96,9 @@ public class PlayerController {
      * @param g2       Graphics2D object for rendering.
      * @param tileSize Size of the tile for scaling the player image.
      */
-    public void draw(Graphics2D g2, int tileSize) {
+    public void draw(Graphics2D g2) {
         BufferedImage currentImage = player.isWalking() ? walkImages.get(currentFrame) : standImage;
-        g2.drawImage(currentImage, player.playerX, player.playerY, tileSize, tileSize, null);
+        g2.drawImage(currentImage, player.playerX, player.playerY, GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
     }
 
     /**
