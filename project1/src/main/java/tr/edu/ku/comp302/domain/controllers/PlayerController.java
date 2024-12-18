@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * The PlayerController class manages the player's movement, state, and animations.
  */
-public class PlayerController {
+public class PlayerController{
 
     private final Player player;
 
@@ -52,6 +52,9 @@ public class PlayerController {
      */
     public void updatePlayerPosition(KeyHandler keyH) {
         boolean isWalking = false;
+
+        //To check if the pause/resume is working correctly
+        //player.playerY += player.playerSpeed/2;
 
         if (keyH.up) {
             player.playerY -= player.playerSpeed;

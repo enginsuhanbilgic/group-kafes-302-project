@@ -44,8 +44,8 @@ public class MainMenuView extends JPanel {
         // Button Actions
         //Start Button currently directs to Play Mode View.
         //This will change to Build Mode after implementing Build Mode.
-        startButton.addActionListener(e -> controller.showPlayMode());
-        helpButton.addActionListener(e -> controller.showHelpMenu());
+        startButton.addActionListener(e -> controller.startNewPlayMode());
+        helpButton.addActionListener(e -> controller.showHelpMenu(evt -> controller.showMainMenu()));
         exitButton.addActionListener(e -> System.exit(0));
 
         // Add buttons with spacing
