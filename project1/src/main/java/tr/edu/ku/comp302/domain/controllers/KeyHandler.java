@@ -5,6 +5,7 @@ import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
     public boolean up, down, left, right;
+    public boolean escPressed = false;
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -27,6 +28,10 @@ public class KeyHandler implements KeyListener {
         if (move == KeyEvent.VK_RIGHT) {
             right = true;
         }
+        if (move == KeyEvent.VK_ESCAPE) { // Avoid repeated toggling
+            escPressed = !escPressed;
+            //System.out.println(escPressed);
+        }
     }
 
     @Override
@@ -46,4 +51,9 @@ public class KeyHandler implements KeyListener {
             right = false;
         }
     }
+
+    public boolean isEscPressed(){
+        return escPressed;
+    }
+
 }

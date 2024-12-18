@@ -6,6 +6,7 @@ import tr.edu.ku.comp302.domain.controllers.PlayModeController;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 
 /**
  * PlayModeView renders the Play Mode screen and handles the game loop.
@@ -14,20 +15,25 @@ import java.awt.*;
 public class PlayModeView extends JPanel implements Runnable {
 
     private Thread gameThread;
+    private final NavigationController navigationController;
     private final PlayModeController playModeController;
     private final KeyHandler keyHandler;
+    private volatile boolean running = true;
+    private boolean pauseMenuShown = false;
 
     /**
      * Constructor: Initializes the PlayModeView.
      *
-     * @param navControl NavigationController for managing views.
+     * @param navigationController NavigationController for managing views.
      */
-    public PlayModeView(NavigationController navControl) {
+    public PlayModeView(NavigationController navigationController, JFrame parentFrame) {
         this.setDoubleBuffered(true);
+        this.setBackground(new Color(66, 40, 53));
 
         // Initialize KeyHandler and PlayModeController
         keyHandler = new KeyHandler();
-        playModeController = new PlayModeController();
+        this.navigationController = navigationController;
+        playModeController = new PlayModeController(keyHandler);
 
         // Add KeyHandler for input
         this.addKeyListener(keyHandler);
@@ -46,10 +52,23 @@ public class PlayModeView extends JPanel implements Runnable {
      * Starts the game thread for the game loop.
      */
     public void startGameThread() {
-        if (gameThread == null) {
+        if (gameThread == null || !gameThread.isAlive()) {
+            running = true;
             gameThread = new Thread(this);
             gameThread.start();
         }
+    }
+
+    /**
+     * Stops the game thread.
+     */
+    public void stopRunning() {
+        running = false; // Mark the game as not running
+    }
+
+    public void stopGameThread(){
+        running = false;
+        gameThread = null;
     }
 
     /**
@@ -61,15 +80,22 @@ public class PlayModeView extends JPanel implements Runnable {
         double drawInterval = 1000000000.0 / 60.0;
         double delta = 0;
 
-        while (gameThread != null) {
+        while (running) {
             long currentTime = System.nanoTime();
             delta += (currentTime - lastTime) / drawInterval;
             lastTime = currentTime;
 
             if (delta >= 1) {
-                update();
-                repaint();
+                if (playModeController.isPaused()) {
+                    if (!pauseMenuShown) { // Check if pause menu is already shown
+                        pauseMenuShown = true;
+                        showPauseMenu(); // Show pause menu on EDT
+                    }
+                } else {
+                    update();
+                }
                 delta--;
+                repaint();
             }
         }
     }
@@ -78,7 +104,31 @@ public class PlayModeView extends JPanel implements Runnable {
      * Updates game logic via PlayModeController.
      */
     public void update() {
-        playModeController.update(keyHandler);
+        playModeController.update();
+    }
+
+    private void showPauseMenu() {
+        SwingUtilities.invokeLater(() -> {
+            PauseMenuView pauseMenu = new PauseMenuView(
+                (JFrame) SwingUtilities.getWindowAncestor(this),
+                e -> { // Resume Action
+                    keyHandler.escPressed = !keyHandler.escPressed; // Toggle pause state
+                    pauseMenuShown = false; // Reset flag
+                    this.requestFocusInWindow();
+                },
+                e -> { // Help Menu Action
+                    keyHandler.escPressed = !keyHandler.escPressed; // Toggle pause state
+                    pauseMenuShown = false; // Reset flag
+                    navigationController.showHelpMenu();
+                },
+                e -> { // Return to Main Menu Action
+                    keyHandler.escPressed = !keyHandler.escPressed; // Toggle pause state
+                    pauseMenuShown = false; // Reset flag
+                    navigationController.showMainMenu();
+                }
+            );
+            pauseMenu.setVisible(true);
+        });
     }
 
     /**

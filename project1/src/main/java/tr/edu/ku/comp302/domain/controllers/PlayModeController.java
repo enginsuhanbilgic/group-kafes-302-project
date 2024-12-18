@@ -1,6 +1,6 @@
 package tr.edu.ku.comp302.domain.controllers;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.Player;
@@ -9,14 +9,18 @@ import tr.edu.ku.comp302.domain.models.Player;
  * PlayModeController manages the game logic and interactions between components.
  */
 public class PlayModeController {
-
+    
     private final PlayerController playerController;
     private final TilesController tilesController;
+    private final KeyHandler keyHandler;
 
     /**
      * Constructs the PlayModeController using global GameConfig settings.
      */
-    public PlayModeController() {
+    public PlayModeController(KeyHandler keyHandler) {
+        //Initialize Key Handler
+        this.keyHandler = keyHandler;
+
         // Initialize Player and PlayerController
         Player player = new Player(GameConfig.PLAYER_START_X, GameConfig.PLAYER_START_Y, GameConfig.PLAYER_SPEED);
         this.playerController = new PlayerController(player);
@@ -33,8 +37,10 @@ public class PlayModeController {
      *
      * @param keyHandler The KeyHandler for user input.
      */
-    public void update(KeyHandler keyHandler) {
-        playerController.updatePlayerPosition(keyHandler);
+    public void update() {
+        if(!keyHandler.isEscPressed()){
+            playerController.updatePlayerPosition(keyHandler);
+        }
     }
 
     /**
@@ -44,6 +50,10 @@ public class PlayModeController {
      */
     public void draw(Graphics2D g2) {
         tilesController.draw(g2);
-        playerController.draw(g2, GameConfig.TILE_SIZE);
+        playerController.draw(g2);
+    }
+
+    public boolean isPaused() {
+        return keyHandler.isEscPressed();
     }
 }
