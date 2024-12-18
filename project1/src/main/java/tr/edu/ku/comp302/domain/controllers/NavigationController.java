@@ -12,7 +12,7 @@ public class NavigationController {
     private final JFrame frame;
     private final JPanel cardPanel;
     private final CardLayout cardLayout;
-
+    
     // View identifiers for CardLayout
     private static final String MAIN_MENU = "MainMenu";
     private static final String BUILD_MODE = "BuildMode";

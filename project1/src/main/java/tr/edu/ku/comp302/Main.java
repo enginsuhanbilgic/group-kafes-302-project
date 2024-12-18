@@ -1,5 +1,6 @@
 package tr.edu.ku.comp302;
 
+import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.controllers.NavigationController;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -7,9 +8,9 @@ import javax.swing.SwingUtilities;
 public class Main {
     public static void main(String[] args) throws Exception {
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Game Application");
+            JFrame frame = new JFrame("KAFES Game");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(1920, 1080);
+            frame.setSize(GameConfig.RES_HORIZONTAL, GameConfig.RES_VERTICAL);
             frame.setResizable(false);
             frame.setLocationRelativeTo(null); // Center the frame
             frame.setTitle("KAFES Game");
