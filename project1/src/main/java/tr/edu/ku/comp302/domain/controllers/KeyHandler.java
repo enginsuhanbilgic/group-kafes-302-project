@@ -58,7 +58,6 @@ public class KeyHandler implements KeyListener {
 
     public void resetKeys() {
         up = down = left = right = false;
-        escPressed = false;
     }
 
 }

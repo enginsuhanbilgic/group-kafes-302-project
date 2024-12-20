@@ -95,6 +95,7 @@ public class PlayModeController {
         if (gameTimerController != null) {
             gameTimerController.pause();
         }
+        keyHandler.resetKeys();
         System.out.println("Timer is paused");
         System.out.println("Remaining time:" + gameTimerController.getTimeRemaining());
     }
