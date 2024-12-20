@@ -1,9 +1,11 @@
 package tr.edu.ku.comp302.domain.controllers;
 
 import java.awt.*;
+import java.util.function.Consumer;
 
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.Player;
+import tr.edu.ku.comp302.domain.models.GameTimer;
 
 /**
  * PlayModeController manages the game logic and interactions between components.
@@ -13,6 +15,13 @@ public class PlayModeController {
     private final PlayerController playerController;
     private final TilesController tilesController;
     private final KeyHandler keyHandler;
+
+    // Timer via GameTimerController
+    private GameTimerController gameTimerController;
+    private int initialTime = 10; // initial countdown time
+    private NavigationController navigationController;
+    private int currentTime;
+    //end of timer
 
     /**
      * Constructs the PlayModeController using global GameConfig settings.
@@ -56,4 +65,53 @@ public class PlayModeController {
     public boolean isPaused() {
         return keyHandler.isEscPressed();
     }
+
+    //------
+    //timer--
+    /**
+     * Starts the game timer.
+     */
+    public void startGameTimer(Consumer<Integer> onTick, Runnable onTimeUp) {
+        gameTimerController = new GameTimerController(
+        time -> {
+            currentTime = time; // store the current time for later use
+            onTick.accept(time);
+        },
+        onTimeUp
+        );
+        gameTimerController.start(initialTime);
+    }
+    
+    private void onTimeUp() {
+        System.out.println("Süre doldu! Oyun bitti.");
+        if (navigationController != null) {
+            navigationController.endGameAndShowMainMenu();
+        } else {
+            System.out.println("NavigationController atanmamış!");
+        }
+    }
+
+    public void pauseGameTimer() {
+        if (gameTimerController != null) {
+            gameTimerController.pause();
+        }
+        System.out.println("Timer is paused");
+        System.out.println("Remaining time:" + gameTimerController.getTimeRemaining());
+    }
+    
+    public void resumeGameTimer() {
+        if (gameTimerController != null) {
+            gameTimerController.resume();
+        }
+        System.out.println("Timer is resumed");
+    }
+
+    public void setNavigationController(NavigationController navigationController) {
+        this.navigationController = navigationController;
+    }
+
+    public int getCurrentTime() {
+        return currentTime;
+    }
+
 }
