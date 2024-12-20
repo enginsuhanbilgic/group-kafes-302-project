@@ -15,10 +15,12 @@ public class PlayModeController {
     private final PlayerController playerController;
     private final TilesController tilesController;
     private final KeyHandler keyHandler;
-    //Timer
-    private GameTimer gameTimer; 
-    private int initialTime = 10; // Start time can be changed
+
+    // Timer via GameTimerController
+    private GameTimerController gameTimerController;
+    private int initialTime = 10; // initial countdown time
     private NavigationController navigationController;
+    private int currentTime;
     //end of timer
 
     /**
@@ -70,35 +72,46 @@ public class PlayModeController {
      * Starts the game timer.
      */
     public void startGameTimer(Consumer<Integer> onTick, Runnable onTimeUp) {
-    gameTimer = new GameTimer(onTick, onTimeUp);
-    gameTimer.start(initialTime); 
+        gameTimerController = new GameTimerController(
+        time -> {
+            currentTime = time; // store the current time for later use
+            onTick.accept(time);
+        },
+        onTimeUp
+        );
+        gameTimerController.start(initialTime);
+    }
+    
+    private void onTimeUp() {
+        System.out.println("Süre doldu! Oyun bitti.");
+        if (navigationController != null) {
+            navigationController.endGameAndShowMainMenu();
+        } else {
+            System.out.println("NavigationController atanmamış!");
+        }
+    }
+
+    public void pauseGameTimer() {
+        if (gameTimerController != null) {
+            gameTimerController.pause();
+        }
+        System.out.println("Timer is paused");
+        System.out.println("Remaining time:" + gameTimerController.getTimeRemaining());
+    }
+    
+    public void resumeGameTimer() {
+        if (gameTimerController != null) {
+            gameTimerController.resume();
+        }
+        System.out.println("Timer is resumed");
     }
 
     public void setNavigationController(NavigationController navigationController) {
         this.navigationController = navigationController;
     }
-    
-    
-    private void onTimeUp() {
-    System.out.println("Süre doldu! Oyun bitti.");
-    if (navigationController != null) {
-        navigationController.endGameAndShowMainMenu();
-    } else {
-        System.out.println("NavigationController atanmamış!");
-    }
+
+    public int getCurrentTime() {
+        return currentTime;
     }
 
-    public void pauseGameTimer() {
-        if (gameTimer != null) {
-            gameTimer.pause();
-        }
-    }
-    
-    public void resumeGameTimer() {
-        if (gameTimer != null) {
-            gameTimer.resume();
-        }
-    }
-    //timer--
-    //------
 }

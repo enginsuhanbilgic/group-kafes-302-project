@@ -19,8 +19,6 @@ public class PlayModeView extends JPanel implements Runnable {
     private final KeyHandler keyHandler;
     private volatile boolean running = true;
     private boolean pauseMenuShown = false;
-    private JLabel timeLabel;
-    private TimeView timeView; // TimeView referansı
 
     /**
      * Constructor: Initializes the PlayModeView.
@@ -31,38 +29,21 @@ public class PlayModeView extends JPanel implements Runnable {
         this.setDoubleBuffered(true);
         this.setBackground(new Color(66, 40, 53));
 
-        //timer
-        // Layout ayarı
-        this.setLayout(new BorderLayout());
-
-        // TimeView 
-        timeView = new TimeView(parentFrame);
-        // TimeView added up north of the panel
-        this.add(timeView, BorderLayout.NORTH);
-
-        // Time Label oluştur ve ekle
-        timeLabel = new JLabel("Kalan Süre: ");
-        timeLabel.setForeground(Color.WHITE);
-        this.add(timeLabel, BorderLayout.NORTH);
-        //timer
-
         // Initialize KeyHandler and PlayModeController
         keyHandler = new KeyHandler();
         this.navigationController = navigationController;
         playModeController = new PlayModeController(keyHandler);
-
-        //timer
-        // set navigation controller using in playmodecontroller
         playModeController.setNavigationController(this.navigationController);
+
         // Timer'ı başlatırken onTick callback'ine timeView'i güncelleyen kod ekleyin
         playModeController.startGameTimer(
             time -> SwingUtilities.invokeLater(() -> {
-                timeView.setTime(time);
                 parentFrame.revalidate();
                 parentFrame.repaint();
             }),
             () -> SwingUtilities.invokeLater(() -> {
                 JOptionPane.showMessageDialog(this, "Süre doldu! Oyun bitti.");
+                keyHandler.resetKeys(); 
                 navigationController.endGameAndShowMainMenu();
             })
         );
@@ -126,7 +107,9 @@ public class PlayModeView extends JPanel implements Runnable {
                         showPauseMenu(); // Show pause menu on EDT
                     }
                 } else {
-                    update();
+                    if(playModeController.getCurrentTime()!=0){
+                        update();
+                    }
                 }
                 delta--;
                 repaint();
@@ -160,13 +143,14 @@ public class PlayModeView extends JPanel implements Runnable {
                     pauseMenuShown = true; // Reset flag
                     navigationController.showHelpMenu(evt -> {
                         pauseMenuShown = false;
+                        playModeController.resumeGameTimer();
                         keyHandler.escPressed = !keyHandler.escPressed;
                         navigationController.showPlayMode(this);
                         this.requestFocusInWindow();
                     });
                 },
                 e -> { // Return to Main Menu Action
-                    keyHandler.escPressed = !keyHandler.escPressed; // Toggle pause state
+                    keyHandler.resetKeys();
                     pauseMenuShown = false; // Reset flag
                     navigationController.showMainMenu();
                 }
@@ -187,8 +171,16 @@ public class PlayModeView extends JPanel implements Runnable {
 
         playModeController.draw(g2);
 
+        // Draw the timer in the top-left corner
+        g2.setColor(Color.WHITE);
+        g2.setFont(new Font("Arial", Font.BOLD, 16));
+        g2.drawString("Kalan Süre: " + playModeController.getCurrentTime(), 10, 20);
+        
         g2.dispose();
     }
 
+    public KeyHandler getKeyHandler() {
+        return keyHandler;
+    }
     
 }

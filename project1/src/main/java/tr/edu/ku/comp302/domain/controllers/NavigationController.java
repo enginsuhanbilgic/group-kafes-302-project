@@ -100,14 +100,14 @@ public class NavigationController {
 
     // end game to do's when time is up
     public void endGameAndShowMainMenu() {
+        showMainMenu();
         if (playModeView != null) {
             playModeView.stopGameThread(); 
+            playModeView.getKeyHandler().resetKeys(); // Reset keys
             cardPanel.remove(playModeView);
             playModeView = null;
         }
     
-        JOptionPane.showMessageDialog(frame, "Time is up! Try again.");
-    
-        showMainMenu();
+        JOptionPane.showMessageDialog(frame, "Try again next time.");
     }
 }
