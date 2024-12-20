@@ -38,7 +38,7 @@ public class PlayModeController {
      * @param keyHandler The KeyHandler for user input.
      */
     public void update() {
-        if(!keyHandler.isEscPressed()){
+        if(!isPaused()){
             playerController.updatePlayerPosition(keyHandler);
         }
     }
