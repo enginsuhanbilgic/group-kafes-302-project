@@ -97,4 +97,17 @@ public class NavigationController {
         cardPanel.add(playModeView2, PLAY_MODE);
         showPlayMode(playModeView2);
     }
+
+    // end game to do's when time is up
+    public void endGameAndShowMainMenu() {
+        if (playModeView != null) {
+            playModeView.stopGameThread(); 
+            cardPanel.remove(playModeView);
+            playModeView = null;
+        }
+    
+        JOptionPane.showMessageDialog(frame, "Time is up! Try again.");
+    
+        showMainMenu();
+    }
 }

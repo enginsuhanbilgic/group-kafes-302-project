@@ -19,6 +19,8 @@ public class PlayModeView extends JPanel implements Runnable {
     private final KeyHandler keyHandler;
     private volatile boolean running = true;
     private boolean pauseMenuShown = false;
+    private JLabel timeLabel;
+    private TimeView timeView; // TimeView referansı
 
     /**
      * Constructor: Initializes the PlayModeView.
@@ -29,10 +31,43 @@ public class PlayModeView extends JPanel implements Runnable {
         this.setDoubleBuffered(true);
         this.setBackground(new Color(66, 40, 53));
 
+        //timer
+        // Layout ayarı
+        this.setLayout(new BorderLayout());
+
+        // TimeView 
+        timeView = new TimeView(parentFrame);
+        // TimeView added up north of the panel
+        this.add(timeView, BorderLayout.NORTH);
+
+        // Time Label oluştur ve ekle
+        timeLabel = new JLabel("Kalan Süre: ");
+        timeLabel.setForeground(Color.WHITE);
+        this.add(timeLabel, BorderLayout.NORTH);
+        //timer
+
         // Initialize KeyHandler and PlayModeController
         keyHandler = new KeyHandler();
         this.navigationController = navigationController;
         playModeController = new PlayModeController(keyHandler);
+
+        //timer
+        // set navigation controller using in playmodecontroller
+        playModeController.setNavigationController(this.navigationController);
+        // Timer'ı başlatırken onTick callback'ine timeView'i güncelleyen kod ekleyin
+        playModeController.startGameTimer(
+            time -> SwingUtilities.invokeLater(() -> {
+                timeView.setTime(time);
+                parentFrame.revalidate();
+                parentFrame.repaint();
+            }),
+            () -> SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(this, "Süre doldu! Oyun bitti.");
+                navigationController.endGameAndShowMainMenu();
+            })
+        );
+
+        //timer
 
         // Add KeyHandler for input
         this.addKeyListener(keyHandler);
@@ -108,12 +143,18 @@ public class PlayModeView extends JPanel implements Runnable {
 
     private void showPauseMenu() {
         SwingUtilities.invokeLater(() -> {
+            // Stop timer before opening pause_menu
+            playModeController.pauseGameTimer();
+
             PauseMenuView pauseMenu = new PauseMenuView(
                 (JFrame) SwingUtilities.getWindowAncestor(this),
                 e -> { // Resume Action
                     keyHandler.escPressed = !keyHandler.escPressed; // Toggle pause state
                     pauseMenuShown = false; // Reset flag
                     this.requestFocusInWindow();
+
+                    // Start timer when continuing
+                    playModeController.resumeGameTimer();
                 },
                 e -> { // Help Menu Action
                     pauseMenuShown = true; // Reset flag
@@ -148,4 +189,6 @@ public class PlayModeView extends JPanel implements Runnable {
 
         g2.dispose();
     }
+
+    
 }

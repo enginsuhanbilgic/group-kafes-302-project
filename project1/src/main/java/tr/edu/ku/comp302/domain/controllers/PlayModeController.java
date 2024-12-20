@@ -1,9 +1,11 @@
 package tr.edu.ku.comp302.domain.controllers;
 
 import java.awt.*;
+import java.util.function.Consumer;
 
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.Player;
+import tr.edu.ku.comp302.domain.models.GameTimer;
 
 /**
  * PlayModeController manages the game logic and interactions between components.
@@ -13,6 +15,11 @@ public class PlayModeController {
     private final PlayerController playerController;
     private final TilesController tilesController;
     private final KeyHandler keyHandler;
+    //Timer
+    private GameTimer gameTimer; 
+    private int initialTime = 10; // Start time can be changed
+    private NavigationController navigationController;
+    //end of timer
 
     /**
      * Constructs the PlayModeController using global GameConfig settings.
@@ -56,4 +63,42 @@ public class PlayModeController {
     public boolean isPaused() {
         return keyHandler.isEscPressed();
     }
+
+    //------
+    //timer--
+    /**
+     * Starts the game timer.
+     */
+    public void startGameTimer(Consumer<Integer> onTick, Runnable onTimeUp) {
+    gameTimer = new GameTimer(onTick, onTimeUp);
+    gameTimer.start(initialTime); 
+    }
+
+    public void setNavigationController(NavigationController navigationController) {
+        this.navigationController = navigationController;
+    }
+    
+    
+    private void onTimeUp() {
+    System.out.println("Süre doldu! Oyun bitti.");
+    if (navigationController != null) {
+        navigationController.endGameAndShowMainMenu();
+    } else {
+        System.out.println("NavigationController atanmamış!");
+    }
+    }
+
+    public void pauseGameTimer() {
+        if (gameTimer != null) {
+            gameTimer.pause();
+        }
+    }
+    
+    public void resumeGameTimer() {
+        if (gameTimer != null) {
+            gameTimer.resume();
+        }
+    }
+    //timer--
+    //------
 }
