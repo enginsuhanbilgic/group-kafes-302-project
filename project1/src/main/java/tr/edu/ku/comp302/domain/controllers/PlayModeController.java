@@ -10,12 +10,16 @@ import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
 import tr.edu.ku.comp302.domain.models.Monsters.Monster;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+
+import javax.imageio.ImageIO;
 
 /**
  * PlayModeController manages the game logic and interactions between components.
@@ -183,10 +187,18 @@ public class PlayModeController {
         // Örn: "box", "chest", "skull"
         // Gerçekte bu resimleri de bir Map<String, BufferedImage>’te tutmalıyız.
         // Şimdilik basit bir kare çizelim:
+        String imageName = obj.getObjectType();
         int px = obj.getX() * GameConfig.TILE_SIZE;
         int py = obj.getY() * GameConfig.TILE_SIZE;
+        BufferedImage image = null;
+        try {
+            image = ImageIO.read(getClass().getResourceAsStream("/assets/"  + imageName + ".png"));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         g2.setColor(Color.GREEN);
-        g2.fillRect(px, py, GameConfig.TILE_SIZE, GameConfig.TILE_SIZE);
+        g2.drawImage(image, px, py ,GameConfig.TILE_SIZE , GameConfig.TILE_SIZE, null);
     }
 
     public boolean isPaused() {
