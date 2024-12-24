@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 
 public class GameTimer {
 
-    private int timeRemaining; // Remaining time
+    public volatile int timeRemaining; // Remaining time
     private Timer timer;       // Swing Timer
     private final Consumer<Integer> onTick; // Callback for each tick
     private final Runnable onTimeUp;        // Callback when time is up
