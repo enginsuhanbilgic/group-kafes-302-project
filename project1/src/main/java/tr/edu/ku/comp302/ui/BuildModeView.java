@@ -271,7 +271,7 @@ public class BuildModeView extends JPanel {
         }
 
         // Ardından NavigationController ile direkt PlayMode'a geçiyoruz
-        controller.startNewPlayModeFromJson(jsonData);
+        controller.startNewPlayModeFromJson(jsonData, HallType.EARTH);
 
     }
 }

@@ -5,6 +5,7 @@ import tr.edu.ku.comp302.domain.controllers.MouseHandler;
 import tr.edu.ku.comp302.domain.controllers.NavigationController;
 import tr.edu.ku.comp302.domain.controllers.PlayModeController;
 import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
+import tr.edu.ku.comp302.domain.models.HallType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,30 +14,34 @@ public class PlayModeView extends JPanel implements Runnable {
 
     private Thread gameThread;
     private final NavigationController navigationController;
-    private final PlayModeController playModeController;
+    private PlayModeController playModeController = null;
     private final KeyHandler keyHandler;
     private volatile boolean running = true;
     private boolean pauseMenuShown = false;
+    private final HallType hallType;
 
+    /*
     // Eski constructor (no JSON)
     public PlayModeView(NavigationController navigationController, JFrame parentFrame) {
         this(navigationController, parentFrame, null);
         // "null" diyerek alt constructor'a yönlendiriyoruz
     }
-
+    */
     /**
      * Yeni constructor: BuildMode’dan gelen JSON data’sını alır.
      */
-    public PlayModeView(NavigationController navigationController, JFrame parentFrame, String jsonData) {
+    public PlayModeView(NavigationController navigationController, JFrame parentFrame, String jsonData, HallType hallType) {
         this.setDoubleBuffered(true);
         this.setBackground(new Color(66, 40, 53));
+        this.hallType = hallType;
+
 
         // Initialize KeyHandler and PlayModeController
         keyHandler = new KeyHandler();
         MouseHandler mouseHandler = new MouseHandler();
         
         this.navigationController = navigationController;
-        playModeController = new PlayModeController(keyHandler, mouseHandler);
+        playModeController = new PlayModeController(keyHandler, mouseHandler, jsonData, hallType);
         playModeController.setNavigationController(this.navigationController);
 
         // JSON’dan world objelerini yükleyelim (eğer JSON varsa)
@@ -59,7 +64,7 @@ public class PlayModeView extends JPanel implements Runnable {
 
         // Input
         this.addKeyListener(keyHandler);
-        this.addMouseListener(mouseHandler);
+//        this.addMouseListener(mouseHandler);
         this.setFocusable(true);
         this.requestFocusInWindow();
 
@@ -69,6 +74,10 @@ public class PlayModeView extends JPanel implements Runnable {
                 this.requestFocusInWindow();
             }
         });
+    }
+
+    public PlayModeView(NavigationController navigationController, JFrame frame) {
+        this(navigationController, frame, null, null);
     }
 
     public void startGameThread() {
@@ -170,7 +179,7 @@ public class PlayModeView extends JPanel implements Runnable {
             g2.drawString(enc.toString(), 1000, i*26+20);
             i++;
         }
-
+        g2.drawString(hallType.toString(), 300, 20);
         g2.dispose();
     }
 

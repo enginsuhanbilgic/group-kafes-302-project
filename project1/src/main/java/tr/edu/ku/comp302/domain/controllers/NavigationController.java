@@ -1,13 +1,10 @@
 package tr.edu.ku.comp302.domain.controllers;
 
+import tr.edu.ku.comp302.domain.models.HallType;
 import tr.edu.ku.comp302.ui.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 /**
  * The NavigationController class controls View switching.
@@ -99,7 +96,7 @@ public class NavigationController {
      * BuildMode tamamlanınca, kaydedilen JSON dosyasından
      * ya da stringden PlayMode'u başlatmak için yeni bir metot.
      */
-    public void startNewPlayModeFromJson(String jsonData) {
+    public void startNewPlayModeFromJson(String jsonData, HallType hallType){
         if(this.playModeView != null){
             playModeView.stopGameThread();
             cardPanel.remove(playModeView);
@@ -107,7 +104,7 @@ public class NavigationController {
         // Okuyup bir string haline getirelim
         
         // Yeni bir PlayModeView, JSON parametresi ile
-        PlayModeView playModeView2 = new PlayModeView(this, frame, jsonData);
+        PlayModeView playModeView2 = new PlayModeView(this, frame, jsonData, hallType);
         cardPanel.add(playModeView2, PLAY_MODE);
         showPlayMode(playModeView2);
     }
