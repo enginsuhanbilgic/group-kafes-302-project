@@ -121,7 +121,7 @@ public class BuildModeView extends JPanel {
                 int y = e.getY() / tileSize;
 
                 // Sadece kafes içine yerleştirme kontrolü
-                if (x -1 < GameConfig.KAFES_STARTING_X || x >= GameConfig.KAFES_STARTING_X + gridCols - 1
+                if (x - 1 < GameConfig.KAFES_STARTING_X || x >= GameConfig.KAFES_STARTING_X + gridCols - 1
                         || y -1< GameConfig.KAFES_STARTING_Y || y >= GameConfig.KAFES_STARTING_Y + gridRows -1) {
                     JOptionPane.showMessageDialog(panel, "You can only place objects inside the grid!", "Invalid Placement", JOptionPane.WARNING_MESSAGE);
                     return;
@@ -189,7 +189,7 @@ public class BuildModeView extends JPanel {
         tilesController.draw(g2);
 
         HallType currentHall = buildModeController.getCurrentHall();
-        for (BuildObject obj : getObjectsForHall(currentHall)) {
+        for (BuildObject obj : buildModeController.getObjectsForHall(currentHall)) {
             BufferedImage img = objectImages.get(obj.getObjectType());
             if (img != null) {
                 g.drawImage(img, obj.getX() * tileSize, obj.getY() * tileSize, tileSize, tileSize, null);
@@ -198,21 +198,6 @@ public class BuildModeView extends JPanel {
                 g.fillRect(obj.getX() * tileSize, obj.getY() * tileSize, tileSize, tileSize);
             }
         }
-    }
-
-    // reflection hack yerine BuildModeController'a getter eklemeyi seçebilirsiniz.
-    private List<BuildObject> getObjectsForHall(HallType hallType) {
-        try {
-            java.lang.reflect.Field f = buildModeController.getClass()
-                    .getDeclaredField("hallObjectsMap");
-            f.setAccessible(true);
-            Map<HallType, List<BuildObject>> map =
-                    (Map<HallType, List<BuildObject>>) f.get(buildModeController);
-            return map.get(hallType);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return new ArrayList<>();
     }
 
     private void onNextHall() {

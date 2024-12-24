@@ -30,6 +30,8 @@ public class TilesController {
     private final int startingX = GameConfig.KAFES_STARTING_X;
     private final int startingY = GameConfig.KAFES_STARTING_Y;
 
+    private Tile transparentCollidableTile;
+
     /**
      * Constructor: Initializes the TilesController with dimensions for the kafes area.
      */
@@ -52,12 +54,14 @@ public class TilesController {
             BufferedImage wallOuterEastImage = ImageIO.read(getClass().getResourceAsStream("/assets/wall_outer_e.png"));
             BufferedImage wallOuterWestImage = ImageIO.read(getClass().getResourceAsStream("/assets/wall_outer_w.png"));
             BufferedImage wallCenterImage = ImageIO.read(getClass().getResourceAsStream("/assets/wall_center.png"));
+            BufferedImage transparentImage = ImageIO.read(getClass().getResourceAsStream("/assets/transparent_tile.png"));
 
             // Create reusable tile objects
             Tile floorTile = new Tile(floorImage, false);
             Tile wallOuterEastTile = new Tile(wallOuterEastImage, true);
             Tile wallOuterWestTile = new Tile(wallOuterWestImage, true);
             Tile wallCenterTile = new Tile(wallCenterImage, true);
+            this.transparentCollidableTile = new Tile(transparentImage, true);
 
             // Populate the entire grid with floor tiles
             for (int y = 0; y < maxRows; y++) {
@@ -107,6 +111,12 @@ public class TilesController {
             return tileGrid[y][x];
         }
         return null;
+    }
+
+    public void setTransparentTileAt(int x, int y) {
+        if (x >= 0 && x < maxCols && y >= 0 && y < maxRows) {
+            tileGrid[y][x] = transparentCollidableTile;
+        }
     }
 
     /**
