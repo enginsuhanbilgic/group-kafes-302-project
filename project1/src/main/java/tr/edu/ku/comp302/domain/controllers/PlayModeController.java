@@ -7,6 +7,7 @@ import tr.edu.ku.comp302.domain.models.BuildObject;
 import tr.edu.ku.comp302.domain.models.HallType;
 import tr.edu.ku.comp302.domain.models.Player;
 import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
+import tr.edu.ku.comp302.domain.models.Monsters.Monster;
 
 import java.awt.*;
 import java.lang.reflect.Type;
@@ -233,5 +234,17 @@ public class PlayModeController {
 
     public int getCurrentTime() {
         return currentTime;
+    }
+
+    public PlayerController getPlayerController() {
+        return this.playerController;
+    }
+
+    public MonsterController getMonsterController() {
+        return this.monsterController;
+    }
+
+    public EnchantmentController getEnchantmentController(){
+        return this.enchantmentController;
     }
 }

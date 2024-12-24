@@ -110,7 +110,8 @@ public class MonsterController {
 
     private void updateFighter(FighterMonster fighter, Player player, long now) {
         // 1) Check adjacency
-        if (isAdjacentToPlayer(fighter, player)) {
+        boolean heroHasCloak = player.isCloakActive();
+        if (isAdjacentToPlayer(fighter, player) && !heroHasCloak) {
             long elapsed = now - fighter.getLastAttackTime();
             if (elapsed >= ATTACK_COOLDOWN) {
                 // Attack

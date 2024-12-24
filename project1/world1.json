@@ -1,365 +1,42 @@
 {
-  "WATER": [
-    {
-      "x": 12,
-      "y": 5,
-      "objectType": "archer"
-    },
-    {
-      "x": 7,
-      "y": 6,
-      "objectType": "archer"
-    },
-    {
-      "x": 9,
-      "y": 6,
-      "objectType": "archer"
-    },
-    {
-      "x": 8,
-      "y": 5,
-      "objectType": "archer"
-    },
-    {
-      "x": 8,
-      "y": 6,
-      "objectType": "archer"
-    },
-    {
-      "x": 7,
-      "y": 5,
-      "objectType": "archer"
-    },
-    {
-      "x": 10,
-      "y": 5,
-      "objectType": "archer"
-    },
-    {
-      "x": 10,
-      "y": 6,
-      "objectType": "archer"
-    },
-    {
-      "x": 9,
-      "y": 5,
-      "objectType": "archer"
-    },
-    {
-      "x": 11,
-      "y": 5,
-      "objectType": "archer"
-    },
-    {
-      "x": 11,
-      "y": 6,
-      "objectType": "archer"
-    },
-    {
-      "x": 12,
-      "y": 6,
-      "objectType": "archer"
-    },
-    {
-      "x": 12,
-      "y": 7,
-      "objectType": "archer"
-    },
-    {
-      "x": 11,
-      "y": 7,
-      "objectType": "archer"
-    },
-    {
-      "x": 10,
-      "y": 7,
-      "objectType": "archer"
-    }
-  ],
-  "AIR": [
-    {
-      "x": 7,
-      "y": 5,
-      "objectType": "archer"
-    },
-    {
-      "x": 5,
-      "y": 8,
-      "objectType": "archer"
-    },
-    {
-      "x": 9,
-      "y": 7,
-      "objectType": "archer"
-    },
-    {
-      "x": 6,
-      "y": 7,
-      "objectType": "archer"
-    },
-    {
-      "x": 8,
-      "y": 7,
-      "objectType": "archer"
-    },
-    {
-      "x": 7,
-      "y": 7,
-      "objectType": "archer"
-    },
-    {
-      "x": 9,
-      "y": 5,
-      "objectType": "box"
-    },
-    {
-      "x": 8,
-      "y": 5,
-      "objectType": "box"
-    },
-    {
-      "x": 8,
-      "y": 6,
-      "objectType": "box"
-    },
-    {
-      "x": 7,
-      "y": 6,
-      "objectType": "box"
-    },
-    {
-      "x": 6,
-      "y": 5,
-      "objectType": "box"
-    },
-    {
-      "x": 6,
-      "y": 4,
-      "objectType": "box"
-    },
-    {
-      "x": 7,
-      "y": 3,
-      "objectType": "box"
-    }
-  ],
+  "WATER": [],
+  "AIR": [],
   "EARTH": [
     {
-      "x": 9,
-      "y": 5,
-      "objectType": "fighter"
-    },
-    {
-      "x": 8,
-      "y": 7,
-      "objectType": "fighter"
-    },
-    {
-      "x": 8,
-      "y": 6,
-      "objectType": "fighter"
-    },
-    {
-      "x": 9,
-      "y": 6,
-      "objectType": "fighter"
-    },
-    {
-      "x": 9,
-      "y": 7,
-      "objectType": "fighter"
-    },
-    {
-      "x": 10,
-      "y": 5,
-      "objectType": "fighter"
-    },
-    {
-      "x": 10,
-      "y": 6,
-      "objectType": "fighter"
-    },
-    {
-      "x": 10,
-      "y": 7,
-      "objectType": "fighter"
-    },
-    {
-      "x": 11,
-      "y": 7,
-      "objectType": "fighter"
-    },
-    {
-      "x": 11,
-      "y": 6,
-      "objectType": "fighter"
-    },
-    {
-      "x": 12,
-      "y": 5,
-      "objectType": "fighter"
-    },
-    {
-      "x": 11,
-      "y": 4,
-      "objectType": "fighter"
-    },
-    {
-      "x": 11,
-      "y": 5,
-      "objectType": "fighter"
-    },
-    {
-      "x": 12,
-      "y": 4,
-      "objectType": "fighter"
-    },
-    {
-      "x": 9,
-      "y": 4,
-      "objectType": "fighter"
-    },
-    {
-      "x": 10,
-      "y": 4,
-      "objectType": "fighter"
-    },
-    {
-      "x": 8,
-      "y": 5,
-      "objectType": "fighter"
-    },
-    {
-      "x": 12,
-      "y": 6,
-      "objectType": "box"
-    },
-    {
-      "x": 12,
-      "y": 7,
-      "objectType": "box"
-    },
-    {
-      "x": 12,
-      "y": 8,
-      "objectType": "box"
-    },
-    {
-      "x": 10,
-      "y": 8,
-      "objectType": "box"
-    },
-    {
-      "x": 11,
-      "y": 8,
-      "objectType": "box"
-    },
-    {
-      "x": 11,
-      "y": 6,
-      "objectType": "fighter"
-    },
-    {
-      "x": 11,
-      "y": 7,
-      "objectType": "fighter"
-    },
-    {
-      "x": 11,
-      "y": 8,
-      "objectType": "fighter"
-    }
-  ],
-  "FIRE": [
-    {
-      "x": 8,
+      "x": 6,
       "y": 3,
-      "objectType": "box"
-    },
-    {
-      "x": 5,
-      "y": 6,
-      "objectType": "box"
-    },
-    {
-      "x": 11,
-      "y": 8,
-      "objectType": "box"
-    },
-    {
-      "x": 8,
-      "y": 5,
-      "objectType": "box"
+      "objectType": "fighter"
     },
     {
       "x": 3,
-      "y": 3,
-      "objectType": "box"
+      "y": 5,
+      "objectType": "fighter"
     },
     {
-      "x": 2,
-      "y": 12,
-      "objectType": "box"
-    },
-    {
-      "x": 5,
-      "y": 12,
-      "objectType": "box"
-    },
-    {
-      "x": 10,
-      "y": 13,
-      "objectType": "box"
-    },
-    {
-      "x": 10,
-      "y": 10,
-      "objectType": "box"
-    },
-    {
-      "x": 8,
-      "y": 12,
-      "objectType": "box"
-    },
-    {
-      "x": 12,
-      "y": 6,
-      "objectType": "box"
-    },
-    {
-      "x": 14,
-      "y": 3,
-      "objectType": "box"
-    },
-    {
-      "x": 12,
+      "x": 3,
       "y": 2,
       "objectType": "box"
     },
     {
-      "x": 10,
-      "y": 5,
-      "objectType": "box"
-    },
-    {
-      "x": 12,
+      "x": 2,
       "y": 4,
       "objectType": "box"
     },
     {
-      "x": 4,
-      "y": 9,
-      "objectType": "box"
-    },
-    {
-      "x": 8,
-      "y": 9,
+      "x": 6,
+      "y": 4,
       "objectType": "box"
     },
     {
       "x": 6,
-      "y": 10,
+      "y": 6,
+      "objectType": "box"
+    },
+    {
+      "x": 3,
+      "y": 7,
       "objectType": "box"
     }
-  ]
+  ],
+  "FIRE": []
 }
