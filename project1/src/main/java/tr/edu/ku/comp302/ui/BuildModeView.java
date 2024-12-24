@@ -2,6 +2,7 @@ package tr.edu.ku.comp302.ui;
 
 import tr.edu.ku.comp302.domain.controllers.BuildModeController;
 import tr.edu.ku.comp302.domain.controllers.NavigationController;
+import tr.edu.ku.comp302.domain.controllers.TilesController;
 import tr.edu.ku.comp302.domain.models.BuildObject;
 import tr.edu.ku.comp302.domain.models.HallType;
 import tr.edu.ku.comp302.config.GameConfig;
@@ -26,6 +27,7 @@ public class BuildModeView extends JPanel {
 
     private NavigationController controller;
     private BuildModeController buildModeController;
+    private TilesController tilesController;
 
     // Bazı tile resimleri
     private BufferedImage floorImage;
@@ -49,6 +51,9 @@ public class BuildModeView extends JPanel {
     public BuildModeView(NavigationController controller) {
         this.controller = controller;
         this.buildModeController = new BuildModeController();
+        this.tilesController = new TilesController();
+        this.tilesController.loadTiles();
+        this.setBackground(new Color(66, 40, 53));
 
         setLayout(new BorderLayout());
 
@@ -56,6 +61,7 @@ public class BuildModeView extends JPanel {
         loadObjectImages();
 
         canvasPanel = createCanvasPanel();
+        canvasPanel.setBackground(new Color(66, 40, 53));
         inventoryPanel = createInventoryPanel();
         controlPanel = createControlPanel();
 
@@ -80,12 +86,14 @@ public class BuildModeView extends JPanel {
         objectImages = new HashMap<>();
         try {
             BufferedImage boxImg = ImageIO.read(getClass().getResourceAsStream("/assets/box.png"));
-            BufferedImage chestImg = ImageIO.read(getClass().getResourceAsStream("/assets/npc_archer.png"));
-            BufferedImage skullImg = ImageIO.read(getClass().getResourceAsStream("/assets/npc_fighter.png"));
+            BufferedImage chestImg = ImageIO.read(getClass().getResourceAsStream("/assets/chest_closed.png"));
+            BufferedImage columnImg = ImageIO.read(getClass().getResourceAsStream("/assets/column_wall.png"));
+            BufferedImage skullImg = ImageIO.read(getClass().getResourceAsStream("/assets/skull.png"));
 
             objectImages.put("box", boxImg);
-            objectImages.put("archer", chestImg);
-            objectImages.put("fighter", skullImg);
+            objectImages.put("chest_closed", chestImg);
+            objectImages.put("column_wall", columnImg);
+            objectImages.put("skull", skullImg);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -111,6 +119,13 @@ public class BuildModeView extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 int x = e.getX() / tileSize;
                 int y = e.getY() / tileSize;
+
+                // Sadece kafes içine yerleştirme kontrolü
+                if (x -1 < GameConfig.KAFES_STARTING_X || x >= GameConfig.KAFES_STARTING_X + gridCols - 1
+                        || y -1< GameConfig.KAFES_STARTING_Y || y >= GameConfig.KAFES_STARTING_Y + gridRows -1) {
+                    JOptionPane.showMessageDialog(panel, "You can only place objects inside the grid!", "Invalid Placement", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
 
                 if (selectedObjectType != null) {
                     buildModeController.placeObject(x, y, selectedObjectType);
@@ -170,17 +185,8 @@ public class BuildModeView extends JPanel {
     }
 
     private void drawHall(Graphics g) {
-        for (int row = 0; row < gridRows; row++) {
-            for (int col = 0; col < gridCols; col++) {
-                BufferedImage tileImg = floorImage;
-                if (row == 0) tileImg = wallTop;
-                if (row == gridRows - 1) tileImg = wallBottom;
-                if (col == 0) tileImg = wallLeft;
-                if (col == gridCols - 1) tileImg = wallRight;
-
-                g.drawImage(tileImg, col * tileSize, row * tileSize, tileSize, tileSize, null);
-            }
-        }
+        Graphics2D g2 = (Graphics2D) g;
+        tilesController.draw(g2);
 
         HallType currentHall = buildModeController.getCurrentHall();
         for (BuildObject obj : getObjectsForHall(currentHall)) {
@@ -232,12 +238,15 @@ public class BuildModeView extends JPanel {
      */
     private void onCompleteAndStartGame() {
         // Son hall da min objeler konuldu mu kontrol edelim
+       // boolean moved = buildModeController.goToNextHall();
+        //if (moved) {
         if (!buildModeController.isCurrentHallValid()) {
             JOptionPane.showMessageDialog(this,
                     "You must place enough objects in the last hall before starting the game!",
                     "Not Enough Objects",
                     JOptionPane.WARNING_MESSAGE);
             return;
+            
         }
 
         // Tüm hall'ların verisini JSON'a çevirelim

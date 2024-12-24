@@ -1,217 +1,72 @@
 {
-  "FIRE": [
-    {
-      "x": 8,
-      "y": 5,
-      "objectType": "box"
-    },
-    {
-      "x": 9,
-      "y": 8,
-      "objectType": "box"
-    },
-    {
-      "x": 9,
-      "y": 8,
-      "objectType": "box"
-    },
-    {
-      "x": 12,
-      "y": 6,
-      "objectType": "box"
-    },
-    {
-      "x": 10,
-      "y": 1,
-      "objectType": "box"
-    },
-    {
-      "x": 6,
-      "y": 3,
-      "objectType": "box"
-    },
-    {
-      "x": 4,
-      "y": 7,
-      "objectType": "box"
-    },
-    {
-      "x": 5,
-      "y": 9,
-      "objectType": "box"
-    },
-    {
-      "x": 7,
-      "y": 7,
-      "objectType": "box"
-    },
-    {
-      "x": 7,
-      "y": 7,
-      "objectType": "box"
-    },
-    {
-      "x": 7,
-      "y": 10,
-      "objectType": "box"
-    },
-    {
-      "x": 11,
-      "y": 13,
-      "objectType": "box"
-    },
-    {
-      "x": 12,
-      "y": 10,
-      "objectType": "box"
-    },
-    {
-      "x": 12,
-      "y": 10,
-      "objectType": "box"
-    },
-    {
-      "x": 8,
-      "y": 11,
-      "objectType": "box"
-    },
-    {
-      "x": 4,
-      "y": 11,
-      "objectType": "box"
-    },
-    {
-      "x": 3,
-      "y": 4,
-      "objectType": "box"
-    },
-    {
-      "x": 3,
-      "y": 4,
-      "objectType": "box"
-    },
-    {
-      "x": 3,
-      "y": 6,
-      "objectType": "box"
-    },
-    {
-      "x": 3,
-      "y": 3,
-      "objectType": "box"
-    },
-    {
-      "x": 5,
-      "y": 2,
-      "objectType": "box"
-    },
-    {
-      "x": 10,
-      "y": 3,
-      "objectType": "box"
-    },
-    {
-      "x": 10,
-      "y": 3,
-      "objectType": "box"
-    },
-    {
-      "x": 13,
-      "y": 2,
-      "objectType": "box"
-    },
-    {
-      "x": 13,
-      "y": 4,
-      "objectType": "box"
-    },
-    {
-      "x": 13,
-      "y": 4,
-      "objectType": "box"
-    }
-  ],
   "EARTH": [
     {
-      "x": 11,
-      "y": 4,
+      "x": 13,
+      "y": 8,
       "objectType": "box"
     },
     {
-      "x": 11,
-      "y": 4,
+      "x": 13,
+      "y": 8,
       "objectType": "box"
     },
     {
-      "x": 6,
+      "x": 13,
+      "y": 8,
+      "objectType": "box"
+    },
+    {
+      "x": 13,
+      "y": 6,
+      "objectType": "box"
+    },
+    {
+      "x": 8,
+      "y": 8,
+      "objectType": "box"
+    },
+    {
+      "x": 10,
       "y": 5,
-      "objectType": "box"
+      "objectType": "column_wall"
     },
     {
-      "x": 6,
+      "x": 10,
       "y": 5,
-      "objectType": "box"
+      "objectType": "column_wall"
     },
     {
-      "x": 7,
-      "y": 3,
-      "objectType": "box"
+      "x": 10,
+      "y": 6,
+      "objectType": "column_wall"
     },
     {
-      "x": 7,
-      "y": 3,
-      "objectType": "box"
-    },
-    {
-      "x": 8,
-      "y": 8,
-      "objectType": "box"
-    },
-    {
-      "x": 8,
-      "y": 8,
-      "objectType": "box"
-    },
-    {
-      "x": 6,
-      "y": 8,
-      "objectType": "box"
-    },
-    {
-      "x": 6,
-      "y": 8,
-      "objectType": "box"
-    },
-    {
-      "x": 4,
-      "y": 8,
-      "objectType": "box"
-    },
-    {
-      "x": 4,
-      "y": 8,
-      "objectType": "box"
-    },
-    {
-      "x": 4,
-      "y": 11,
-      "objectType": "box"
+      "x": 11,
+      "y": 10,
+      "objectType": "column_wall"
     },
     {
       "x": 8,
       "y": 11,
-      "objectType": "box"
+      "objectType": "column_wall"
     },
     {
-      "x": 8,
-      "y": 11,
-      "objectType": "box"
+      "x": 11,
+      "y": 12,
+      "objectType": "column_wall"
     }
   ],
+  "WATER": [],
+  "FIRE": [],
   "AIR": [
     {
-      "x": 7,
-      "y": 9,
+      "x": 9,
+      "y": 2,
+      "objectType": "box"
+    },
+    {
+      "x": 9,
+      "y": 3,
       "objectType": "box"
     },
     {
@@ -220,156 +75,44 @@
       "objectType": "box"
     },
     {
-      "x": 5,
-      "y": 3,
-      "objectType": "box"
-    },
-    {
-      "x": 5,
-      "y": 3,
-      "objectType": "box"
-    },
-    {
-      "x": 4,
+      "x": 6,
       "y": 6,
       "objectType": "box"
     },
     {
       "x": 8,
-      "y": 6,
-      "objectType": "box"
+      "y": 8,
+      "objectType": "chest_closed"
     },
     {
-      "x": 4,
+      "x": 8,
+      "y": 8,
+      "objectType": "chest_closed"
+    },
+    {
+      "x": 11,
       "y": 9,
-      "objectType": "box"
+      "objectType": "skull"
     },
     {
-      "x": 4,
-      "y": 9,
-      "objectType": "box"
-    },
-    {
-      "x": 6,
+      "x": 11,
       "y": 11,
-      "objectType": "box"
+      "objectType": "skull"
     },
     {
-      "x": 12,
-      "y": 10,
-      "objectType": "box"
+      "x": 7,
+      "y": 12,
+      "objectType": "skull"
     },
     {
-      "x": 12,
-      "y": 8,
-      "objectType": "box"
+      "x": 14,
+      "y": 4,
+      "objectType": "column_wall"
     },
     {
-      "x": 12,
-      "y": 8,
-      "objectType": "box"
-    }
-  ],
-  "WATER": [
-    {
-      "x": 6,
+      "x": 13,
       "y": 9,
-      "objectType": "box"
-    },
-    {
-      "x": 7,
-      "y": 4,
-      "objectType": "box"
-    },
-    {
-      "x": 7,
-      "y": 4,
-      "objectType": "box"
-    },
-    {
-      "x": 10,
-      "y": 4,
-      "objectType": "box"
-    },
-    {
-      "x": 10,
-      "y": 6,
-      "objectType": "box"
-    },
-    {
-      "x": 10,
-      "y": 6,
-      "objectType": "box"
-    },
-    {
-      "x": 6,
-      "y": 6,
-      "objectType": "box"
-    },
-    {
-      "x": 4,
-      "y": 3,
-      "objectType": "box"
-    },
-    {
-      "x": 4,
-      "y": 3,
-      "objectType": "box"
-    },
-    {
-      "x": 7,
-      "y": 2,
-      "objectType": "box"
-    },
-    {
-      "x": 7,
-      "y": 2,
-      "objectType": "box"
-    },
-    {
-      "x": 10,
-      "y": 2,
-      "objectType": "box"
-    },
-    {
-      "x": 10,
-      "y": 2,
-      "objectType": "box"
-    },
-    {
-      "x": 12,
-      "y": 2,
-      "objectType": "box"
-    },
-    {
-      "x": 3,
-      "y": 2,
-      "objectType": "box"
-    },
-    {
-      "x": 3,
-      "y": 2,
-      "objectType": "box"
-    },
-    {
-      "x": 3,
-      "y": 8,
-      "objectType": "box"
-    },
-    {
-      "x": 3,
-      "y": 8,
-      "objectType": "box"
-    },
-    {
-      "x": 4,
-      "y": 12,
-      "objectType": "box"
-    },
-    {
-      "x": 7,
-      "y": 12,
-      "objectType": "box"
+      "objectType": "column_wall"
     }
   ]
 }
