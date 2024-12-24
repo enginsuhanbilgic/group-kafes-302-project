@@ -239,7 +239,7 @@ public class BuildModeView extends JPanel {
     private void onCompleteAndStartGame() {
         // Son hall da min objeler konuldu mu kontrol edelim
        // boolean moved = buildModeController.goToNextHall();
-        //if (moved) {
+        //üif (moved) {
         if (!buildModeController.isCurrentHallValid()) {
             JOptionPane.showMessageDialog(this,
                     "You must place enough objects in the last hall before starting the game!",
@@ -262,7 +262,16 @@ public class BuildModeView extends JPanel {
             return;
         }
 
+
+        String jsonData = "";
+        try {
+            jsonData = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         // Ardından NavigationController ile direkt PlayMode'a geçiyoruz
-        controller.startNewPlayModeFromJson(fileName);
+        controller.startNewPlayModeFromJson(jsonData);
+
     }
 }

@@ -99,18 +99,13 @@ public class NavigationController {
      * BuildMode tamamlanınca, kaydedilen JSON dosyasından
      * ya da stringden PlayMode'u başlatmak için yeni bir metot.
      */
-    public void startNewPlayModeFromJson(String jsonFilePath) {
+    public void startNewPlayModeFromJson(String jsonData) {
         if(this.playModeView != null){
             playModeView.stopGameThread();
             cardPanel.remove(playModeView);
         }
         // Okuyup bir string haline getirelim
-        String jsonData = "";
-        try {
-            jsonData = new String(Files.readAllBytes(Paths.get(jsonFilePath)), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        
         // Yeni bir PlayModeView, JSON parametresi ile
         PlayModeView playModeView2 = new PlayModeView(this, frame, jsonData);
         cardPanel.add(playModeView2, PLAY_MODE);

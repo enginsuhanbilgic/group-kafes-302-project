@@ -9,8 +9,8 @@ public class GameConfig {
     public static final int ORIGINAL_TILE_SIZE = 16; // Base tile size
     public static final int SCALE = 3;
     public static final int TILE_SIZE = ORIGINAL_TILE_SIZE * SCALE;
-    public static final int KAFES_STARTING_X = 2;
-    public static final int KAFES_STARTING_Y = 2;
+    public static final int KAFES_STARTING_X = 1;
+    public static final int KAFES_STARTING_Y = 1;
 
     // Screen configuration
     public static final int RES_HORIZONTAL = 1680;//1024;//1980; //
