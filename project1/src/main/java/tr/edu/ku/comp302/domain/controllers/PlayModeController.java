@@ -99,6 +99,19 @@ public class PlayModeController {
 
             // Assign the newly constructed map to your field
             worldObjectsMap = finalMap;
+
+            for (Map.Entry<HallType, List<BuildObject>> e : worldObjectsMap.entrySet()) {
+                for (BuildObject obj : e.getValue()) {
+                    int globalX = obj.getX();
+                    int globalY = obj.getY();
+                    // If your BuildObject coords are already "global," 
+                    // you're done. If they're local, add KAFES offsets.
+                    // e.g., globalX += GameConfig.KAFES_STARTING_X;
+    
+                    // Then mark collidable:
+                    tilesController.setTransparentTileAt(globalX, globalY);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
             // If something goes wrong, fallback to an empty map

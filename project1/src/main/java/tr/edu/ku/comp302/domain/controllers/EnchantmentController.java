@@ -130,7 +130,7 @@ public class EnchantmentController {
 
             // Double check if tile is non-collidable
             Tile t = tilesController.getTileAt(col+GameConfig.KAFES_STARTING_Y, row+GameConfig.KAFES_STARTING_X);
-            if (t != null && !t.isCollidable && isLocationAvailable(col, row) && monsterController.isLocationAvailable(col, row)) {
+            if (t != null && !t.isCollidable && isLocationAvailable(col, row)) {
                 // create enchantment
                 long now = System.currentTimeMillis();
                 Enchantment e = createRandomEnchantment((col + GameConfig.KAFES_STARTING_X) * tileSize, (row + GameConfig.KAFES_STARTING_Y) * tileSize, now);

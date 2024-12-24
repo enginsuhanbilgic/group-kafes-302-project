@@ -5,6 +5,7 @@ import tr.edu.ku.comp302.domain.controllers.KeyHandler;
 import tr.edu.ku.comp302.domain.controllers.MouseHandler;
 import tr.edu.ku.comp302.domain.controllers.NavigationController;
 import tr.edu.ku.comp302.domain.controllers.PlayModeController;
+import tr.edu.ku.comp302.domain.controllers.TilesController;
 import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
 import tr.edu.ku.comp302.domain.models.Enchantments.EnchantmentType;
 import tr.edu.ku.comp302.domain.models.HallType;
@@ -27,6 +28,11 @@ public class PlayModeView extends JPanel implements Runnable {
     public PlayModeView(NavigationController navigationController, JFrame parentFrame, HallType hallType) {
         this(navigationController, parentFrame, null, hallType);
         // "null" diyerek alt constructor'a yönlendiriyoruz
+    }
+
+    // Daha eski Constructor
+    public PlayModeView(NavigationController navigationController, JFrame frame) {
+        this(navigationController, frame, null, null);
     }
 
     /**
@@ -76,10 +82,6 @@ public class PlayModeView extends JPanel implements Runnable {
                 this.requestFocusInWindow();
             }
         });
-    }
-
-    public PlayModeView(NavigationController navigationController, JFrame frame) {
-        this(navigationController, frame, null, null);
     }
 
     public void startGameThread() {

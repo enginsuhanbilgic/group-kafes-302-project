@@ -87,6 +87,7 @@ public class BuildModeController {
     public String exportToJson() {
         return gson.toJson(hallObjectsMap);
     }
+    
 
     /**
      * Bir JSON string'den hall objelerini geri yükler.
@@ -97,6 +98,10 @@ public class BuildModeController {
         if(data != null) {
             this.hallObjectsMap = data;
         }
+    }
+
+    public List<BuildObject> getObjectsForHall(HallType hallType) {
+        return hallObjectsMap.getOrDefault(hallType, Collections.emptyList());
     }
 
     /**

@@ -175,31 +175,16 @@ public class MonsterController {
             int row = random.nextInt(mapHeight);
 
             Tile tile = tilesController.getTileAt(col+GameConfig.KAFES_STARTING_Y, row+GameConfig.KAFES_STARTING_X);
-            if (tile != null && !tile.isCollidable && isLocationAvailable(col, row) && enchantmentController.isLocationAvailable(col, row)) {
+            if (tile != null && !tile.isCollidable && enchantmentController.isLocationAvailable(col, row)) {
                 // pick a random monster type
                 Monster monster = createRandomMonster((col + GameConfig.KAFES_STARTING_X) * tileSize, (row + GameConfig.KAFES_STARTING_Y) * tileSize);
                 monsters.add(monster);
+                tilesController.setTransparentTileAt((col + GameConfig.KAFES_STARTING_X), (row + GameConfig.KAFES_STARTING_Y));
                 System.out.println("Spawned " + monster.getClass().getSimpleName() +
                                    " at col=" + col + ", row=" + row);
                 return;
             }
         }
-    }
-
-    public boolean isLocationAvailable(int col, int row) {
-        int tileSize = GameConfig.TILE_SIZE;
-    
-        for (Monster m : this.monsters) {
-            // Convert monster pixel coords to tile coords
-            int monsterCol = m.getX() / tileSize - GameConfig.KAFES_STARTING_X;
-            int monsterRow = m.getY() / tileSize - GameConfig.KAFES_STARTING_Y;
-    
-            // If the monster occupies the same tile, it's not available
-            if (monsterCol == col && monsterRow == row) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private Monster createRandomMonster(int x, int y) {
