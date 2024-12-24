@@ -21,7 +21,7 @@ public class PlayModeView extends JPanel implements Runnable {
     private volatile boolean running = true;
     private boolean pauseMenuShown = false;
     private final HallType hallType;
-
+    private final String jsonData;
 
     // Eski constructor (no JSON)
     public PlayModeView(NavigationController navigationController, JFrame parentFrame, HallType hallType) {
@@ -36,7 +36,7 @@ public class PlayModeView extends JPanel implements Runnable {
         this.setDoubleBuffered(true);
         this.setBackground(new Color(66, 40, 53));
         this.hallType = hallType;
-
+        this.jsonData = jsonData;
 
         // Initialize KeyHandler and PlayModeController
         keyHandler = new KeyHandler();

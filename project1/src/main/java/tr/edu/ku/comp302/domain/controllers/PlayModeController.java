@@ -32,7 +32,9 @@ public class PlayModeController {
     private MonsterController monsterController;
     private EnchantmentController enchantmentController;
     private final KeyHandler keyHandler;
-    
+    private final HallType hallType;
+    private final String jsonData;
+
     // Timer via GameTimerController
     private GameTimerController gameTimerController;
     private int initialTime = 60;
@@ -42,12 +44,12 @@ public class PlayModeController {
     private Map<HallType, List<BuildObject>> worldObjectsMap = new HashMap<>();
 
     private boolean gameOver = false;
-    private HallType hallType;
-    private String jsonData;
+
 
     public PlayModeController(KeyHandler keyHandler, MouseHandler mouseHandler, String jsonData, HallType hallType) {
         this.keyHandler = keyHandler;
         this.hallType = hallType;
+        this.jsonData = jsonData;
         // Initialize Player
         Player player = new Player(GameConfig.PLAYER_START_X, GameConfig.PLAYER_START_Y, GameConfig.PLAYER_SPEED);
 
