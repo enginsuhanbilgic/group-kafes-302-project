@@ -25,35 +25,38 @@ public class MainMenuView extends JPanel {
 
         // Set MigLayout as the layout manager
         setLayout(new MigLayout(
-            "fill, insets 10, debug",     // Layout constraints: fill panel, no insets
-            "[center]",           // Column constraints: center components horizontally
-            "[]push[]20[]15[]15[]push" // Row constraints: vertical spacing and centering
+                "fill, insets 10",
+                "[center]",
+                "[]push[]20[]15[]15[]15[]push" // GÜNCELLENDİ: satır aralığı artırdık
         ));
 
-        // Title Label
-        //JLabel titleLabel = new JLabel("Welcome to Kafes Game");
-        //titleLabel.setFont(new Font("Arial", Font.BOLD, 48));
+        // Title Panel
         JPanel titlePanel = createOutlinedTextPanel("Welcome to Kafes game", 48);
         add(titlePanel, "growx, wrap");
 
         // Buttons
         JButton startButton = createStyledButton("Start Game");
+        JButton buildModeButton = createStyledButton("Build Mode");  // GÜNCELLENDİ
         JButton helpButton = createStyledButton("Help");
         JButton exitButton = createStyledButton("Exit");
 
         // Button Actions
-        //Start Button currently directs to Play Mode View.
-        //This will change to Build Mode after implementing Build Mode.
         startButton.addActionListener(e -> controller.startNewPlayMode());
+
+        //  Yeni buton eklendi
+        buildModeButton.addActionListener(e -> {
+            controller.showBuildMode();
+        });
+
         helpButton.addActionListener(e -> controller.showHelpMenu(evt -> controller.showMainMenu()));
         exitButton.addActionListener(e -> System.exit(0));
 
-        // Add buttons with spacing
-        add(startButton, "align center, wrap");
-        add(helpButton, "align center, wrap");
-        add(exitButton, "align center");
+        add(startButton,    "align center, wrap");
+        add(buildModeButton,"align center, wrap"); // GÜNCELLENDİ
+        add(helpButton,     "align center, wrap");
+        add(exitButton,     "align center");
 
-        setOpaque(false); // Enable custom painting for the background
+        setOpaque(false);
     }
 
     private void loadBackgroundImage() {

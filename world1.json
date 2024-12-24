@@ -1,0 +1,375 @@
+{
+  "FIRE": [
+    {
+      "x": 8,
+      "y": 5,
+      "objectType": "box"
+    },
+    {
+      "x": 9,
+      "y": 8,
+      "objectType": "box"
+    },
+    {
+      "x": 9,
+      "y": 8,
+      "objectType": "box"
+    },
+    {
+      "x": 12,
+      "y": 6,
+      "objectType": "box"
+    },
+    {
+      "x": 10,
+      "y": 1,
+      "objectType": "box"
+    },
+    {
+      "x": 6,
+      "y": 3,
+      "objectType": "box"
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "objectType": "box"
+    },
+    {
+      "x": 5,
+      "y": 9,
+      "objectType": "box"
+    },
+    {
+      "x": 7,
+      "y": 7,
+      "objectType": "box"
+    },
+    {
+      "x": 7,
+      "y": 7,
+      "objectType": "box"
+    },
+    {
+      "x": 7,
+      "y": 10,
+      "objectType": "box"
+    },
+    {
+      "x": 11,
+      "y": 13,
+      "objectType": "box"
+    },
+    {
+      "x": 12,
+      "y": 10,
+      "objectType": "box"
+    },
+    {
+      "x": 12,
+      "y": 10,
+      "objectType": "box"
+    },
+    {
+      "x": 8,
+      "y": 11,
+      "objectType": "box"
+    },
+    {
+      "x": 4,
+      "y": 11,
+      "objectType": "box"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "objectType": "box"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "objectType": "box"
+    },
+    {
+      "x": 3,
+      "y": 6,
+      "objectType": "box"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "objectType": "box"
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "objectType": "box"
+    },
+    {
+      "x": 10,
+      "y": 3,
+      "objectType": "box"
+    },
+    {
+      "x": 10,
+      "y": 3,
+      "objectType": "box"
+    },
+    {
+      "x": 13,
+      "y": 2,
+      "objectType": "box"
+    },
+    {
+      "x": 13,
+      "y": 4,
+      "objectType": "box"
+    },
+    {
+      "x": 13,
+      "y": 4,
+      "objectType": "box"
+    }
+  ],
+  "EARTH": [
+    {
+      "x": 11,
+      "y": 4,
+      "objectType": "box"
+    },
+    {
+      "x": 11,
+      "y": 4,
+      "objectType": "box"
+    },
+    {
+      "x": 6,
+      "y": 5,
+      "objectType": "box"
+    },
+    {
+      "x": 6,
+      "y": 5,
+      "objectType": "box"
+    },
+    {
+      "x": 7,
+      "y": 3,
+      "objectType": "box"
+    },
+    {
+      "x": 7,
+      "y": 3,
+      "objectType": "box"
+    },
+    {
+      "x": 8,
+      "y": 8,
+      "objectType": "box"
+    },
+    {
+      "x": 8,
+      "y": 8,
+      "objectType": "box"
+    },
+    {
+      "x": 6,
+      "y": 8,
+      "objectType": "box"
+    },
+    {
+      "x": 6,
+      "y": 8,
+      "objectType": "box"
+    },
+    {
+      "x": 4,
+      "y": 8,
+      "objectType": "box"
+    },
+    {
+      "x": 4,
+      "y": 8,
+      "objectType": "box"
+    },
+    {
+      "x": 4,
+      "y": 11,
+      "objectType": "box"
+    },
+    {
+      "x": 8,
+      "y": 11,
+      "objectType": "box"
+    },
+    {
+      "x": 8,
+      "y": 11,
+      "objectType": "box"
+    }
+  ],
+  "AIR": [
+    {
+      "x": 7,
+      "y": 9,
+      "objectType": "box"
+    },
+    {
+      "x": 10,
+      "y": 5,
+      "objectType": "box"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "objectType": "box"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "objectType": "box"
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "objectType": "box"
+    },
+    {
+      "x": 8,
+      "y": 6,
+      "objectType": "box"
+    },
+    {
+      "x": 4,
+      "y": 9,
+      "objectType": "box"
+    },
+    {
+      "x": 4,
+      "y": 9,
+      "objectType": "box"
+    },
+    {
+      "x": 6,
+      "y": 11,
+      "objectType": "box"
+    },
+    {
+      "x": 12,
+      "y": 10,
+      "objectType": "box"
+    },
+    {
+      "x": 12,
+      "y": 8,
+      "objectType": "box"
+    },
+    {
+      "x": 12,
+      "y": 8,
+      "objectType": "box"
+    }
+  ],
+  "WATER": [
+    {
+      "x": 6,
+      "y": 9,
+      "objectType": "box"
+    },
+    {
+      "x": 7,
+      "y": 4,
+      "objectType": "box"
+    },
+    {
+      "x": 7,
+      "y": 4,
+      "objectType": "box"
+    },
+    {
+      "x": 10,
+      "y": 4,
+      "objectType": "box"
+    },
+    {
+      "x": 10,
+      "y": 6,
+      "objectType": "box"
+    },
+    {
+      "x": 10,
+      "y": 6,
+      "objectType": "box"
+    },
+    {
+      "x": 6,
+      "y": 6,
+      "objectType": "box"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "objectType": "box"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "objectType": "box"
+    },
+    {
+      "x": 7,
+      "y": 2,
+      "objectType": "box"
+    },
+    {
+      "x": 7,
+      "y": 2,
+      "objectType": "box"
+    },
+    {
+      "x": 10,
+      "y": 2,
+      "objectType": "box"
+    },
+    {
+      "x": 10,
+      "y": 2,
+      "objectType": "box"
+    },
+    {
+      "x": 12,
+      "y": 2,
+      "objectType": "box"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "objectType": "box"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "objectType": "box"
+    },
+    {
+      "x": 3,
+      "y": 8,
+      "objectType": "box"
+    },
+    {
+      "x": 3,
+      "y": 8,
+      "objectType": "box"
+    },
+    {
+      "x": 4,
+      "y": 12,
+      "objectType": "box"
+    },
+    {
+      "x": 7,
+      "y": 12,
+      "objectType": "box"
+    }
+  ]
+}

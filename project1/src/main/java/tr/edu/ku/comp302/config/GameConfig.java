@@ -11,8 +11,8 @@ public class GameConfig {
     public static final int TILE_SIZE = ORIGINAL_TILE_SIZE * SCALE;
 
     // Screen configuration
-    public static final int RES_HORIZONTAL = 1920;
-    public static final int RES_VERTICAL = 1080;
+    public static final int RES_HORIZONTAL = 1680;//1024;//1980; //
+    public static final int RES_VERTICAL = 1050;//640;//1080; //
     public static final int NUM_HALL_COLS = 16; // Number of columns
     public static final int NUM_HALL_ROWS = 16; // Number of rows
 
