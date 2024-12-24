@@ -87,7 +87,7 @@ public class NavigationController {
             playModeView.stopGameThread();
             cardPanel.remove(playModeView);
         }
-        PlayModeView playModeView2 = new PlayModeView(this, frame);
+        PlayModeView playModeView2 = new PlayModeView(this, frame, HallType.EARTH);
         cardPanel.add(playModeView2, PLAY_MODE);
         showPlayMode(playModeView2);
     }

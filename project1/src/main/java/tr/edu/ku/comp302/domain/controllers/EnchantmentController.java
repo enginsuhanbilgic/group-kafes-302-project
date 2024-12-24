@@ -191,4 +191,25 @@ public class EnchantmentController {
             enchantments.remove(collected);
         }
     }
+
+    public BufferedImage getImage(EnchantmentType e){
+        switch (e) {
+            case EXTRA_TIME -> {
+                return null;
+            }
+            case EXTRA_LIFE -> {
+                return heartImage;
+            }
+            case REVEAL -> {
+                return revealImage;
+            }
+            case CLOAK_OF_PROTECTION -> {
+                return cloakImage;
+            }
+            case LURING_GEM -> {
+                return runeImage;
+            }
+        }
+        return null;
+    }
 }
