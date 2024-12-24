@@ -155,6 +155,7 @@ public class PlayModeController {
             else if (keyHandler.right) direction = 'D';
             if (direction != ' ') {
                 playerController.getEntity().useLuringGem(direction);
+                
                 keyHandler.b = false;
                 keyHandler.up = keyHandler.down = keyHandler.left = keyHandler.right = false;
             }
@@ -193,9 +194,9 @@ public class PlayModeController {
         tilesController.draw(g2);
 
         // Draw objects from JSON if needed
-        List<BuildObject> earthObjects = worldObjectsMap.get(hallType);
-        if (earthObjects != null) {
-            for (BuildObject obj : earthObjects) {
+        List<BuildObject> hallObjects  = worldObjectsMap.get(hallType);
+        if (hallObjects  != null) {
+            for (BuildObject obj : hallObjects ) {
                 drawSingleObject(g2, obj);
             }
         }
