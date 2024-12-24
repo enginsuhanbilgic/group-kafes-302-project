@@ -16,6 +16,7 @@ import javax.imageio.ImageIO;
 public class MonsterController {
 
     private final TilesController tilesController;
+    private EnchantmentController enchantmentController;
     private final List<Monster> monsters;
     private final Random random;
 
@@ -30,6 +31,7 @@ public class MonsterController {
 
     public MonsterController(TilesController tilesController) {
         this.tilesController = tilesController;
+        this.enchantmentController = null;
         this.monsters = new ArrayList<>();
         this.random = new Random();
         this.lastSpawnTime = System.currentTimeMillis();
@@ -43,6 +45,9 @@ public class MonsterController {
         }
     }
 
+    public void setEnchantmentController(EnchantmentController enchantmentController){
+        this.enchantmentController = enchantmentController;
+    }
     /**
      * Called every game frame. Updates all monsters, spawns new ones if needed, etc.
      */
@@ -170,15 +175,31 @@ public class MonsterController {
             int row = random.nextInt(mapHeight);
 
             Tile tile = tilesController.getTileAt(col+GameConfig.KAFES_STARTING_Y, row+GameConfig.KAFES_STARTING_X);
-            if (tile != null && !tile.isCollidable) {
+            if (tile != null && !tile.isCollidable && isLocationAvailable(col, row) && enchantmentController.isLocationAvailable(col, row)) {
                 // pick a random monster type
-                Monster monster = createRandomMonster((col + GameConfig.KAFES_STARTING_Y) * tileSize, (row + GameConfig.KAFES_STARTING_X) * tileSize);
+                Monster monster = createRandomMonster((col + GameConfig.KAFES_STARTING_X) * tileSize, (row + GameConfig.KAFES_STARTING_Y) * tileSize);
                 monsters.add(monster);
                 System.out.println("Spawned " + monster.getClass().getSimpleName() +
                                    " at col=" + col + ", row=" + row);
                 return;
             }
         }
+    }
+
+    public boolean isLocationAvailable(int col, int row) {
+        int tileSize = GameConfig.TILE_SIZE;
+    
+        for (Monster m : this.monsters) {
+            // Convert monster pixel coords to tile coords
+            int monsterCol = m.getX() / tileSize - GameConfig.KAFES_STARTING_X;
+            int monsterRow = m.getY() / tileSize - GameConfig.KAFES_STARTING_Y;
+    
+            // If the monster occupies the same tile, it's not available
+            if (monsterCol == col && monsterRow == row) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private Monster createRandomMonster(int x, int y) {

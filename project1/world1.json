@@ -3,39 +3,34 @@
   "AIR": [],
   "EARTH": [
     {
-      "x": 6,
-      "y": 3,
-      "objectType": "fighter"
+      "x": 9,
+      "y": 8,
+      "objectType": "chest_closed"
     },
     {
-      "x": 3,
-      "y": 5,
-      "objectType": "fighter"
+      "x": 8,
+      "y": 13,
+      "objectType": "chest_closed"
     },
     {
-      "x": 3,
-      "y": 2,
-      "objectType": "box"
+      "x": 11,
+      "y": 12,
+      "objectType": "chest_closed"
     },
     {
-      "x": 2,
-      "y": 4,
-      "objectType": "box"
+      "x": 13,
+      "y": 9,
+      "objectType": "chest_closed"
     },
     {
-      "x": 6,
-      "y": 4,
-      "objectType": "box"
+      "x": 13,
+      "y": 10,
+      "objectType": "chest_closed"
     },
     {
-      "x": 6,
-      "y": 6,
-      "objectType": "box"
-    },
-    {
-      "x": 3,
-      "y": 7,
-      "objectType": "box"
+      "x": 11,
+      "y": 10,
+      "objectType": "chest_closed"
     }
   ],
   "FIRE": []

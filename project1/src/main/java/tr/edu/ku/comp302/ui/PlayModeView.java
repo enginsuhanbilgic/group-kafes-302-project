@@ -164,10 +164,11 @@ public class PlayModeView extends JPanel implements Runnable {
         g2.drawString("Time Remaining: " + playModeController.getCurrentTime(), 10, 20);
         g2.drawString("Lives: " + playModeController.getPlayerController().getEntity().getLives(), 10, 46);
         int i = 0;
-        g2.drawString("Inventory", 800, 20+i*26);
+        g2.drawString("Inventory", 1000, 20+i*26);
         i++;
         for(Enchantment enc : playModeController.getPlayerController().getEntity().getInventory().getAllItems()){
             g2.drawString(enc.toString(), 1000, i*26+20);
+            i++;
         }
 
         g2.dispose();
