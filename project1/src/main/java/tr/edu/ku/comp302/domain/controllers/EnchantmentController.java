@@ -2,9 +2,9 @@ package tr.edu.ku.comp302.domain.controllers;
 
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.Enchantments.*;
+import tr.edu.ku.comp302.domain.models.Monsters.Monster;
 import tr.edu.ku.comp302.domain.models.Player;
 import tr.edu.ku.comp302.domain.models.Tile;
-import tr.edu.ku.comp302.domain.controllers.TilesController;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -23,6 +23,7 @@ public class EnchantmentController {
 
     private final List<Enchantment> enchantments;
     private final Random random;
+    private final MonsterController monsterController;
     private long lastSpawnTime;
     private final long SPAWN_INTERVAL = 12_000; // 12 seconds
 
@@ -33,11 +34,12 @@ public class EnchantmentController {
     private BufferedImage cloakImage;
     private BufferedImage runeImage;
 
-    public EnchantmentController(MouseHandler mouseHandler) {
+    public EnchantmentController(MouseHandler mouseHandler, MonsterController monsterController) {
         this.enchantments = new ArrayList<>();
         this.random = new Random();
         this.lastSpawnTime = System.currentTimeMillis();
         this.mouseHandler = mouseHandler;
+        this.monsterController = monsterController;
 
         try {
         heartImage = ImageIO.read(getClass().getResourceAsStream("/assets/enchantment_heart.png"));
@@ -128,7 +130,7 @@ public class EnchantmentController {
 
             // Double check if tile is non-collidable
             Tile t = tilesController.getTileAt(col+GameConfig.KAFES_STARTING_Y, row+GameConfig.KAFES_STARTING_X);
-            if (t != null && !t.isCollidable) {
+            if (t != null && !t.isCollidable && isLocationAvailable(col, row) && monsterController.isLocationAvailable(col, row)) {
                 // create enchantment
                 long now = System.currentTimeMillis();
                 Enchantment e = createRandomEnchantment((col + GameConfig.KAFES_STARTING_X) * tileSize, (row + GameConfig.KAFES_STARTING_Y) * tileSize, now);
@@ -137,6 +139,22 @@ public class EnchantmentController {
                 return;
             }
         }
+    }
+
+    public boolean isLocationAvailable(int col, int row) {
+        int tileSize = GameConfig.TILE_SIZE;
+    
+        for (Enchantment m : this.enchantments) {
+            // Convert monster pixel coords to tile coords
+            int enchantmentCol = m.getX() / tileSize - GameConfig.KAFES_STARTING_X;
+            int enchantmentRow = m.getY() / tileSize - GameConfig.KAFES_STARTING_Y;
+    
+            // If the monster occupies the same tile, it's not available
+            if (enchantmentCol == col && enchantmentRow == row) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private Enchantment createRandomEnchantment(int x, int y, long spawnTime) {

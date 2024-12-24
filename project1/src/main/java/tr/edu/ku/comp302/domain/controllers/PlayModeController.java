@@ -7,6 +7,7 @@ import tr.edu.ku.comp302.domain.models.BuildObject;
 import tr.edu.ku.comp302.domain.models.HallType;
 import tr.edu.ku.comp302.domain.models.Player;
 import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
+import tr.edu.ku.comp302.domain.models.Monsters.Monster;
 
 import java.awt.*;
 import java.lang.reflect.Type;
@@ -36,8 +37,6 @@ public class PlayModeController {
     // JSON’dan yüklenen objeler: HallType -> List<BuildObject>
     private Map<HallType, List<BuildObject>> worldObjectsMap = new HashMap<>();
 
-    private List<Enchantment> hallEnchantments = new ArrayList<>();
-
     private boolean gameOver = false;
     public PlayModeController(KeyHandler keyHandler, MouseHandler mouseHandler) {
         this.keyHandler = keyHandler;
@@ -53,9 +52,10 @@ public class PlayModeController {
         this.playerController = new PlayerController(player, this.tilesController, this.keyHandler);
     
         this.monsterController = new MonsterController(this.tilesController);
-
-        this.enchantmentController = new EnchantmentController(mouseHandler);
-    }
+        this.enchantmentController = new EnchantmentController(mouseHandler, this.monsterController);
+        //Very bad solution
+        monsterController.setEnchantmentController(enchantmentController);
+    }   
 
     /**
      * Build mode'dan gelen JSON data'yı bu metotla yükleyebiliriz.
@@ -233,5 +233,17 @@ public class PlayModeController {
 
     public int getCurrentTime() {
         return currentTime;
+    }
+
+    public PlayerController getPlayerController() {
+        return this.playerController;
+    }
+
+    public MonsterController getMonsterController() {
+        return this.monsterController;
+    }
+
+    public EnchantmentController getEnchantmentController(){
+        return this.enchantmentController;
     }
 }

@@ -29,6 +29,10 @@ public abstract class Enchantment {
         return y;
     }
 
+    public String toString(){
+        return this.type.toString();
+    }
+
     /**
      * Returns true if more than 6 seconds have passed since spawn.
      */
