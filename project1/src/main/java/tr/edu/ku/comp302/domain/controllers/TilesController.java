@@ -62,9 +62,9 @@ public class TilesController {
             // Populate the entire grid with floor tiles
             for (int y = 0; y < maxRows; y++) {
                 for (int x = 0; x < maxCols; x++) {
-                    if (tileGrid[y][x] != null) {
+                  
                         tileGrid[y][x] = floorTile;
-                    }
+                    
                     
                 }
             }
