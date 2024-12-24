@@ -7,7 +7,7 @@ import javax.swing.SwingUtilities;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        SwingUtilities.invokeLater(() -> {
+        SwingUtilities.invokeLater(() -> {git
             JFrame frame = new JFrame("KAFES Game");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(GameConfig.RES_HORIZONTAL, GameConfig.RES_VERTICAL);

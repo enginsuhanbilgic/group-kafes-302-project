@@ -4,16 +4,19 @@ import tr.edu.ku.comp302.ui.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * The NavigationController class controls View switching.
- * It uses Card Layout to switch between different views easily.
  */
 public class NavigationController {
     private final JFrame frame;
     private final JPanel cardPanel;
     private final CardLayout cardLayout;
-    
+
     // View identifiers for CardLayout
     private static final String MAIN_MENU = "MainMenu";
     private static final String BUILD_MODE = "BuildMode";
@@ -22,12 +25,6 @@ public class NavigationController {
 
     private PlayModeView playModeView;
 
-    /**
-     * @param frame
-     * 
-     * Initiate a card layout and populate it with the views the program has.
-     * Then populate the frame with this new JPanel which uses Card Layout
-     */
     public NavigationController(JFrame frame) {
         this.frame = frame;
         this.cardLayout = new CardLayout();
@@ -36,6 +33,8 @@ public class NavigationController {
 
         // Initialize views
         cardPanel.add(new MainMenuView(this), MAIN_MENU);
+
+        // BuildModeView ekleniyor (daha sonra da yaratabiliriz, ama basitlik için direkt ekliyoruz)
         cardPanel.add(new BuildModeView(this), BUILD_MODE);
 
         this.frame.getContentPane().add(cardPanel, BorderLayout.CENTER);
@@ -44,34 +43,31 @@ public class NavigationController {
     // Navigation methods
     public void showMainMenu() {
         if (playModeView != null) {
-            playModeView.stopGameThread(); // Stop the game thread
+            playModeView.stopGameThread();
             cardPanel.remove(playModeView);
             playModeView = null;
-            System.out.println("removed play mode view");
         }
         cardLayout.show(cardPanel, MAIN_MENU);
     }
 
     public void showBuildMode() {
         if (playModeView != null) {
-            playModeView.stopGameThread(); // Stop the game thread
+            playModeView.stopGameThread();
             cardPanel.remove(playModeView);
-            playModeView=null;
-        }    
-        cardLayout.show(cardPanel, BUILD_MODE);        
+            playModeView = null;
+        }
+        BuildModeView buildModeView = new BuildModeView(this);
+        cardPanel.add(buildModeView, BUILD_MODE);
+        cardLayout.show(cardPanel, BUILD_MODE);
     }
 
     public void showHelpMenu(ActionListener onBack) {
-
-        //Set the previous HelpMenuView to null and delete it
-        //from the cardPanel to avoid memory leak.
         for(Component comp : cardPanel.getComponents()){
             if (comp instanceof HelpMenuView){
                 cardPanel.remove(comp);
                 break;
             }
         }
-
         HelpMenuView helpMenuView = new HelpMenuView(frame, onBack);
         cardPanel.add(helpMenuView, HELP_MENU);
         cardLayout.show(cardPanel, HELP_MENU);
@@ -79,17 +75,18 @@ public class NavigationController {
         frame.repaint();
     }
 
-    //Creates a new PlayModeView object and adds it to the cardPanel
-    //Ensures when clicked to start game, game starts from the beginning.
     public void showPlayMode(PlayModeView playModeView2) {
         this.playModeView = playModeView2;
         this.playModeView.startGameThread();
         cardLayout.show(cardPanel, PLAY_MODE);
         this.playModeView.requestFocusInWindow();
     }
-    
+
+    /**
+     * Start a new PlayMode with default (no JSON).
+     */
     public void startNewPlayMode(){
-        if(this.playModeView!=null){
+        if(this.playModeView != null){
             playModeView.stopGameThread();
             cardPanel.remove(playModeView);
         }
@@ -98,16 +95,38 @@ public class NavigationController {
         showPlayMode(playModeView2);
     }
 
+    /**
+     * BuildMode tamamlanınca, kaydedilen JSON dosyasından
+     * ya da stringden PlayMode'u başlatmak için yeni bir metot.
+     */
+    public void startNewPlayModeFromJson(String jsonFilePath) {
+        if(this.playModeView != null){
+            playModeView.stopGameThread();
+            cardPanel.remove(playModeView);
+        }
+        // Okuyup bir string haline getirelim
+        String jsonData = "";
+        try {
+            jsonData = new String(Files.readAllBytes(Paths.get(jsonFilePath)), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // Yeni bir PlayModeView, JSON parametresi ile
+        PlayModeView playModeView2 = new PlayModeView(this, frame, jsonData);
+        cardPanel.add(playModeView2, PLAY_MODE);
+        showPlayMode(playModeView2);
+    }
+
     // end game to do's when time is up
     public void endGameAndShowMainMenu() {
         showMainMenu();
         if (playModeView != null) {
-            playModeView.stopGameThread(); 
-            playModeView.getKeyHandler().resetKeys(); // Reset keys
+            playModeView.stopGameThread();
+            playModeView.getKeyHandler().resetKeys();
             cardPanel.remove(playModeView);
             playModeView = null;
         }
-    
+
         JOptionPane.showMessageDialog(frame, "Try again next time.");
     }
 }
