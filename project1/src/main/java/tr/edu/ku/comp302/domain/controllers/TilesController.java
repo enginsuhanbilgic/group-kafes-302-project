@@ -27,6 +27,9 @@ public class TilesController {
     private final int kafesRows = GameConfig.NUM_HALL_ROWS; // Number of rows for the inner area
     private final int kafesCols = GameConfig.NUM_HALL_COLS; // Number of columns for the inner area
 
+    private final int startingX = GameConfig.KAFES_STARTING_X;
+    private final int startingY = GameConfig.KAFES_STARTING_Y;
+
     /**
      * Constructor: Initializes the TilesController with dimensions for the kafes area.
      */
@@ -41,17 +44,19 @@ public class TilesController {
      * @param startingX Starting X-coordinate for placing the "kafes" (hall area).
      * @param startingY Starting Y-coordinate for placing the "kafes" (hall area).
      */
-    public void loadTiles(int startingX, int startingY) {
+    public void loadTiles() {
 
         try {
             // Load floor and wall tile images
             BufferedImage floorImage = ImageIO.read(getClass().getResourceAsStream("/assets/floor_plain.png"));
-            BufferedImage wallOuterImage = ImageIO.read(getClass().getResourceAsStream("/assets/wall_outer_e.png"));
+            BufferedImage wallOuterEastImage = ImageIO.read(getClass().getResourceAsStream("/assets/wall_outer_e.png"));
+            BufferedImage wallOuterWestImage = ImageIO.read(getClass().getResourceAsStream("/assets/wall_outer_w.png"));
             BufferedImage wallCenterImage = ImageIO.read(getClass().getResourceAsStream("/assets/wall_center.png"));
 
             // Create reusable tile objects
             Tile floorTile = new Tile(floorImage, false);
-            Tile wallOuterTile = new Tile(wallOuterImage, true);
+            Tile wallOuterEastTile = new Tile(wallOuterEastImage, true);
+            Tile wallOuterWestTile = new Tile(wallOuterWestImage, true);
             Tile wallCenterTile = new Tile(wallCenterImage, true);
 
             // Populate the entire grid with floor tiles
@@ -74,31 +79,14 @@ public class TilesController {
                     }
                     // Left border
                     if (x == startingX) {
-                        tileGrid[y][x] = wallOuterTile;
+                        tileGrid[y][x] = wallOuterWestTile;
                     }
                     // Right border
                     if (x == startingX + kafesCols - 1) {
-                        tileGrid[y][x] = wallOuterTile;
+                        tileGrid[y][x] = wallOuterEastTile;
                     }
                 }
             }
-
-            // Ensure proper alignment for borders
-            for (int x = startingX; x < startingX + kafesCols; x++) {
-                tileGrid[startingY][x] = wallCenterTile; // Top border row
-                tileGrid[startingY + kafesRows - 1][x] = wallCenterTile; // Bottom border row
-            }
-
-            for (int y = startingY; y < startingY + kafesRows; y++) {
-                tileGrid[y][startingX] = wallOuterTile; // Left border column
-                tileGrid[y][startingX + kafesCols - 1] = wallOuterTile; // Right border column
-            }
-
-            // Fill corners with proper alignment
-            tileGrid[startingY][startingX] = wallCenterTile; // Top-left corner
-            tileGrid[startingY][startingX + kafesCols - 1] = wallOuterTile; // Top-right corner
-            tileGrid[startingY + kafesRows -1 ][startingX] = wallCenterTile; // Bottom-left corner
-            tileGrid[startingY + kafesRows - 1][startingX + kafesCols - 1] = wallOuterTile; // Bottom-right corner
 
         } catch (IOException e) {
             e.printStackTrace();

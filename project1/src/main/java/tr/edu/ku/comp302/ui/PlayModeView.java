@@ -1,6 +1,7 @@
 package tr.edu.ku.comp302.ui;
 
 import tr.edu.ku.comp302.domain.controllers.KeyHandler;
+import tr.edu.ku.comp302.domain.controllers.MouseHandler;
 import tr.edu.ku.comp302.domain.controllers.NavigationController;
 import tr.edu.ku.comp302.domain.controllers.PlayModeController;
 
@@ -31,8 +32,10 @@ public class PlayModeView extends JPanel implements Runnable {
 
         // Initialize KeyHandler and PlayModeController
         keyHandler = new KeyHandler();
+        MouseHandler mouseHandler = new MouseHandler();
+        
         this.navigationController = navigationController;
-        playModeController = new PlayModeController(keyHandler);
+        playModeController = new PlayModeController(keyHandler, mouseHandler);
         playModeController.setNavigationController(this.navigationController);
 
         // JSON’dan world objelerini yükleyelim (eğer JSON varsa)
@@ -55,6 +58,7 @@ public class PlayModeView extends JPanel implements Runnable {
 
         // Input
         this.addKeyListener(keyHandler);
+        this.addMouseListener(mouseHandler);
         this.setFocusable(true);
         this.requestFocusInWindow();
 

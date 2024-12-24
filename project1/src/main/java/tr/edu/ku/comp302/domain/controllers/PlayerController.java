@@ -2,7 +2,6 @@ package tr.edu.ku.comp302.domain.controllers;
 
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.Player;
-import tr.edu.ku.comp302.domain.models.Tile;
 
 import javax.imageio.ImageIO;
 import java.awt.Graphics2D;
@@ -14,10 +13,7 @@ import java.util.List;
 /**
  * The PlayerController class manages the player's movement, state, and animations.
  */
-public class PlayerController {
-
-    private final Player player;
-    private final TilesController tilesController; // COLLISION UPDATE
+public class PlayerController extends EntityController<Player>{
 
     // Animation Images
     private List<BufferedImage> walkImages;
@@ -28,9 +24,11 @@ public class PlayerController {
     private int frameCounter = 0;
     private final int frameDelay = 15;
 
-    public PlayerController(Player player, TilesController tilesController) { // COLLISION UPDATE
-        this.player = player;
-        this.tilesController = tilesController; // COLLISION UPDATE
+    private final KeyHandler keyHandler; // We can store this if we want direct access each update
+
+    public PlayerController(Player player, TilesController tilesController, KeyHandler keyHandler) { // COLLISION UPDATE
+        super(player, tilesController);
+        this.keyHandler = keyHandler;
         loadPlayerImages();
     }
 
@@ -48,109 +46,62 @@ public class PlayerController {
         }
     }
 
-    /**
-     * Updates the player's position and walking state based on keyboard input.
-     *
-     * @param keyH KeyHandler for input.
-     */
-    public void updatePlayerPosition(KeyHandler keyH) {
-        // COLLISION UPDATE
+    @Override
+    public void update() {
         boolean isWalking = false;
 
-        // Gelecek konumları hesapla
-        int newX = player.playerX;
-        int newY = player.playerY;
+        // Calculate new proposed positions
+        int newX = entity.getX();
+        int newY = entity.getY();
 
-        if (keyH.up) {
-            newY -= player.playerSpeed;
+        if (keyHandler.up) {
+            newY -= entity.getSpeed();
         }
-        if (keyH.down) {
-            newY += player.playerSpeed;
+        if (keyHandler.down) {
+            newY += entity.getSpeed();
         }
-        if (keyH.left) {
-            newX -= player.playerSpeed;
+        if (keyHandler.left) {
+            newX -= entity.getSpeed();
         }
-        if (keyH.right) {
-            newX += player.playerSpeed;
+        if (keyHandler.right) {
+            newX += entity.getSpeed();
         }
 
-        // Kafes (duvar) çarpışmasını kontrol et
+        // Use the inherited collision check
         if (!checkCollision(newX, newY)) {
-            player.playerX = newX;
-            player.playerY = newY;
-            // Hareket varsa animasyon yürüme durumuna geçsin
-            isWalking = keyH.up || keyH.down || keyH.left || keyH.right;
+            // Move the player
+            entity.setX(newX);
+            entity.setY(newY);
+            // Are we moving at all?
+            isWalking = (keyHandler.up || keyHandler.down || keyHandler.left || keyHandler.right);
         } else {
-            // Duvara çarpıyorsak hareket etme
             isWalking = false;
         }
 
-        player.setWalking(isWalking);
+        entity.setWalking(isWalking);
         updateAnimationFrame();
-    }
-
-    /**
-     * Çarpışma kontrolü:
-     * Oyuncunun x,y koordinatları tile grid içindeki collidable tile'a denk geliyor mu?
-     */
-    private boolean checkCollision(int x, int y) { // COLLISION UPDATE
-        int tileSize = GameConfig.TILE_SIZE;
-
-        // Oyuncunun bounding box'ını (kutusunu) hesapla
-        int leftX = x;
-        int rightX = x + tileSize - 1;
-        int topY = y;
-        int bottomY = y + tileSize - 1;
-
-        // Tile indexlerine dönüştür
-        int leftCol = leftX / tileSize;
-        int rightCol = rightX / tileSize;
-        int topRow = topY / tileSize;
-        int bottomRow = bottomY / tileSize;
-
-        // Dört köşe (veya gerekirse aradaki tile'lar) collidable mı kontrol et
-        for (int row = topRow; row <= bottomRow; row++) {
-            for (int col = leftCol; col <= rightCol; col++) {
-                Tile tile = tilesController.getTileAt(col, row);
-                if (tile != null && tile.isCollidable) {
-                    return true; // Çarpışma var
-                }
-            }
-        }
-        return false; // Çarpışma yok
     }
 
     /**
      * Updates the current animation frame based on the walking state.
      */
     private void updateAnimationFrame() {
-        if (player.isWalking()) {
+        if (entity.isWalking()) {
             frameCounter++;
             if (frameCounter >= frameDelay) {
-                currentFrame = (currentFrame + 1) % walkImages.size(); // Cycle through frames
+                currentFrame = (currentFrame + 1) % walkImages.size();
                 frameCounter = 0;
             }
         } else {
-            currentFrame = 0; // Reset to standing when not walking
+            currentFrame = 0; // reset to standing
         }
     }
 
-    /**
-     * Draws the player on the screen.
-     *
-     * @param g2       Graphics2D object for rendering.
-     */
+    @Override
     public void draw(Graphics2D g2) {
-        BufferedImage currentImage = player.isWalking() ? walkImages.get(currentFrame) : standImage;
-        g2.drawImage(currentImage, player.playerX, player.playerY, GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
-    }
-
-    /**
-     * Returns the Player object.
-     *
-     * @return Player object.
-     */
-    public Player getPlayer() {
-        return player;
+        BufferedImage currentImage = entity.isWalking() ? walkImages.get(currentFrame) : standImage;
+        g2.drawImage(currentImage, entity.getX(), entity.getY(),
+                     GameConfig.TILE_SIZE,
+                     GameConfig.TILE_SIZE, null);
     }
 }
