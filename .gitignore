@@ -4,6 +4,7 @@ target/
 !/src/main//target/
 !/src/test//target/
 world1.json
+
 ### STS ###
 .apt_generated
 .classpath
