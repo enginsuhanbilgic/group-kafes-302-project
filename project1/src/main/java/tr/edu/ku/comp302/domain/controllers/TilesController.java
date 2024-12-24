@@ -62,7 +62,10 @@ public class TilesController {
             // Populate the entire grid with floor tiles
             for (int y = 0; y < maxRows; y++) {
                 for (int x = 0; x < maxCols; x++) {
-                    tileGrid[y][x] = floorTile;
+                    if (tileGrid[y][x] != null) {
+                        tileGrid[y][x] = floorTile;
+                    }
+                    
                 }
             }
 
@@ -87,6 +90,7 @@ public class TilesController {
                     }
                 }
             }
+            
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -108,6 +112,8 @@ public class TilesController {
         }
         return null;
     }
+    
+    
 
     /**
      * Draws the tile grid onto the given Graphics2D object.

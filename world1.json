@@ -1,34 +1,34 @@
 {
   "EARTH": [
     {
-      "x": 7,
-      "y": 8,
-      "objectType": "column_wall"
+      "x": 11,
+      "y": 6,
+      "objectType": "chest_closed"
     },
     {
-      "x": 11,
-      "y": 7,
-      "objectType": "column_wall"
+      "x": 5,
+      "y": 6,
+      "objectType": "chest_closed"
+    },
+    {
+      "x": 5,
+      "y": 8,
+      "objectType": "chest_closed"
     },
     {
       "x": 10,
       "y": 8,
-      "objectType": "column_wall"
+      "objectType": "chest_closed"
+    },
+    {
+      "x": 9,
+      "y": 6,
+      "objectType": "chest_closed"
     },
     {
       "x": 8,
-      "y": 11,
-      "objectType": "column_wall"
-    },
-    {
-      "x": 10,
-      "y": 11,
-      "objectType": "column_wall"
-    },
-    {
-      "x": 13,
-      "y": 9,
-      "objectType": "column_wall"
+      "y": 10,
+      "objectType": "chest_closed"
     }
   ],
   "WATER": [],

@@ -129,6 +129,8 @@ public class BuildModeView extends JPanel {
 
                 if (selectedObjectType != null) {
                     buildModeController.placeObject(x, y, selectedObjectType);
+                    System.out.println(x);
+                    
                     repaint();
                 }
             }
@@ -141,7 +143,7 @@ public class BuildModeView extends JPanel {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setPreferredSize(new Dimension(200, 0));
 
-        panel.add(new JLabel("Inventory:"));
+        panel.add(new JLabel("BuildMode"));
         panel.add(Box.createVerticalStrut(10));
 
         for (String objName : objectImages.keySet()) {

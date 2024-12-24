@@ -9,12 +9,16 @@ import tr.edu.ku.comp302.domain.models.Player;
 import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+
+import javax.imageio.ImageIO;
 
 /**
  * PlayModeController manages the game logic and interactions between components.
@@ -36,7 +40,6 @@ public class PlayModeController {
     // JSON’dan yüklenen objeler: HallType -> List<BuildObject>
     private Map<HallType, List<BuildObject>> worldObjectsMap = new HashMap<>();
 
-    private List<Enchantment> hallEnchantments = new ArrayList<>();
 
     private boolean gameOver = false;
     public PlayModeController(KeyHandler keyHandler, MouseHandler mouseHandler) {
@@ -138,7 +141,7 @@ public class PlayModeController {
         }
     }
 
-    public void draw(Graphics2D g2) {
+    public void draw(Graphics2D g2)  {
         // Tiles
         tilesController.draw(g2);
 
@@ -146,6 +149,7 @@ public class PlayModeController {
         List<BuildObject> earthObjects = worldObjectsMap.get(HallType.EARTH);
         if (earthObjects != null) {
             for (BuildObject obj : earthObjects) {
+                
                 drawSingleObject(g2, obj);
             }
         }
@@ -178,15 +182,25 @@ public class PlayModeController {
         }
     }
 
-    private void drawSingleObject(Graphics2D g2, BuildObject obj) {
+    private void drawSingleObject(Graphics2D g2, BuildObject obj)  {
         // Sadece demonstration amaçlı, "objectType" string'ine bakarak resim seçebiliriz.
         // Örn: "box", "chest", "skull"
         // Gerçekte bu resimleri de bir Map<String, BufferedImage>’te tutmalıyız.
         // Şimdilik basit bir kare çizelim:
-        int px = obj.getX() * GameConfig.TILE_SIZE;
-        int py = obj.getY() * GameConfig.TILE_SIZE;
-        g2.setColor(Color.GREEN);
-        g2.fillRect(px, py, GameConfig.TILE_SIZE, GameConfig.TILE_SIZE);
+        
+        try {
+            int px = obj.getX() * GameConfig.TILE_SIZE;
+            int py = obj.getY() * GameConfig.TILE_SIZE;
+            String imageName = obj.getObjectType();
+            BufferedImage image = null;
+            image = ImageIO.read(getClass().getResourceAsStream("/assets/" + imageName + "." + "png"));
+            
+            g2.setColor(Color.GREEN);
+            g2.drawImage(image, px , py , 48, 48, null);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     public boolean isPaused() {
