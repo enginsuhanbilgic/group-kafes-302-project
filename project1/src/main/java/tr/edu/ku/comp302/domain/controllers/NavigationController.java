@@ -1,5 +1,6 @@
 package tr.edu.ku.comp302.domain.controllers;
 
+import tr.edu.ku.comp302.domain.models.HallType;
 import tr.edu.ku.comp302.ui.*;
 import javax.swing.*;
 import java.awt.*;
@@ -99,7 +100,7 @@ public class NavigationController {
      * BuildMode tamamlanınca, kaydedilen JSON dosyasından
      * ya da stringden PlayMode'u başlatmak için yeni bir metot.
      */
-    public void startNewPlayModeFromJson(String jsonFilePath) {
+    public void startNewPlayModeFromJson(String jsonFilePath, HallType halltType) {
         if(this.playModeView != null){
             playModeView.stopGameThread();
             cardPanel.remove(playModeView);
@@ -112,7 +113,7 @@ public class NavigationController {
             e.printStackTrace();
         }
         // Yeni bir PlayModeView, JSON parametresi ile
-        PlayModeView playModeView2 = new PlayModeView(this, frame, jsonData);
+        PlayModeView playModeView2 = new PlayModeView(this, frame, jsonData, halltType);
         cardPanel.add(playModeView2, PLAY_MODE);
         showPlayMode(playModeView2);
     }

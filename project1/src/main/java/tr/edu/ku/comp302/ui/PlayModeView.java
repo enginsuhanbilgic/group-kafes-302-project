@@ -5,6 +5,7 @@ import tr.edu.ku.comp302.domain.controllers.KeyHandler;
 import tr.edu.ku.comp302.domain.controllers.MouseHandler;
 import tr.edu.ku.comp302.domain.controllers.NavigationController;
 import tr.edu.ku.comp302.domain.controllers.PlayModeController;
+import tr.edu.ku.comp302.domain.models.HallType;
 import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
 import tr.edu.ku.comp302.domain.models.Enchantments.EnchantmentType;
 
@@ -19,19 +20,21 @@ public class PlayModeView extends JPanel implements Runnable {
     private final KeyHandler keyHandler;
     private volatile boolean running = true;
     private boolean pauseMenuShown = false;
+    private final HallType hallType;
 
     // Eski constructor (no JSON)
     public PlayModeView(NavigationController navigationController, JFrame parentFrame) {
-        this(navigationController, parentFrame, null);
+        this(navigationController, parentFrame, null, HallType.EARTH);
         // "null" diyerek alt constructor'a yönlendiriyoruz
     }
 
     /**
      * Yeni constructor: BuildMode’dan gelen JSON data’sını alır.
      */
-    public PlayModeView(NavigationController navigationController, JFrame parentFrame, String jsonData) {
+    public PlayModeView(NavigationController navigationController, JFrame parentFrame, String jsonData, HallType hallType) {
         this.setDoubleBuffered(true);
         this.setBackground(new Color(66, 40, 53));
+        this.hallType = hallType;
 
         // Initialize KeyHandler and PlayModeController
         keyHandler = new KeyHandler();
