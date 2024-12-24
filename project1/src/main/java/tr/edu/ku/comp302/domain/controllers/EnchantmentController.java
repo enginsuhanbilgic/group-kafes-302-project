@@ -2,7 +2,6 @@ package tr.edu.ku.comp302.domain.controllers;
 
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.Enchantments.*;
-import tr.edu.ku.comp302.domain.models.Monsters.Monster;
 import tr.edu.ku.comp302.domain.models.Player;
 import tr.edu.ku.comp302.domain.models.Tile;
 
@@ -24,6 +23,7 @@ public class EnchantmentController {
     private final List<Enchantment> enchantments;
     private final Random random;
     private final MonsterController monsterController;
+    private final TilesController tilesController;
     private long lastSpawnTime;
     private final long SPAWN_INTERVAL = 12_000; // 12 seconds
 
@@ -34,12 +34,13 @@ public class EnchantmentController {
     private BufferedImage cloakImage;
     private BufferedImage runeImage;
 
-    public EnchantmentController(MouseHandler mouseHandler, MonsterController monsterController) {
+    public EnchantmentController(MouseHandler mouseHandler, TilesController tilesController, MonsterController monsterController) {
         this.enchantments = new ArrayList<>();
         this.random = new Random();
         this.lastSpawnTime = System.currentTimeMillis();
         this.mouseHandler = mouseHandler;
         this.monsterController = monsterController;
+        this.tilesController = tilesController;
 
         try {
         heartImage = ImageIO.read(getClass().getResourceAsStream("/assets/enchantment_heart.png"));
@@ -57,7 +58,7 @@ public class EnchantmentController {
      * - Removes expired.
      * - Checks if user left-clicked on an enchantment to collect it.
      */
-    public void update(Player player, TilesController tilesController) {
+    public void update(Player player) {
         long now = System.currentTimeMillis();
 
         // 1) Spawn check
@@ -114,6 +115,27 @@ public class EnchantmentController {
                 }
             }
         }
+    }
+
+    public BufferedImage getImage(EnchantmentType e){
+        switch (e) {
+            case EXTRA_TIME -> {
+                return null;
+            }
+            case EXTRA_LIFE -> {
+                return heartImage;
+            }
+            case REVEAL -> {
+                return revealImage;
+            }
+            case CLOAK_OF_PROTECTION -> {
+                return cloakImage;
+            }
+            case LURING_GEM -> {
+                return runeImage;
+            }
+        }
+        return null;
     }
 
     // ====================== Private Helpers ======================

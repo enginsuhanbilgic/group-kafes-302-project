@@ -52,7 +52,7 @@ public class PlayModeController {
         this.playerController = new PlayerController(player, this.tilesController, this.keyHandler);
     
         this.monsterController = new MonsterController(this.tilesController);
-        this.enchantmentController = new EnchantmentController(mouseHandler, this.monsterController);
+        this.enchantmentController = new EnchantmentController(mouseHandler, this.tilesController, this.monsterController);
         //Very bad solution
         monsterController.setEnchantmentController(enchantmentController);
     }   
@@ -86,7 +86,7 @@ public class PlayModeController {
             monsterController.updateAll(playerController.getEntity());
 
             // 3) Update Enchantments (spawn, despawn, mouse clicks)
-            enchantmentController.update(playerController.getEntity(), tilesController);
+            enchantmentController.update(playerController.getEntity());
 
             // 4) Check if user pressed R, P, B, etc. to use stored enchantments
             checkEnchantmentUsage();
@@ -124,6 +124,7 @@ public class PlayModeController {
             else if (keyHandler.right) direction = 'D';
             if (direction != ' ') {
                 playerController.getEntity().useLuringGem(direction);
+                
                 keyHandler.b = false;
                 keyHandler.up = keyHandler.down = keyHandler.left = keyHandler.right = false;
             }

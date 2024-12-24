@@ -134,6 +134,7 @@ public class Player extends Entity{
             inventory.removeItem(gem);
 
             System.out.println("Luring Gem thrown to direction: " + direction);
+
             // In a real game, you'd place the gem at some location and cause Fighter monsters to walk there.
         } else {
             System.out.println("No Luring Gem in inventory!");
