@@ -38,9 +38,12 @@ public class PlayModeController {
     private Map<HallType, List<BuildObject>> worldObjectsMap = new HashMap<>();
 
     private boolean gameOver = false;
-    public PlayModeController(KeyHandler keyHandler, MouseHandler mouseHandler) {
-        this.keyHandler = keyHandler;
+    private HallType hallType;
+    private String jsonData;
 
+    public PlayModeController(KeyHandler keyHandler, MouseHandler mouseHandler, String jsonData, HallType hallType) {
+        this.keyHandler = keyHandler;
+        this.hallType = hallType;
         // Initialize Player
         Player player = new Player(GameConfig.PLAYER_START_X, GameConfig.PLAYER_START_Y, GameConfig.PLAYER_SPEED);
 
@@ -61,20 +64,42 @@ public class PlayModeController {
      * Build mode'dan gelen JSON data'yı bu metotla yükleyebiliriz.
      */
     public void loadWorldFromJson(String jsonData) {
-        if(jsonData == null || jsonData.isEmpty()) return;
+        if (jsonData == null || jsonData.isEmpty()) {
+            return;
+        }
+
         try {
-            // HallType -> List<BuildObject>
             Gson gson = new Gson();
-            Type type = new TypeToken<Map<HallType, List<BuildObject>>>(){}.getType();
-            worldObjectsMap = gson.fromJson(jsonData, type);
-            if (worldObjectsMap == null) {
-                worldObjectsMap = new HashMap<>();
+            // First parse as Map<String, List<BuildObject>> from the JSON
+            Type rawType = new TypeToken<Map<String, List<BuildObject>>>() {}.getType();
+            Map<String, List<BuildObject>> rawMap = gson.fromJson(jsonData, rawType);
+
+            if (rawMap == null) {
+                rawMap = new HashMap<>();
             }
+
+            // Convert the string keys to HallType keys
+            Map<HallType, List<BuildObject>> finalMap = new HashMap<>();
+            for (Map.Entry<String, List<BuildObject>> entry : rawMap.entrySet()) {
+                try {
+                    // Make sure the key matches an enum name (e.g., "EARTH", "AIR", etc.)
+                    HallType hall = HallType.valueOf(entry.getKey().toUpperCase());
+                    finalMap.put(hall, entry.getValue());
+                } catch (IllegalArgumentException iae) {
+                    // If the key isn't a valid HallType, skip or handle as needed
+                    System.err.println("Skipping invalid hall type: " + entry.getKey());
+                }
+            }
+
+            // Assign the newly constructed map to your field
+            worldObjectsMap = finalMap;
         } catch (Exception e) {
             e.printStackTrace();
+            // If something goes wrong, fallback to an empty map
             worldObjectsMap = new HashMap<>();
         }
     }
+
 
     public void update() {
         if (gameOver) return;
@@ -133,9 +158,28 @@ public class PlayModeController {
     private void onGameOver() {
         System.out.println("Game Over! The hero has no more lives.");
         // You can navigate to a game over screen, or show a dialog, etc.
-        if (navigationController != null) {
-            navigationController.endGameAndShowMainMenu();
+        switch (hallType) {
+            case EARTH:
+                // Next hall is AIR
+                navigationController.startNewPlayModeFromJson(jsonData, HallType.AIR);
+                break;
+            case AIR:
+                // Next hall is WATER
+                navigationController.startNewPlayModeFromJson(jsonData, HallType.WATER);
+                break;
+            case WATER:
+                // Next hall is FIRE
+                navigationController.startNewPlayModeFromJson(jsonData, HallType.FIRE);
+                break;
+            case FIRE:
+            default:
+                // For FIRE, either loop back or end the game, depending on your design
+                navigationController.endGameAndShowMainMenu();
+                break;
         }
+        /*if (navigationController != null) {
+            navigationController.endGameAndShowMainMenu();
+        }*/
     }
 
     public void draw(Graphics2D g2) {
@@ -143,7 +187,7 @@ public class PlayModeController {
         tilesController.draw(g2);
 
         // Draw objects from JSON if needed
-        List<BuildObject> earthObjects = worldObjectsMap.get(HallType.EARTH);
+        List<BuildObject> earthObjects = worldObjectsMap.get(hallType);
         if (earthObjects != null) {
             for (BuildObject obj : earthObjects) {
                 drawSingleObject(g2, obj);
@@ -199,7 +243,7 @@ public class PlayModeController {
                 time -> {
                     currentTime = time;
                     onTick.accept(time);
-                },
+                    },
                 onTimeUp
         );
         gameTimerController.start(initialTime);

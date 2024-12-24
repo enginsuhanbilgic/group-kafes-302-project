@@ -11,7 +11,7 @@ public class Main {
             JFrame frame = new JFrame("KAFES Game");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(GameConfig.RES_HORIZONTAL, GameConfig.RES_VERTICAL);
-            frame.setResizable(false);
+            frame.setResizable(true);
             frame.setLocationRelativeTo(null); // Center the frame
             frame.setTitle("KAFES Game");
 
