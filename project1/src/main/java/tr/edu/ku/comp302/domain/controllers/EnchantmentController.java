@@ -25,7 +25,7 @@ public class EnchantmentController {
     private final Random random;
     private final MonsterController monsterController;
     private long lastSpawnTime;
-    private final long SPAWN_INTERVAL = 12_000; // 12 seconds
+    private final long SPAWN_INTERVAL = 12000; // 12 seconds
 
     private BufferedImage extraTimeImage;
     private BufferedImage heartImage;

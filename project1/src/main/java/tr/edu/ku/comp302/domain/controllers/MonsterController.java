@@ -117,8 +117,7 @@ public class MonsterController {
 
     private void updateFighter(FighterMonster fighter, Player player, long now) {
         // 1) Check adjacency
-        boolean heroHasCloak = player.isCloakActive();
-        if (isAdjacentToPlayer(fighter, player) && !heroHasCloak) {
+        if (isAdjacentToPlayer(fighter, player)) {
             long elapsed = now - fighter.getLastAttackTime();
             if (elapsed >= ATTACK_COOLDOWN) {
                 // Attack
@@ -126,12 +125,10 @@ public class MonsterController {
                 System.out.println("Fighter Monster stabbed the hero! Lives: " + player.getLives());
                 // Reset cooldown
                 fighter.setLastAttackTime(now);
+            }
+        } else {
+            handleMovementCycle(fighter, now, player);
         }
-        }
-        // 2) Possibly do random walk
-        //    We'll do it every 1 second (example). We can store lastMoveTime in the monster if we want,
-        //    or just do random movement every frame for demonstration:
-        randomWalk(fighter);
     }
 
     private void updateArcher(ArcherMonster archer, Player player, long now) {
@@ -181,6 +178,7 @@ public class MonsterController {
                 // pick a random monster type
                 Monster monster = createRandomMonster((col + GameConfig.KAFES_STARTING_X) * tileSize, (row + GameConfig.KAFES_STARTING_Y) * tileSize);
                 monsters.add(monster);
+                if(!(monster instanceof FighterMonster))
                 tilesController.setTransparentTileAt((col + GameConfig.KAFES_STARTING_X), (row + GameConfig.KAFES_STARTING_Y));
                 System.out.println("Spawned " + monster.getClass().getSimpleName() +
                                    " at col=" + col + ", row=" + row);
@@ -193,7 +191,7 @@ public class MonsterController {
         int r = random.nextInt(3); // 0=Fighter, 1=Archer, 2=Wizard
         return switch (r) {
             case 0 -> new FighterMonster(x, y, 1);
-            case 1 -> new ArcherMonster(x, y, 2);
+            case 1 -> new ArcherMonster(x, y, 0);
             case 2 -> new WizardMonster(x, y, 0);
             default -> null;
         };
@@ -203,56 +201,123 @@ public class MonsterController {
     //                  HELPER METHODS
     // =========================================================
 
-    /**
-     * Example random walk for FighterMonster.
-     * Calls checkCollision(...) first. 
-     */
-    private void randomWalk(Monster monster) {
-        /*int direction = random.nextInt(4); // 0=up,1=down,2=left,3=right
-        int newX = monster.getX();
-        int newY = monster.getY();
-
-        int speed = monster.getSpeed();
-        switch (direction) {
-            case 0 -> newY -= speed;
-            case 1 -> newY += speed;
-            case 2 -> newX -= speed;
-            case 3 -> newX += speed;
+    //BOZUK DÜZELTİLECEK
+    private void handleMovementCycle(FighterMonster fighter, long now, Player player) {
+        long elapsedInCycle = now - fighter.getLastMoveCycleStart();
+        if (elapsedInCycle >= 2000) {
+            fighter.setLastMoveCycleStart(now);
+            fighter.setMoving(true);
+            elapsedInCycle = 0;
         }
-        // Check collision with the environment
-        if (!checkCollision(newX, newY)) {
-            monster.setX(newX);
-            monster.setY(newY);
-        }*/
+        if (elapsedInCycle < 1000) {
+            fighter.setMoving(true);
+            /*if (manhattanDistance(fighter.getX(), fighter.getY(), player.getX(), player.getY()) < 2*GameConfig.TILE_SIZE) {
+                if (!fighter.hasMovedThisCycle()) {
+                    System.out.println("Player coordinates: " + player.getX() + " " + player.getY());
+                    System.out.println("Monster coordinates: " + fighter.getX() + " " + fighter.getY());
+                    doOneStepTowardPlayer(fighter, player);
+                    fighter.setHasMovedThisCycle(true);
+                }
+            } else {*/
+                // random
+                if (!fighter.hasPickedDirectionThisCycle()) {
+                    int direction = random.nextInt(4);
+                    fighter.setDirectionForThisCycle(direction);
+                    fighter.setHasPickedDirectionThisCycle(true);
+                }
+                doOneStepInStoredDirection(fighter);
+            //}
+        } else {
+            fighter.setMoving(false);
+            fighter.setHasPickedDirectionThisCycle(false);
+        }
     }
+    
+
+    private void doOneStepInStoredDirection(FighterMonster fighter) {
+        int direction = fighter.getDirectionForThisCycle();
+        int newX = fighter.getX();
+        int newY = fighter.getY();
+    
+        int speed = fighter.getSpeed(); // typically 1 tile
+        switch (direction) {
+            case 0 -> newY -= speed; // up
+            case 1 -> newY += speed; // down
+            case 2 -> newX -= speed; // left
+            case 3 -> newX += speed; // right
+        }
+    
+        if (!checkCollision(newX, newY)) {
+            fighter.setX(newX);
+            fighter.setY(newY);
+        }
+    }
+    
+    //BOZUK DÜZELTİLECEK
+    private void doOneStepTowardPlayer(FighterMonster fighter, Player player) {
+        int tileSize = GameConfig.TILE_SIZE;
+    
+        // Convert fighter's pixel coords to tile coords
+        int fighterCol = fighter.getX() / tileSize - GameConfig.KAFES_STARTING_X;
+        int fighterRow = fighter.getY() / tileSize - GameConfig.KAFES_STARTING_Y;
+    
+        // Convert player's pixel coords to tile coords
+        int playerCol = player.getX() / tileSize - GameConfig.KAFES_STARTING_X;
+        int playerRow = player.getY() / tileSize - GameConfig.KAFES_STARTING_Y;
+    
+        // Move just 1 tile in the direction of the player
+        int dCol = 0;
+        int dRow = 0;
+    
+        if (playerCol > fighterCol) dCol = 1;
+        else if (playerCol < fighterCol) dCol = -1;
+    
+        if (playerRow > fighterRow) dRow = 1;
+        else if (playerRow < fighterRow) dRow = -1;
+    
+        // Proposed new tile coords: exactly one tile step
+        int newCol = fighterCol + dCol;
+        int newRow = fighterRow + dRow;
+    
+        // Convert back to pixel coords
+        int newX = (newCol + GameConfig.KAFES_STARTING_X) * tileSize;
+        int newY = (newRow + GameConfig.KAFES_STARTING_Y) * tileSize;
+    
+        // Check collision
+        if (!checkCollision(newX, newY)) {
+            fighter.setX(newX);
+            fighter.setY(newY);
+        }
+    }
+    
+    
 
     /**
-     * Collision check logic pulled from EntityController approach.
-     * We'll do a bounding box approach. If the new bounding box intersects a collidable tile,
-     * return true for collision. Here we invert so false means "no collision, movement allowed".
+     * A bounding box approach that checks if the monster's new bounding box 
+     * intersects a collidable tile. If yes, returns true for collision.
      */
     private boolean checkCollision(int x, int y) {
         int tileSize = GameConfig.TILE_SIZE;
 
-        int leftX = x;
-        int rightX = x + tileSize - 1;
-        int topY = y;
+        int leftX   = x;
+        int rightX  = x + tileSize - 1;
+        int topY    = y;
         int bottomY = y + tileSize - 1;
 
-        int leftCol = leftX / tileSize;
-        int rightCol = rightX / tileSize;
-        int topRow = topY / tileSize;
+        int leftCol   = leftX / tileSize;
+        int rightCol  = rightX / tileSize;
+        int topRow    = topY / tileSize;
         int bottomRow = bottomY / tileSize;
 
         for (int row = topRow; row <= bottomRow; row++) {
             for (int col = leftCol; col <= rightCol; col++) {
                 Tile tile = tilesController.getTileAt(col, row);
                 if (tile != null && tile.isCollidable) {
-                    return true; // collision
+                    return true;
                 }
             }
         }
-        return false; // no collision
+        return false;
     }
 
     private boolean isAdjacentToPlayer(Monster monster, Player player) {

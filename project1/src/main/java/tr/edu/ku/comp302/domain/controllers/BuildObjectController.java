@@ -232,13 +232,15 @@ public class BuildObjectController {
     public void transferRune() {
         Random rand = new Random();
         BuildObject newObj = null;
-        for(int i = 0; i<50; i++){
-            int randIndex = rand.nextInt(getObjectsForHall(hallType).size());
-            if(getObjectsForHall(hallType).get(randIndex).getHasRune()!=true){
-                newObj = getObjectsForHall(hallType).get(randIndex);
+        if(getObjectsForHall(hallType).size()!=0){
+            for(int i = 0; i<50; i++){
+                int randIndex = rand.nextInt(getObjectsForHall(hallType).size());
+                if(getObjectsForHall(hallType).get(randIndex).getHasRune()!=true){
+                    newObj = getObjectsForHall(hallType).get(randIndex);
+                }
             }
         }
-
+        
         if(newObj!=null && getRuneHolder()!=null){
             getRuneHolder().setHasRune(false);
             newObj.setHasRune(true);
