@@ -37,6 +37,9 @@ public abstract class Enchantment {
      * Returns true if more than 6 seconds have passed since spawn.
      */
     public boolean isExpired() {
+        if(this.getType()==EnchantmentType.RUNE){
+            return false;
+        }
         long now = System.currentTimeMillis();
         return (now - spawnTime) >= DESPAWN_DELAY;
     }
