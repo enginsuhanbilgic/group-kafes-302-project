@@ -16,6 +16,7 @@ import javax.imageio.ImageIO;
 public class MonsterController {
 
     private final TilesController tilesController;
+    private final BuildObjectController buildObjectController;
     private EnchantmentController enchantmentController;
     private final List<Monster> monsters;
     private final Random random;
@@ -29,8 +30,9 @@ public class MonsterController {
     private final long SPAWN_INTERVAL = 8000; // 8 seconds
     private final long ATTACK_COOLDOWN = 1000; // 1 second
 
-    public MonsterController(TilesController tilesController) {
+    public MonsterController(TilesController tilesController, BuildObjectController buildObjectController) {
         this.tilesController = tilesController;
+        this.buildObjectController = buildObjectController;
         this.enchantmentController = null;
         this.monsters = new ArrayList<>();
         this.random = new Random();
@@ -155,7 +157,7 @@ public class MonsterController {
         if (now - lastTeleportTime >= 5000) {
             wizard.setLastTeleportTime(now);
             // e.g., teleport the rune
-            //tilesController.teleportRuneRandomly();
+            buildObjectController.transferRune();
             System.out.println("Wizard teleported the rune!");
         }
     }

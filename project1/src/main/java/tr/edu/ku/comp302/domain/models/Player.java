@@ -25,7 +25,7 @@ public class Player extends Entity{
 
     public Player(int x, int y, int speed) {
         super(x, y, speed);
-        this.lives = 500; // 3 canla başla
+        this.lives = 3; // 3 canla başla
         this.inventory = new Inventory();
         this.cloakActive = false;
         this.revealActive = false;

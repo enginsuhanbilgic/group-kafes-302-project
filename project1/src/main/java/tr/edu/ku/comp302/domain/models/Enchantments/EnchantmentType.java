@@ -5,7 +5,8 @@ public enum EnchantmentType {
     EXTRA_LIFE,
     REVEAL,
     CLOAK_OF_PROTECTION,
-    LURING_GEM;
+    LURING_GEM,
+    RUNE;
 
     @Override
     public String toString() {
@@ -20,6 +21,8 @@ public enum EnchantmentType {
                 return "Cloak of Protection";
             case LURING_GEM:
                 return "Luring Gem";
+            case RUNE:
+                return "Rune";
             default:
                 throw new IllegalArgumentException("Unknown EnchantmentType: " + this);
         }

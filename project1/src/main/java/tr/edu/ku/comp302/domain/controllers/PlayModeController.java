@@ -1,25 +1,15 @@
 package tr.edu.ku.comp302.domain.controllers;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.BuildObject;
 import tr.edu.ku.comp302.domain.models.HallType;
 import tr.edu.ku.comp302.domain.models.Player;
-import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
-import tr.edu.ku.comp302.domain.models.Monsters.Monster;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /**
  * PlayModeController manages the game logic and interactions between components.
@@ -31,93 +21,55 @@ public class PlayModeController {
     private NavigationController navigationController;
     private MonsterController monsterController;
     private EnchantmentController enchantmentController;
+    private BuildObjectController buildObjectController;
     private final KeyHandler keyHandler;
     private final HallType hallType;
     private final String jsonData;
+    private final MouseHandler mouseHandler;
 
     // Timer via GameTimerController
     private GameTimerController gameTimerController;
     private int initialTime = 60;
     private int currentTime;
 
-    // JSON’dan yüklenen objeler: HallType -> List<BuildObject>
-    private Map<HallType, List<BuildObject>> worldObjectsMap = new HashMap<>();
-
     private boolean gameOver = false;
-
 
     public PlayModeController(KeyHandler keyHandler, MouseHandler mouseHandler, String jsonData, HallType hallType) {
         this.keyHandler = keyHandler;
         this.hallType = hallType;
         this.jsonData = jsonData;
-        // Initialize Player
-        Player player = new Player(GameConfig.PLAYER_START_X, GameConfig.PLAYER_START_Y, GameConfig.PLAYER_SPEED);
-
+        this.mouseHandler = mouseHandler;
+        
         // Initialize TilesController
         this.tilesController = new TilesController();
         this.tilesController.loadTiles();
 
+        this.buildObjectController = new BuildObjectController(hallType);
+        this.buildObjectController.loadWorldFromJson(jsonData);
+
+        buildObjectController.getWorldObjectsMap()
+            .forEach((h, list) -> {
+                if(h==hallType){
+                    for (BuildObject obj : list) {
+                        tilesController.setTransparentTileAt(obj.getX(), obj.getY());
+                    }
+                }
+            });
+        
+        // Initialize Player
+        Player player = new Player(
+            GameConfig.PLAYER_START_X, 
+            GameConfig.PLAYER_START_Y, 
+            GameConfig.PLAYER_SPEED);
+
         // Initialize PlayerController
         this.playerController = new PlayerController(player, this.tilesController, this.keyHandler);
     
-        this.monsterController = new MonsterController(this.tilesController);
-        this.enchantmentController = new EnchantmentController(mouseHandler, this.monsterController);
+        this.monsterController = new MonsterController(this.tilesController, buildObjectController);
+        this.enchantmentController = new EnchantmentController(this.monsterController);
         //Very bad solution
         monsterController.setEnchantmentController(enchantmentController);
     }   
-
-    /**
-     * Build mode'dan gelen JSON data'yı bu metotla yükleyebiliriz.
-     */
-    public void loadWorldFromJson(String jsonData) {
-        if (jsonData == null || jsonData.isEmpty()) {
-            return;
-        }
-
-        try {
-            Gson gson = new Gson();
-            // First parse as Map<String, List<BuildObject>> from the JSON
-            Type rawType = new TypeToken<Map<String, List<BuildObject>>>() {}.getType();
-            Map<String, List<BuildObject>> rawMap = gson.fromJson(jsonData, rawType);
-
-            if (rawMap == null) {
-                rawMap = new HashMap<>();
-            }
-
-            // Convert the string keys to HallType keys
-            Map<HallType, List<BuildObject>> finalMap = new HashMap<>();
-            for (Map.Entry<String, List<BuildObject>> entry : rawMap.entrySet()) {
-                try {
-                    // Make sure the key matches an enum name (e.g., "EARTH", "AIR", etc.)
-                    HallType hall = HallType.valueOf(entry.getKey().toUpperCase());
-                    finalMap.put(hall, entry.getValue());
-                } catch (IllegalArgumentException iae) {
-                    // If the key isn't a valid HallType, skip or handle as needed
-                    System.err.println("Skipping invalid hall type: " + entry.getKey());
-                }
-            }
-
-            // Assign the newly constructed map to your field
-            worldObjectsMap = finalMap;
-
-            for (Map.Entry<HallType, List<BuildObject>> e : worldObjectsMap.entrySet()) {
-                for (BuildObject obj : e.getValue()) {
-                    int globalX = obj.getX();
-                    int globalY = obj.getY();
-                    // If your BuildObject coords are already "global," 
-                    // you're done. If they're local, add KAFES offsets.
-                    // e.g., globalX += GameConfig.KAFES_STARTING_X;
-    
-                    // Then mark collidable:
-                    tilesController.setTransparentTileAt(globalX, globalY);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            // If something goes wrong, fallback to an empty map
-            worldObjectsMap = new HashMap<>();
-        }
-    }
 
 
     public void update() {
@@ -129,24 +81,66 @@ public class PlayModeController {
             // 2) Update Monsters
             monsterController.updateAll(playerController.getEntity());
 
-            // 3) Update Enchantments (spawn, despawn, mouse clicks)
-            enchantmentController.update(playerController.getEntity(), tilesController);
+            Point clickPos = mouseHandler.getLastClickAndConsume();
+            // 3) Update Enchantments
+            enchantmentController.update(playerController.getEntity(), tilesController, clickPos);
 
-            // 4) Check if user pressed R, P, B, etc. to use stored enchantments
+            // 4) Let BuildObjectController do any per-frame logic
+            buildObjectController.update(hallType, playerController.getEntity(), clickPos);
+
+            // 5) Check enchantment usage
             checkEnchantmentUsage();
 
-            // 5) Apply any extra time that was requested by the player
+            // 6) Any bonus time?
             int bonusTime = playerController.getEntity().consumeBonusTime();
             if (bonusTime > 0 && gameTimerController != null) {
-                // add time to the global timer
                 gameTimerController.addTime(bonusTime);
             }
 
-            // 6) Check hero’s lives
+            // 7) Check hero’s lives
             if (playerController.getEntity().getLives() <= 0) {
-                gameOver = true;
                 onGameOver();
             }
+
+            // 8) Check if rune is collected
+            if (playerController.getEntity().getInventory().hasRune()){
+                onGameComplete();
+            }
+        }
+    }
+
+    public void draw(Graphics2D g2) {
+        // 1) Draw tiles
+        tilesController.draw(g2);
+
+        // 2) Draw build objects
+        buildObjectController.draw(g2);
+
+        // 3) Draw monsters
+        monsterController.drawAll(g2);
+
+        // 4) Draw enchantments
+        enchantmentController.draw(g2);
+
+        // 5) Draw player
+        playerController.draw(g2);
+
+        // If player has reveal active, you might highlight a 4x4 area around the rune
+        if (playerController.getEntity().isRevealActive()) {
+            // For demonstration, let's just draw a red rectangle somewhere
+            // e.g., if your game tracks the rune location as (runeX, runeY) in TilesController
+            // we do a simple 4x4 highlight
+            
+            //Point runeTile = tilesController.getRuneTile(); // hypothetical
+            //if (runeTile != null) {
+                int rectX = 1 * GameConfig.TILE_SIZE - GameConfig.TILE_SIZE;
+                int rectY = 1 * GameConfig.TILE_SIZE - GameConfig.TILE_SIZE;
+                int rectWidth = 4 * GameConfig.TILE_SIZE;
+                int rectHeight = 4 * GameConfig.TILE_SIZE;
+
+                g2.setColor(new Color(255, 0, 0, 80));
+                g2.fillRect(rectX, rectY, rectWidth, rectHeight);
+            //}
         }
     }
 
@@ -176,89 +170,53 @@ public class PlayModeController {
     }
 
     private void onGameOver() {
+        gameOver = true;
+        pauseGameTimer();
         System.out.println("Game Over! The hero has no more lives.");
-        // You can navigate to a game over screen, or show a dialog, etc.
-        switch (hallType) {
-            case EARTH:
-                // Next hall is AIR
-                navigationController.startNewPlayModeFromJson(jsonData, HallType.AIR);
-                break;
-            case AIR:
-                // Next hall is WATER
-                navigationController.startNewPlayModeFromJson(jsonData, HallType.WATER);
-                break;
-            case WATER:
-                // Next hall is FIRE
-                navigationController.startNewPlayModeFromJson(jsonData, HallType.FIRE);
-                break;
-            case FIRE:
-            default:
-                // For FIRE, either loop back or end the game, depending on your design
-                navigationController.endGameAndShowMainMenu();
-                break;
-        }
-        /*if (navigationController != null) {
+        if (navigationController != null) {
             navigationController.endGameAndShowMainMenu();
-        }*/
+        }
     }
 
-    public void draw(Graphics2D g2) {
-        // Tiles
-        tilesController.draw(g2);
+    private void onGameComplete() {
+        gameOver = true;
+        pauseGameTimer();
+        SwingUtilities.invokeLater(() -> {
+        // Create a dialog with a message and button
+        int result = JOptionPane.showOptionDialog(
+            null,
+            "Hall is completed! Ready for the next challenge?",
+            "Game Completed",
+            JOptionPane.DEFAULT_OPTION,
+            JOptionPane.INFORMATION_MESSAGE,
+            null,
+            new String[]{"Next"}, // Button text
+            "Next"
+        );
 
-        // Draw objects from JSON if needed
-        List<BuildObject> hallObjects  = worldObjectsMap.get(hallType);
-        if (hallObjects  != null) {
-            for (BuildObject obj : hallObjects ) {
-                drawSingleObject(g2, obj);
+        // Handle button click
+        if (result == JOptionPane.OK_OPTION) {
+            switch (hallType) {
+                case EARTH:
+                    // Navigate to AIR hall
+                    navigationController.startNewPlayModeFromJson(jsonData, HallType.AIR);
+                    break;
+                case AIR:
+                    // Navigate to WATER hall
+                    navigationController.startNewPlayModeFromJson(jsonData, HallType.WATER);
+                    break;
+                case WATER:
+                    // Navigate to FIRE hall
+                    navigationController.startNewPlayModeFromJson(jsonData, HallType.FIRE);
+                    break;
+                case FIRE:
+                default:
+                    // End the game and show the main menu
+                    navigationController.endGameAndShowMainMenu();
+                    break;
             }
         }
-
-        // Draw monsters
-        monsterController.drawAll(g2);
-
-        // Draw enchantments
-        enchantmentController.draw(g2);
-
-        // Draw player
-        playerController.draw(g2);
-
-        // If player has reveal active, you might highlight a 4x4 area around the rune
-        if (playerController.getEntity().isRevealActive()) {
-            // For demonstration, let's just draw a red rectangle somewhere
-            // e.g., if your game tracks the rune location as (runeX, runeY) in TilesController
-            // we do a simple 4x4 highlight
-            
-            //Point runeTile = tilesController.getRuneTile(); // hypothetical
-            //if (runeTile != null) {
-                int rectX = 1 * GameConfig.TILE_SIZE - GameConfig.TILE_SIZE;
-                int rectY = 1 * GameConfig.TILE_SIZE - GameConfig.TILE_SIZE;
-                int rectWidth = 4 * GameConfig.TILE_SIZE;
-                int rectHeight = 4 * GameConfig.TILE_SIZE;
-
-                g2.setColor(new Color(255, 0, 0, 80));
-                g2.fillRect(rectX, rectY, rectWidth, rectHeight);
-            //}
-        }
-    }
-
-    private void drawSingleObject(Graphics2D g2, BuildObject obj) {
-        // Sadece demonstration amaçlı, "objectType" string'ine bakarak resim seçebiliriz.
-        // Örn: "box", "chest", "skull"
-        // Gerçekte bu resimleri de bir Map<String, BufferedImage>’te tutmalıyız.
-        // Şimdilik basit bir kare çizelim:
-        String imageName = obj.getObjectType();
-        int px = obj.getX() * GameConfig.TILE_SIZE;
-        int py = obj.getY() * GameConfig.TILE_SIZE;
-        BufferedImage image = null;
-        try {
-            image = ImageIO.read(getClass().getResourceAsStream("/assets/"  + imageName + ".png"));
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        g2.setColor(Color.GREEN);
-        g2.drawImage(image, px, py ,GameConfig.TILE_SIZE , GameConfig.TILE_SIZE, null);
+    });
     }
 
     public boolean isPaused() {

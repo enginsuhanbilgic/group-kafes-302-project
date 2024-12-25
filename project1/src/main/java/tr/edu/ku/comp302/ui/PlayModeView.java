@@ -52,11 +52,6 @@ public class PlayModeView extends JPanel implements Runnable {
         playModeController = new PlayModeController(keyHandler, mouseHandler, jsonData, hallType);
         playModeController.setNavigationController(this.navigationController);
 
-        // JSON’dan world objelerini yükleyelim (eğer JSON varsa)
-        if(jsonData != null && !jsonData.isEmpty()){
-            playModeController.loadWorldFromJson(jsonData);
-        }
-
         // Timer
         playModeController.startGameTimer(
                 time -> SwingUtilities.invokeLater(() -> {

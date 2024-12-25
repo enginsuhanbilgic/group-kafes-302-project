@@ -37,6 +37,10 @@ public class Inventory {
         return null;
     }
 
+    public boolean hasRune() {
+        return getEnchantmentByType(EnchantmentType.RUNE) != null;
+    }
+
     public boolean hasEnchantment(EnchantmentType type) {
         return getEnchantmentByType(type) != null;
     }

@@ -27,25 +27,26 @@ public class EnchantmentController {
     private long lastSpawnTime;
     private final long SPAWN_INTERVAL = 12_000; // 12 seconds
 
-    private final MouseHandler mouseHandler;
-
+    private BufferedImage extraTimeImage;
     private BufferedImage heartImage;
     private BufferedImage revealImage;
     private BufferedImage cloakImage;
+    private BufferedImage gemImage;
     private BufferedImage runeImage;
 
-    public EnchantmentController(MouseHandler mouseHandler, MonsterController monsterController) {
+    public EnchantmentController(MonsterController monsterController) {
         this.enchantments = new ArrayList<>();
         this.random = new Random();
         this.lastSpawnTime = System.currentTimeMillis();
-        this.mouseHandler = mouseHandler;
         this.monsterController = monsterController;
 
         try {
+        extraTimeImage = ImageIO.read(getClass().getResourceAsStream("/assets/enchantment_extratime.png"));
         heartImage = ImageIO.read(getClass().getResourceAsStream("/assets/enchantment_heart.png"));
         revealImage = ImageIO.read(getClass().getResourceAsStream("/assets/enchantment_reveal.png"));
         cloakImage = ImageIO.read(getClass().getResourceAsStream("/assets/enchantment_cloak.png"));
-        runeImage = ImageIO.read(getClass().getResourceAsStream("/assets/enchantment_rune.png"));
+        gemImage = ImageIO.read(getClass().getResourceAsStream("/assets/enchantment_gem.png"));
+        runeImage = ImageIO.read(getClass().getResourceAsStream("/assets/rune.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,7 +58,7 @@ public class EnchantmentController {
      * - Removes expired.
      * - Checks if user left-clicked on an enchantment to collect it.
      */
-    public void update(Player player, TilesController tilesController) {
+    public void update(Player player, TilesController tilesController, Point clickPos) {
         long now = System.currentTimeMillis();
 
         // 1) Spawn check
@@ -70,7 +71,6 @@ public class EnchantmentController {
         enchantments.removeIf(Enchantment::isExpired);
 
         // 3) Check for user left-click
-        Point clickPos = mouseHandler.getLastClickAndConsume();
         if (clickPos != null) {
             handleClickCollection(clickPos, player);
         }
@@ -83,9 +83,8 @@ public class EnchantmentController {
         for (Enchantment e : enchantments) {
             switch (e.getType()) {
                 case EXTRA_TIME -> {
-                    // Draw a blue rectangle 
-                    g2.setColor(Color.BLUE);
-                    g2.fillRect(e.getX(), e.getY(), GameConfig.TILE_SIZE, GameConfig.TILE_SIZE);
+                    g2.drawImage(extraTimeImage, e.getX(), e.getY(),
+                                     GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
                 }
                 case EXTRA_LIFE -> {
                     // Draw the heart image if not null
@@ -107,9 +106,15 @@ public class EnchantmentController {
                     }
                 }
                 case LURING_GEM -> {
-                    if (runeImage != null) {
-                        g2.drawImage(runeImage, e.getX(), e.getY(),
+                    if (gemImage != null) {
+                        g2.drawImage(gemImage, e.getX(), e.getY(),
                                      GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
+                    }
+                }
+                case RUNE -> {
+                    if (runeImage!=null){
+                        g2.drawImage(runeImage, e.getX(), e.getY(),
+                                    GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
                     }
                 }
             }
@@ -207,6 +212,9 @@ public class EnchantmentController {
                 return cloakImage;
             }
             case LURING_GEM -> {
+                return gemImage;
+            }
+            case RUNE -> {
                 return runeImage;
             }
         }
