@@ -133,8 +133,8 @@ public class PlayModeController {
             
             //Point runeTile = tilesController.getRuneTile(); // hypothetical
             //if (runeTile != null) {
-                int rectX = 1 * GameConfig.TILE_SIZE - GameConfig.TILE_SIZE;
-                int rectY = 1 * GameConfig.TILE_SIZE - GameConfig.TILE_SIZE;
+                int rectX = buildObjectController.getRuneHolder().getX() * GameConfig.TILE_SIZE - GameConfig.TILE_SIZE;
+                int rectY = buildObjectController.getRuneHolder().getY() * GameConfig.TILE_SIZE - GameConfig.TILE_SIZE;
                 int rectWidth = 4 * GameConfig.TILE_SIZE;
                 int rectHeight = 4 * GameConfig.TILE_SIZE;
 
@@ -154,7 +154,7 @@ public class PlayModeController {
             keyHandler.p = false;
         }
         // For Luring Gem: we press B, then a direction:
-        if (keyHandler.isBPressed()) {
+        if (keyHandler.isBPressed() && buildObjectController.getRuneHolder()!=null) {
             char direction = ' ';
             if (keyHandler.up) direction = 'W';
             else if (keyHandler.down) direction = 'S';
