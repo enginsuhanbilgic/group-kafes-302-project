@@ -13,8 +13,9 @@ public class GameConfig {
     public static final int KAFES_STARTING_Y = 1;
 
     // Screen configuration
-    public static final int RES_HORIZONTAL = 1680;//1024;//1980; //
-    public static final int RES_VERTICAL = 1050;//640;//1080; //
+    public static final boolean RESIZABLE = true; // Resizable propert of screen
+    public static final int RES_HORIZONTAL = 1920;//1024;//1980; //
+    public static final int RES_VERTICAL = 1040;//640;//1080; //
     public static final int NUM_HALL_COLS = 16; // Number of columns
     public static final int NUM_HALL_ROWS = 16; // Number of rows
 
@@ -22,4 +23,11 @@ public class GameConfig {
     public static final int PLAYER_START_X = 144; // Default player starting X-coordinate
     public static final int PLAYER_START_Y = 144; // Default player starting Y-coordinate
     public static final int PLAYER_SPEED = 4;     // Player speed
+
+    // Enchantment properties
+    public static final long ENCHANTMENT_SPAWN_INTERVAL = 12_000;
+
+    // Monster properties
+    public static final long MONSTER_SPAWN_INTERVAL = 8000; // 8 seconds
+    public static final long MONSTER_ATTACK_COOLDOWN = 1000; // 1 second
 }

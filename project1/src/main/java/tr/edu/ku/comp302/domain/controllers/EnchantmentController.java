@@ -25,7 +25,6 @@ public class EnchantmentController {
     private final Random random;
     private final MonsterController monsterController;
     private long lastSpawnTime;
-    private final long SPAWN_INTERVAL = 12000; // 12 seconds
 
     private BufferedImage extraTimeImage;
     private BufferedImage heartImage;
@@ -62,7 +61,7 @@ public class EnchantmentController {
         long now = System.currentTimeMillis();
 
         // 1) Spawn check
-        if (now - lastSpawnTime >= SPAWN_INTERVAL) {
+        if (now - lastSpawnTime >= GameConfig.ENCHANTMENT_SPAWN_INTERVAL) {
             spawnRandomEnchantment(tilesController);
             lastSpawnTime = now;
         }

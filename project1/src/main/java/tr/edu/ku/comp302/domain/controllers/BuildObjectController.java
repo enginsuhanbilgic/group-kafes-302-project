@@ -71,11 +71,13 @@ public class BuildObjectController {
             }
             this.worldObjectsMap = finalMap;
 
-            Random rand = new Random();
-            int randIndex = rand.nextInt(getObjectsForHall(hallType).size());
-            // Clear the existing runeHolder, because we reloaded data
-            getObjectsForHall(hallType).get(randIndex).setHasRune(true);
-            this.runeHolder = getObjectsForHall(hallType).get(randIndex);
+            if(getObjectsForHall(hallType).size()!=0){
+                Random rand = new Random();
+                int randIndex = rand.nextInt(getObjectsForHall(hallType).size());
+                // Clear the existing runeHolder, because we reloaded data
+                getObjectsForHall(hallType).get(randIndex).setHasRune(true);
+                this.runeHolder = getObjectsForHall(hallType).get(randIndex);
+            }
             // If you want to preserve some previous state of the rune, you'd handle that differently.
         } catch (Exception e) {
             e.printStackTrace();

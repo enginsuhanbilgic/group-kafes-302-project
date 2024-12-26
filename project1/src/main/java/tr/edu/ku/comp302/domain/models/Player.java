@@ -139,4 +139,9 @@ public class Player extends Entity{
             System.out.println("No Luring Gem in inventory!");
         }
     }
+
+    public void resetEffects(){
+        this.cloakActive = false;
+        this.revealActive = false;
+    }
 }

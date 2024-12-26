@@ -4,6 +4,8 @@ import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.BuildObject;
 import tr.edu.ku.comp302.domain.models.HallType;
 import tr.edu.ku.comp302.domain.models.Player;
+import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
+import tr.edu.ku.comp302.domain.models.Enchantments.EnchantmentType;
 
 import java.awt.*;
 import java.util.function.Consumer;
@@ -16,6 +18,7 @@ import javax.swing.SwingUtilities;
  */
 public class PlayModeController {
 
+    private final Player player;
     private final PlayerController playerController;
     private final TilesController tilesController;
     private NavigationController navigationController;
@@ -34,11 +37,12 @@ public class PlayModeController {
 
     private boolean gameOver = false;
 
-    public PlayModeController(KeyHandler keyHandler, MouseHandler mouseHandler, String jsonData, HallType hallType) {
+    public PlayModeController(KeyHandler keyHandler, MouseHandler mouseHandler, String jsonData, HallType hallType, Player player) {
         this.keyHandler = keyHandler;
         this.hallType = hallType;
         this.jsonData = jsonData;
         this.mouseHandler = mouseHandler;
+        this.player = player;
         
         // Initialize TilesController
         this.tilesController = new TilesController();
@@ -56,12 +60,6 @@ public class PlayModeController {
                 }
             });
         
-        // Initialize Player
-        Player player = new Player(
-            GameConfig.PLAYER_START_X, 
-            GameConfig.PLAYER_START_Y, 
-            GameConfig.PLAYER_SPEED);
-
         // Initialize PlayerController
         this.playerController = new PlayerController(player, this.tilesController, this.keyHandler);
     
@@ -126,7 +124,7 @@ public class PlayModeController {
         playerController.draw(g2);
 
         // If player has reveal active, you might highlight a 4x4 area around the rune
-        if (playerController.getEntity().isRevealActive()) {
+        if (playerController.getEntity().isRevealActive() && buildObjectController.getRuneHolder()!=null) {
             // For demonstration, let's just draw a red rectangle somewhere
             // e.g., if your game tracks the rune location as (runeX, runeY) in TilesController
             // we do a simple 4x4 highlight
@@ -199,19 +197,31 @@ public class PlayModeController {
             switch (hallType) {
                 case EARTH:
                     // Navigate to AIR hall
+                    Enchantment e1 = player.getInventory().getEnchantmentByType(EnchantmentType.RUNE);
+                    player.getInventory().removeItem(e1);
+                    player.resetEffects();
                     navigationController.startNewPlayModeFromJson(jsonData, HallType.AIR);
                     break;
                 case AIR:
                     // Navigate to WATER hall
+                    Enchantment e2 = player.getInventory().getEnchantmentByType(EnchantmentType.RUNE);
+                    player.getInventory().removeItem(e2);
+                    player.resetEffects();
                     navigationController.startNewPlayModeFromJson(jsonData, HallType.WATER);
                     break;
                 case WATER:
                     // Navigate to FIRE hall
+                    Enchantment e3 = player.getInventory().getEnchantmentByType(EnchantmentType.RUNE);
+                    player.getInventory().removeItem(e3);
+                    player.resetEffects();
                     navigationController.startNewPlayModeFromJson(jsonData, HallType.FIRE);
                     break;
                 case FIRE:
                 default:
                     // End the game and show the main menu
+                    Enchantment e4 = player.getInventory().getEnchantmentByType(EnchantmentType.RUNE);
+                    player.getInventory().removeItem(e4);
+                    player.resetEffects();
                     navigationController.endGameAndShowMainMenu();
                     break;
             }

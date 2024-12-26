@@ -1,6 +1,8 @@
 package tr.edu.ku.comp302.domain.controllers;
 
+import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.HallType;
+import tr.edu.ku.comp302.domain.models.Player;
 import tr.edu.ku.comp302.ui.*;
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +15,7 @@ public class NavigationController {
     private final JFrame frame;
     private final JPanel cardPanel;
     private final CardLayout cardLayout;
+    private Player player;
 
     // View identifiers for CardLayout
     private static final String MAIN_MENU = "MainMenu";
@@ -27,6 +30,7 @@ public class NavigationController {
         this.cardLayout = new CardLayout();
         this.cardPanel = new JPanel(cardLayout);
         this.playModeView = null;
+        this.player = createNewPlayer();
 
         // Initialize views
         cardPanel.add(new MainMenuView(this), MAIN_MENU);
@@ -37,6 +41,16 @@ public class NavigationController {
         this.frame.getContentPane().add(cardPanel, BorderLayout.CENTER);
     }
 
+    // Create a new Player object with initial state
+    private Player createNewPlayer() {
+        return new Player(GameConfig.PLAYER_START_X, GameConfig.PLAYER_START_Y, GameConfig.PLAYER_SPEED);
+    }
+
+    // Reset the Player object for a new game
+    public void resetPlayer() {
+        this.player = createNewPlayer();
+    }
+
     // Navigation methods
     public void showMainMenu() {
         if (playModeView != null) {
@@ -44,6 +58,7 @@ public class NavigationController {
             cardPanel.remove(playModeView);
             playModeView = null;
         }
+
         cardLayout.show(cardPanel, MAIN_MENU);
     }
 
@@ -87,7 +102,8 @@ public class NavigationController {
             playModeView.stopGameThread();
             cardPanel.remove(playModeView);
         }
-        PlayModeView playModeView2 = new PlayModeView(this, frame, HallType.EARTH);
+
+        PlayModeView playModeView2 = new PlayModeView(this, frame, HallType.EARTH, player);
         cardPanel.add(playModeView2, PLAY_MODE);
         showPlayMode(playModeView2);
     }
@@ -101,10 +117,9 @@ public class NavigationController {
             playModeView.stopGameThread();
             cardPanel.remove(playModeView);
         }
-        // Okuyup bir string haline getirelim
-        
+
         // Yeni bir PlayModeView, JSON parametresi ile
-        PlayModeView playModeView2 = new PlayModeView(this, frame, jsonData, hallType);
+        PlayModeView playModeView2 = new PlayModeView(this, frame, jsonData, hallType, player);
         cardPanel.add(playModeView2, PLAY_MODE);
         showPlayMode(playModeView2);
     }
