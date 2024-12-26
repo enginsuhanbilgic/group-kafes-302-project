@@ -9,6 +9,7 @@ import tr.edu.ku.comp302.domain.controllers.TilesController;
 import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
 import tr.edu.ku.comp302.domain.models.Enchantments.EnchantmentType;
 import tr.edu.ku.comp302.domain.models.HallType;
+import tr.edu.ku.comp302.domain.models.Player;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,20 +26,20 @@ public class PlayModeView extends JPanel implements Runnable {
     private final String jsonData;
 
     // Eski constructor (no JSON)
-    public PlayModeView(NavigationController navigationController, JFrame parentFrame, HallType hallType) {
-        this(navigationController, parentFrame, null, hallType);
+    public PlayModeView(NavigationController navigationController, JFrame parentFrame, HallType hallType, Player player) {
+        this(navigationController, parentFrame, null, hallType, player);
         // "null" diyerek alt constructor'a yönlendiriyoruz
     }
-
+    /* 
     // Daha eski Constructor
     public PlayModeView(NavigationController navigationController, JFrame frame) {
         this(navigationController, frame, null, null);
-    }
+    }*/
 
     /**
      * Yeni constructor: BuildMode’dan gelen JSON data’sını alır.
      */
-    public PlayModeView(NavigationController navigationController, JFrame parentFrame, String jsonData, HallType hallType) {
+    public PlayModeView(NavigationController navigationController, JFrame parentFrame, String jsonData, HallType hallType, Player player) {
         this.setDoubleBuffered(true);
         this.setBackground(new Color(66, 40, 53));
         this.hallType = hallType;
@@ -49,7 +50,7 @@ public class PlayModeView extends JPanel implements Runnable {
         MouseHandler mouseHandler = new MouseHandler();
         
         this.navigationController = navigationController;
-        playModeController = new PlayModeController(keyHandler, mouseHandler, jsonData, hallType);
+        playModeController = new PlayModeController(keyHandler, mouseHandler, jsonData, hallType, player);
         playModeController.setNavigationController(this.navigationController);
 
         // Timer

@@ -51,5 +51,5 @@ public class FighterMonster extends Monster {
     public void setDirectionForThisCycle(int dir) { this.directionForThisCycle = dir; }
 
     public boolean hasMovedThisCycle() { return this.hasMovedThisCycle;}
-    public void setHasMovedThisCycle(boolean val) {this.hasMovedThisCycle = hasMovedThisCycle;}
+    public void setHasMovedThisCycle(boolean val) {this.hasMovedThisCycle = val;}
 }

@@ -27,8 +27,6 @@ public class MonsterController {
 
     // For example, spawn a new monster every 8 seconds, etc.
     private long lastSpawnTime;
-    private final long SPAWN_INTERVAL = 8000; // 8 seconds
-    private final long ATTACK_COOLDOWN = 1000; // 1 second
 
     public MonsterController(TilesController tilesController, BuildObjectController buildObjectController) {
         this.tilesController = tilesController;
@@ -57,7 +55,7 @@ public class MonsterController {
         long now = System.currentTimeMillis();
 
         // 1) Possibly spawn new monster if enough time passed
-        if (now - lastSpawnTime >= SPAWN_INTERVAL) {
+        if (now - lastSpawnTime >= GameConfig.MONSTER_SPAWN_INTERVAL) {
             spawnRandomMonster();
             lastSpawnTime = now;
         }
@@ -119,7 +117,7 @@ public class MonsterController {
         // 1) Check adjacency
         if (isAdjacentToPlayer(fighter, player)) {
             long elapsed = now - fighter.getLastAttackTime();
-            if (elapsed >= ATTACK_COOLDOWN) {
+            if (elapsed >= GameConfig.MONSTER_ATTACK_COOLDOWN) {
                 // Attack
                 player.loseLife();
                 System.out.println("Fighter Monster stabbed the hero! Lives: " + player.getLives());

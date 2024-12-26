@@ -41,7 +41,10 @@ public class MainMenuView extends JPanel {
         JButton exitButton = createStyledButton("Exit");
 
         // Button Actions
-        startButton.addActionListener(e -> controller.startNewPlayMode());
+        startButton.addActionListener(e -> {
+            controller.resetPlayer();
+            controller.startNewPlayMode();
+        });
 
         //  Yeni buton eklendi
         buildModeButton.addActionListener(e -> {
