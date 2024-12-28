@@ -3,10 +3,13 @@ package tr.edu.ku.comp302.domain.controllers;
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.HallType;
 import tr.edu.ku.comp302.domain.models.Player;
+import tr.edu.ku.comp302.domain.models.Tile;
 import tr.edu.ku.comp302.ui.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.Random;
+import tr.edu.ku.comp302.domain.controllers.TilesController;
 
 /**
  * The NavigationController class controls View switching.
@@ -24,12 +27,14 @@ public class NavigationController {
     private static final String PLAY_MODE = "PlayMode";
 
     private PlayModeView playModeView;
+    private BuildModeView buildModeView;
 
     public NavigationController(JFrame frame) {
         this.frame = frame;
         this.cardLayout = new CardLayout();
         this.cardPanel = new JPanel(cardLayout);
         this.playModeView = null;
+        this.buildModeView = null;
         this.player = createNewPlayer();
 
         // Initialize views
@@ -43,7 +48,36 @@ public class NavigationController {
 
     // Create a new Player object with initial state
     private Player createNewPlayer() {
-        return new Player(GameConfig.PLAYER_START_X, GameConfig.PLAYER_START_Y, GameConfig.PLAYER_SPEED);
+        Random random = new Random();
+        TilesController tilesController = new TilesController();
+        tilesController.loadTiles();
+
+        // Spawn alanını belirle (duvarların içinde)
+        int minX = (GameConfig.KAFES_STARTING_X + 1) * GameConfig.TILE_SIZE;
+        int maxX = (GameConfig.KAFES_STARTING_X + GameConfig.NUM_HALL_COLS - 2) * GameConfig.TILE_SIZE;
+        int minY = (GameConfig.KAFES_STARTING_Y + 1) * GameConfig.TILE_SIZE;
+        int maxY = (GameConfig.KAFES_STARTING_Y + GameConfig.NUM_HALL_ROWS - 2) * GameConfig.TILE_SIZE;
+
+        int x, y;
+        boolean validPosition = false;
+
+        // Geçerli bir spawn noktası bulana kadar dene
+        do {
+            x = minX + random.nextInt(maxX - minX);
+            y = minY + random.nextInt(maxY - minY);
+
+            // Tile koordinatlarına çevir
+            int tileX = x / GameConfig.TILE_SIZE;
+            int tileY = y / GameConfig.TILE_SIZE;
+
+            // Pozisyonun geçerli olup olmadığını kontrol et
+            Tile tile = tilesController.getTileAt(tileX, tileY);
+            if (tile != null && !tile.isCollidable) {
+                validPosition = true;
+            }
+        } while (!validPosition);
+
+        return new Player(x, y, GameConfig.PLAYER_SPEED);
     }
 
     // Reset the Player object for a new game
@@ -58,6 +92,10 @@ public class NavigationController {
             cardPanel.remove(playModeView);
             playModeView = null;
         }
+        if (buildModeView != null){
+            cardPanel.remove(buildModeView);
+            buildModeView = null;
+        }
 
         cardLayout.show(cardPanel, MAIN_MENU);
     }
@@ -68,7 +106,12 @@ public class NavigationController {
             cardPanel.remove(playModeView);
             playModeView = null;
         }
+        if (buildModeView != null){
+            cardPanel.remove(buildModeView);
+            buildModeView = null;
+        }
         BuildModeView buildModeView = new BuildModeView(this);
+        this.buildModeView = buildModeView;
         cardPanel.add(buildModeView, BUILD_MODE);
         cardLayout.show(cardPanel, BUILD_MODE);
     }
@@ -106,6 +149,11 @@ public class NavigationController {
         PlayModeView playModeView2 = new PlayModeView(this, frame, HallType.EARTH, player);
         cardPanel.add(playModeView2, PLAY_MODE);
         showPlayMode(playModeView2);
+
+        if (buildModeView != null){
+            cardPanel.remove(buildModeView);
+            buildModeView = null;
+        }
     }
 
     /**
@@ -122,6 +170,11 @@ public class NavigationController {
         PlayModeView playModeView2 = new PlayModeView(this, frame, jsonData, hallType, player);
         cardPanel.add(playModeView2, PLAY_MODE);
         showPlayMode(playModeView2);
+
+        if (buildModeView != null){
+            cardPanel.remove(buildModeView);
+            buildModeView = null;
+        }
     }
 
     // end game to do's when time is up
@@ -135,5 +188,9 @@ public class NavigationController {
         }
 
         JOptionPane.showMessageDialog(frame, "Try again next time.");
+    }
+
+    public Component[] getAllPanelsInCardLayout() {
+        return cardPanel.getComponents();
     }
 }

@@ -171,7 +171,7 @@ public class MonsterController {
             int col = random.nextInt(mapWidth);
             int row = random.nextInt(mapHeight);
 
-            Tile tile = tilesController.getTileAt(col+GameConfig.KAFES_STARTING_Y, row+GameConfig.KAFES_STARTING_X);
+            Tile tile = tilesController.getTileAt(col+GameConfig.KAFES_STARTING_X, row+GameConfig.KAFES_STARTING_Y);
             if (tile != null && !tile.isCollidable && enchantmentController.isLocationAvailable(col, row)) {
                 // pick a random monster type
                 Monster monster = createRandomMonster((col + GameConfig.KAFES_STARTING_X) * tileSize, (row + GameConfig.KAFES_STARTING_Y) * tileSize);

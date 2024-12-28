@@ -35,6 +35,7 @@ public class BuildModeView extends JPanel {
 
     // Seçili obje
     private String selectedObjectType = null;
+    private boolean isRemoveMode = false;
 
     // Envanterdeki obje resimleri (key=objName)
     private Map<String, BufferedImage> objectImages;
@@ -123,14 +124,16 @@ public class BuildModeView extends JPanel {
                 // Sadece kafes içine yerleştirme kontrolü
                 if (x - 1 < GameConfig.KAFES_STARTING_X || x >= GameConfig.KAFES_STARTING_X + gridCols - 1
                         || y -1< GameConfig.KAFES_STARTING_Y || y >= GameConfig.KAFES_STARTING_Y + gridRows -1) {
-                    JOptionPane.showMessageDialog(panel, "You can only place objects inside the grid!", "Invalid Placement", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(panel, "You can only interact with objects inside the grid!", "Invalid Action", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
-                if (selectedObjectType != null) {
+                if (isRemoveMode) {
+                    removeObjectAt(x, y);
+                } else if (selectedObjectType != null) {
                     buildModeController.placeObject(x, y, selectedObjectType);
-                    repaint();
                 }
+                repaint();
             }
         });
         return panel;
@@ -153,14 +156,26 @@ public class BuildModeView extends JPanel {
 
             btn.addActionListener(e -> {
                 selectedObjectType = objName;
+                isRemoveMode = false;
             });
 
             panel.add(btn);
             panel.add(Box.createVerticalStrut(10));
         }
 
+        JButton removeBtn = new JButton("Remove Object");
+        removeBtn.addActionListener(e -> {
+            isRemoveMode = true;
+            selectedObjectType = null;
+        });
+        panel.add(removeBtn);
+        panel.add(Box.createVerticalStrut(10));
+
         JButton noneBtn = new JButton("De-select");
-        noneBtn.addActionListener(e -> selectedObjectType = null);
+        noneBtn.addActionListener(e -> {
+            selectedObjectType = null;
+            isRemoveMode = false;
+        });
         panel.add(noneBtn);
 
         return panel;
@@ -169,9 +184,21 @@ public class BuildModeView extends JPanel {
     private JPanel createControlPanel() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
+        JButton prevHallBtn = new JButton("Previous Hall");
+        prevHallBtn.addActionListener(e -> onPreviousHall());
+        panel.add(prevHallBtn);
+
         JButton nextHallBtn = new JButton("Next Hall");
         nextHallBtn.addActionListener(e -> onNextHall());
         panel.add(nextHallBtn);
+
+        JButton saveBtn = new JButton("Save Design");
+        saveBtn.addActionListener(e -> onSaveDesign());
+        panel.add(saveBtn);
+
+        JButton loadBtn = new JButton("Load Design");
+        loadBtn.addActionListener(e -> onLoadDesign());
+        panel.add(loadBtn);
 
         JButton completeBtn = new JButton("Complete & Start Game");
         completeBtn.addActionListener(e -> onCompleteAndStartGame());
@@ -200,6 +227,17 @@ public class BuildModeView extends JPanel {
         }
     }
 
+    private void onPreviousHall() {
+        boolean moved = buildModeController.goToPreviousHall();
+        if (!moved) {
+            JOptionPane.showMessageDialog(this, "This is the first hall, you cannot go back further.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Moved to previous hall: " + buildModeController.getCurrentHall());
+        }
+        selectedObjectType = null;
+        repaint();
+    }
+
     private void onNextHall() {
         if (!buildModeController.isCurrentHallValid()) {
             JOptionPane.showMessageDialog(this,
@@ -214,7 +252,68 @@ public class BuildModeView extends JPanel {
         } else {
             JOptionPane.showMessageDialog(this, "Moved to next hall: " + buildModeController.getCurrentHall());
         }
+        selectedObjectType = null;
         repaint();
+    }
+
+    private void onSaveDesign() {
+        String designName = JOptionPane.showInputDialog(this, 
+            "Enter a name for your design:", 
+            "Save Design", 
+            JOptionPane.PLAIN_MESSAGE);
+
+        if (designName != null && !designName.trim().isEmpty()) {
+            try {
+                buildModeController.saveDesign(designName.trim());
+                JOptionPane.showMessageDialog(this, 
+                    "Design saved successfully!", 
+                    "Success", 
+                    JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, 
+                    "Error saving design: " + e.getMessage(), 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void onLoadDesign() {
+        List<String> savedDesigns = buildModeController.getSavedDesigns();
+        
+        if (savedDesigns.isEmpty()) {
+            JOptionPane.showMessageDialog(this, 
+                "No saved designs found.", 
+                "Information", 
+                JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        String[] designs = savedDesigns.toArray(new String[0]);
+        String selectedDesign = (String) JOptionPane.showInputDialog(this,
+            "Select a design to load:",
+            "Load Design",
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            designs,
+            designs[0]);
+
+        if (selectedDesign != null) {
+            try {
+                buildModeController.loadDesign(selectedDesign);
+                selectedObjectType = null;
+                JOptionPane.showMessageDialog(this, 
+                    "Design loaded successfully!", 
+                    "Success", 
+                    JOptionPane.INFORMATION_MESSAGE);
+                repaint();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, 
+                    "Error loading design: " + e.getMessage(), 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     /**
@@ -259,5 +358,11 @@ public class BuildModeView extends JPanel {
         controller.resetPlayer();
         controller.startNewPlayModeFromJson(jsonData, HallType.EARTH);
 
+    }
+
+    private void removeObjectAt(int x, int y) {
+        HallType currentHall = buildModeController.getCurrentHall();
+        List<BuildObject> objects = buildModeController.getObjectsForHall(currentHall);
+        objects.removeIf(obj -> obj.getX() == x && obj.getY() == y);
     }
 }

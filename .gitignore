@@ -4,6 +4,7 @@ target/
 !/src/main//target/
 !/src/test//target/
 world1.json
+project1/saves
 
 ### STS ###
 .apt_generated
