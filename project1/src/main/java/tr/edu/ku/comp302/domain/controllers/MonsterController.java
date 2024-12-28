@@ -54,14 +54,16 @@ public class MonsterController {
     public void updateAll(Player player) {
         long now = System.currentTimeMillis();
 
-        // 1) Possibly spawn new monster if enough time passed
-        if (now - lastSpawnTime >= GameConfig.MONSTER_SPAWN_INTERVAL) {
+        // 1) Possibly spawn new monster if enough time passed and monster sayısı limiti aşılmamışsa
+        if (now - lastSpawnTime >= GameConfig.MONSTER_SPAWN_INTERVAL && monsters.size() < 10) {
             spawnRandomMonster();
             lastSpawnTime = now;
         }
 
         // 2) Update each monster's behavior
         for (Monster m : monsters) {
+            if (!isMonsterVisible(m)) continue; // Ekranda görünmeyen canavarları güncelleme
+
             if (m instanceof FighterMonster fighter) {
                 updateFighter(fighter, player, now);
             } 
@@ -71,10 +73,15 @@ public class MonsterController {
             else if (m instanceof WizardMonster wizard) {
                 updateWizard(wizard, player, now);
             }
-            // else: other monster types, if any
         }
+    }
 
-        // 3) You can also remove dead monsters, check transitions to next hall, etc.
+    private boolean isMonsterVisible(Monster monster) {
+        // Ekran sınırları dışındaki canavarları işleme alma
+        return monster.getX() >= -GameConfig.TILE_SIZE && 
+               monster.getX() <= GameConfig.RES_HORIZONTAL + GameConfig.TILE_SIZE &&
+               monster.getY() >= -GameConfig.TILE_SIZE && 
+               monster.getY() <= GameConfig.RES_VERTICAL + GameConfig.TILE_SIZE;
     }
 
     /**
@@ -82,26 +89,22 @@ public class MonsterController {
      */
     public void drawAll(Graphics2D g2) {
         for (Monster m : monsters) {
-            if (m instanceof FighterMonster) {
-                if (fighterImage != null) {
-                    g2.drawImage(fighterImage, m.getX(), m.getY(),
-                                 GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
-                }
+            if (!isMonsterVisible(m)) continue; // Ekranda görünmeyen canavarları çizme
+
+            BufferedImage image = null;
+            if (m instanceof FighterMonster && fighterImage != null) {
+                image = fighterImage;
             } 
-            else if (m instanceof ArcherMonster) {
-                if (archerImage != null) {
-                    g2.drawImage(archerImage, m.getX(), m.getY(),
-                                 GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
-                }
+            else if (m instanceof ArcherMonster && archerImage != null) {
+                image = archerImage;
             }
-            else if (m instanceof WizardMonster) {
-                if (wizardImage != null) {
-                    g2.drawImage(wizardImage, m.getX(), m.getY(),
-                                 GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
-                }
-            } 
-            else {
-                // fallback if some other monster type
+            else if (m instanceof WizardMonster && wizardImage != null) {
+                image = wizardImage;
+            }
+
+            if (image != null) {
+                g2.drawImage(image, m.getX(), m.getY(), GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
+            } else {
                 g2.setColor(Color.GRAY);
                 g2.fillRect(m.getX(), m.getY(), GameConfig.TILE_SIZE, GameConfig.TILE_SIZE);
             }
