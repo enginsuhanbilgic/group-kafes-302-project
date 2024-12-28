@@ -6,6 +6,9 @@ import com.google.gson.reflect.TypeToken;
 import tr.edu.ku.comp302.domain.models.BuildObject;
 import tr.edu.ku.comp302.domain.models.HallType;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -32,11 +35,22 @@ public class BuildModeController {
     // Gson örneği (json'a çevirme / geri çevirme)
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
+    private static final String SAVES_DIRECTORY = "saves";
+
     public BuildModeController() {
         this.currentHallIndex = 0;
         this.hallObjectsMap = new HashMap<>();
         for (HallType ht : hallSequence) {
             hallObjectsMap.put(ht, new ArrayList<>());
+        }
+        createSavesDirectory();
+    }
+
+    private void createSavesDirectory() {
+        try {
+            Files.createDirectories(Paths.get(SAVES_DIRECTORY));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -82,6 +96,19 @@ public class BuildModeController {
     }
 
     /**
+     * Bir önceki Hall'a geçer.
+     *
+     * @return false ise zaten ilk hall'dayız.
+     */
+    public boolean goToPreviousHall() {
+        if (currentHallIndex <= 0) {
+            return false;
+        }
+        currentHallIndex--;
+        return true;
+    }
+
+    /**
      * Tüm hall objelerini JSON formatına çevirir.
      */
     public String exportToJson() {
@@ -122,5 +149,42 @@ public class BuildModeController {
         System.out.println("Saving world: " + worldName);
         printAllObjects();
         System.out.println("Done saving " + worldName);
+    }
+
+    public void saveDesign(String designName) {
+        String json = exportToJson();
+        Path savePath = Paths.get(SAVES_DIRECTORY, designName + ".json");
+        
+        try {
+            Files.write(savePath, json.getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to save design: " + e.getMessage());
+        }
+    }
+
+    public void loadDesign(String designName) {
+        Path loadPath = Paths.get(SAVES_DIRECTORY, designName + ".json");
+        
+        try {
+            String json = new String(Files.readAllBytes(loadPath), StandardCharsets.UTF_8);
+            importFromJson(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to load design: " + e.getMessage());
+        }
+    }
+
+    public List<String> getSavedDesigns() {
+        try {
+            return Files.list(Paths.get(SAVES_DIRECTORY))
+                    .filter(path -> path.toString().endsWith(".json"))
+                    .map(path -> path.getFileName().toString().replace(".json", ""))
+                    .sorted()
+                    .toList();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 }
