@@ -37,12 +37,13 @@ public abstract class EntityController<T extends Entity> {
      */
     protected boolean checkCollision(int x, int y) {
         int tileSize = GameConfig.TILE_SIZE;
+        int collisionOffset = 8;
 
         // Calculate the bounding box of the entity
-        int leftX = x;
-        int rightX = x + tileSize - 1;
-        int topY = y;
-        int bottomY = y + tileSize - 1;
+        int leftX = x + collisionOffset;
+        int rightX = x + tileSize - 1 - collisionOffset;
+        int topY = y + collisionOffset;
+        int bottomY = y + tileSize - 1 - collisionOffset;
 
         // Convert them to tile indices
         int leftCol = leftX / tileSize;

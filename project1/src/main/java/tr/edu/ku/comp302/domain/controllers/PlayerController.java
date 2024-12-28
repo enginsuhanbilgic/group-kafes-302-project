@@ -15,6 +15,8 @@ import java.util.List;
  */
 public class PlayerController extends EntityController<Player>{
 
+    private Player player;
+    
     // Animation Images
     private List<BufferedImage> walkImages;
     private BufferedImage standImage;
@@ -28,6 +30,7 @@ public class PlayerController extends EntityController<Player>{
 
     public PlayerController(Player player, TilesController tilesController, KeyHandler keyHandler) { // COLLISION UPDATE
         super(player, tilesController);
+        this.player = player;
         this.keyHandler = keyHandler;
         loadPlayerImages();
     }
@@ -70,8 +73,8 @@ public class PlayerController extends EntityController<Player>{
         // Use the inherited collision check
         if (!checkCollision(newX, newY)) {
             // Move the player
-            entity.setX(newX);
-            entity.setY(newY);
+            System.out.println("Player location: " + newX + " " + newY);
+            setLocation(newX, newY);
             // Are we moving at all?
             isWalking = (keyHandler.up || keyHandler.down || keyHandler.left || keyHandler.right);
         } else {
@@ -103,5 +106,10 @@ public class PlayerController extends EntityController<Player>{
         g2.drawImage(currentImage, entity.getX(), entity.getY(),
                      GameConfig.TILE_SIZE,
                      GameConfig.TILE_SIZE, null);
+    }
+
+    public void setLocation(int x, int y){
+        player.setX(x);
+        player.setY(y);
     }
 }

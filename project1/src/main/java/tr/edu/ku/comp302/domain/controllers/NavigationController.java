@@ -27,12 +27,14 @@ public class NavigationController {
     private static final String PLAY_MODE = "PlayMode";
 
     private PlayModeView playModeView;
+    private BuildModeView buildModeView;
 
     public NavigationController(JFrame frame) {
         this.frame = frame;
         this.cardLayout = new CardLayout();
         this.cardPanel = new JPanel(cardLayout);
         this.playModeView = null;
+        this.buildModeView = null;
         this.player = createNewPlayer();
 
         // Initialize views
@@ -90,6 +92,10 @@ public class NavigationController {
             cardPanel.remove(playModeView);
             playModeView = null;
         }
+        if (buildModeView != null){
+            cardPanel.remove(buildModeView);
+            buildModeView = null;
+        }
 
         cardLayout.show(cardPanel, MAIN_MENU);
     }
@@ -100,7 +106,12 @@ public class NavigationController {
             cardPanel.remove(playModeView);
             playModeView = null;
         }
+        if (buildModeView != null){
+            cardPanel.remove(buildModeView);
+            buildModeView = null;
+        }
         BuildModeView buildModeView = new BuildModeView(this);
+        this.buildModeView = buildModeView;
         cardPanel.add(buildModeView, BUILD_MODE);
         cardLayout.show(cardPanel, BUILD_MODE);
     }
@@ -138,6 +149,11 @@ public class NavigationController {
         PlayModeView playModeView2 = new PlayModeView(this, frame, HallType.EARTH, player);
         cardPanel.add(playModeView2, PLAY_MODE);
         showPlayMode(playModeView2);
+
+        if (buildModeView != null){
+            cardPanel.remove(buildModeView);
+            buildModeView = null;
+        }
     }
 
     /**
@@ -154,6 +170,11 @@ public class NavigationController {
         PlayModeView playModeView2 = new PlayModeView(this, frame, jsonData, hallType, player);
         cardPanel.add(playModeView2, PLAY_MODE);
         showPlayMode(playModeView2);
+
+        if (buildModeView != null){
+            cardPanel.remove(buildModeView);
+            buildModeView = null;
+        }
     }
 
     // end game to do's when time is up
@@ -167,5 +188,9 @@ public class NavigationController {
         }
 
         JOptionPane.showMessageDialog(frame, "Try again next time.");
+    }
+
+    public Component[] getAllPanelsInCardLayout() {
+        return cardPanel.getComponents();
     }
 }

@@ -58,6 +58,15 @@ public class PlayModeView extends JPanel implements Runnable {
                 time -> SwingUtilities.invokeLater(() -> {
                     parentFrame.revalidate();
                     parentFrame.repaint();
+                    /* 
+                    Component[] allPanels = navigationController.getAllPanelsInCardLayout();
+                    System.out.println("All Panels:");
+                    for (Component panel : allPanels) {
+                        System.out.println(panel.getClass().getName());
+                    }
+                    System.out.println();
+                    System.out.println();
+                    */
                 }),
                 () -> SwingUtilities.invokeLater(() -> {
                     JOptionPane.showMessageDialog(this, "Süre doldu! Oyun bitti.");

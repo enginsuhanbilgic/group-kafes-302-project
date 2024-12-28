@@ -20,7 +20,7 @@ public class GameConfig {
     public static final int NUM_HALL_ROWS = 16; // Number of rows
 
     // Player default properties
-    public static final int PLAYER_SPEED = 4;     // Player speed
+    public static final int PLAYER_SPEED = 12/SCALE;     // Player speed
 
     // Enchantment properties
     public static final long ENCHANTMENT_SPAWN_INTERVAL = 12_000;

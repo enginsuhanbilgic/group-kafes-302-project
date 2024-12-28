@@ -4,10 +4,14 @@ import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.BuildObject;
 import tr.edu.ku.comp302.domain.models.HallType;
 import tr.edu.ku.comp302.domain.models.Player;
+import tr.edu.ku.comp302.domain.models.Tile;
 import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
 import tr.edu.ku.comp302.domain.models.Enchantments.EnchantmentType;
+import tr.edu.ku.comp302.domain.models.Monsters.FighterMonster;
+import tr.edu.ku.comp302.domain.models.Monsters.Monster;
 
 import java.awt.*;
+import java.util.Random;
 import java.util.function.Consumer;
 
 import javax.swing.JOptionPane;
@@ -62,12 +66,35 @@ public class PlayModeController {
         
         // Initialize PlayerController
         this.playerController = new PlayerController(player, this.tilesController, this.keyHandler);
-    
+
         this.monsterController = new MonsterController(this.tilesController, buildObjectController);
         this.enchantmentController = new EnchantmentController(this.monsterController);
         //Very bad solution
         monsterController.setEnchantmentController(enchantmentController);
-    }   
+
+        initializePlayerLocation();
+    }  
+    
+    public void initializePlayerLocation(){
+        int tileSize = GameConfig.TILE_SIZE;
+        int mapWidth = GameConfig.NUM_HALL_COLS;
+        int mapHeight = GameConfig.NUM_HALL_ROWS;
+        Random random = new Random();
+
+        // We'll try a few times to find a free tile
+        for (int attempt = 0; attempt < 50; attempt++) {
+            int col = random.nextInt(mapWidth);
+            int row = random.nextInt(mapHeight);
+
+            Tile tile = tilesController.getTileAt(col+GameConfig.KAFES_STARTING_X, row+GameConfig.KAFES_STARTING_Y);
+            if (tile != null && !tile.isCollidable && enchantmentController.isLocationAvailable(col, row)) {
+                //
+                playerController.setLocation((col + GameConfig.KAFES_STARTING_X) * tileSize, (row + GameConfig.KAFES_STARTING_Y) * tileSize);
+            } else{
+                //System.out.println("Unsuccesful location: " + col + " " + row);
+            }
+        }
+    }
 
 
     public void update() {
