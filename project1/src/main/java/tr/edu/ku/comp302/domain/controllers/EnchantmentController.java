@@ -7,12 +7,9 @@ import tr.edu.ku.comp302.domain.models.Tile;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import javax.imageio.ImageIO;
 
 /**
  * EnchantmentController handles spawning of enchantments, 
@@ -40,16 +37,12 @@ public class EnchantmentController {
         this.tilesController = tilesController;
         this.lastSpawnTime = 0;
 
-        try {
-        extraTimeImage = ImageIO.read(getClass().getResourceAsStream("/assets/enchantment_extratime.png"));
-        heartImage = ImageIO.read(getClass().getResourceAsStream("/assets/enchantment_heart.png"));
-        revealImage = ImageIO.read(getClass().getResourceAsStream("/assets/enchantment_reveal.png"));
-        cloakImage = ImageIO.read(getClass().getResourceAsStream("/assets/enchantment_cloak.png"));
-        gemImage = ImageIO.read(getClass().getResourceAsStream("/assets/enchantment_gem.png"));
-        runeImage = ImageIO.read(getClass().getResourceAsStream("/assets/rune.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        extraTimeImage = ResourceManager.getImage("enchantment_extratime");
+        heartImage     = ResourceManager.getImage("enchantment_heart");
+        revealImage    = ResourceManager.getImage("enchantment_reveal");
+        cloakImage     = ResourceManager.getImage("enchantment_cloak");
+        gemImage       = ResourceManager.getImage("enchantment_gem");
+        runeImage      = ResourceManager.getImage("rune");
     }
 
     /**

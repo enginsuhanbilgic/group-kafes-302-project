@@ -3,10 +3,8 @@ package tr.edu.ku.comp302.domain.controllers;
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.Player;
 
-import javax.imageio.ImageIO;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,13 +38,9 @@ public class PlayerController extends EntityController<Player>{
      */
     private void loadPlayerImages() {
         walkImages = new ArrayList<>();
-        try {
-            walkImages.add(ImageIO.read(getClass().getResourceAsStream("/assets/player_walk_1.png")));
-            walkImages.add(ImageIO.read(getClass().getResourceAsStream("/assets/player_walk_2.png")));
-            standImage = ImageIO.read(getClass().getResourceAsStream("/assets/player_stand.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        walkImages.add(ResourceManager.getImage("player_walk_1"));
+        walkImages.add(ResourceManager.getImage("player_walk_2"));
+        standImage = ResourceManager.getImage("player_stand");
     }
 
     @Override

@@ -15,7 +15,7 @@ public class ExtraTimeEnchantment extends Enchantment {
         // But let's assume the player can somehow reference or request +5s from the controller.
         // For demonstration, we’ll just store the “time bonus needed” in the player,
         // or call a method like player.requestExtraTime(5).
-        player.requestExtraTime(5); 
+        player.requestExtraTime(5);
         System.out.println("[ExtraTime] Player gained +5 seconds!");
     }
 }
