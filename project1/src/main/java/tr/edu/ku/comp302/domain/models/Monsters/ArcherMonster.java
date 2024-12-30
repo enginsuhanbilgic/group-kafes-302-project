@@ -2,7 +2,7 @@ package tr.edu.ku.comp302.domain.models.Monsters;
 
 public class ArcherMonster extends Monster {
 
-    private long lastShotTime = 0;
+    private int lastShotTime = 0;
 
     public ArcherMonster(int x, int y, int speed) {
         super(x, y, speed);
@@ -12,7 +12,7 @@ public class ArcherMonster extends Monster {
         return lastShotTime;
     }
 
-    public void setLastShotTime(long lastShotTime) {
+    public void setLastShotTime(int lastShotTime) {
         this.lastShotTime = lastShotTime;
     }
 }

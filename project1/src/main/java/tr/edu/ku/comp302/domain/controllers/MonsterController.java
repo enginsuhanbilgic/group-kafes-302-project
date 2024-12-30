@@ -25,8 +25,9 @@ public class MonsterController {
     private BufferedImage archerImage;
     private BufferedImage wizardImage;
 
-    // For example, spawn a new monster every 8 seconds, etc.
-    private long lastSpawnTime;
+    //In game time count
+    private int lastSpawnTime;
+    private static int spawnIntervalSeconds = GameConfig.MONSTER_SPAWN_INTERVAL;
 
     public MonsterController(TilesController tilesController, BuildObjectController buildObjectController) {
         this.tilesController = tilesController;
@@ -34,7 +35,7 @@ public class MonsterController {
         this.enchantmentController = null;
         this.monsters = new ArrayList<>();
         this.random = new Random();
-        this.lastSpawnTime = System.currentTimeMillis();
+        this.lastSpawnTime = 0;
 
         try {
         fighterImage = ImageIO.read(getClass().getResourceAsStream("/assets/npc_fighter.png"));
@@ -51,25 +52,18 @@ public class MonsterController {
     /**
      * Called every game frame. Updates all monsters, spawns new ones if needed, etc.
      */
-    public void updateAll(Player player) {
-        long now = System.currentTimeMillis();
-
-        // 1) Possibly spawn new monster if enough time passed
-        if (now - lastSpawnTime >= GameConfig.MONSTER_SPAWN_INTERVAL) {
-            spawnRandomMonster();
-            lastSpawnTime = now;
-        }
+    public void updateAll(Player player, int inGameTime) {
 
         // 2) Update each monster's behavior
         for (Monster m : monsters) {
             if (m instanceof FighterMonster fighter) {
-                updateFighter(fighter, player, now);
+                updateFighter(fighter, player, inGameTime);
             } 
             else if (m instanceof ArcherMonster archer) {
-                updateArcher(archer, player, now);
+                updateArcher(archer, player, inGameTime);
             } 
             else if (m instanceof WizardMonster wizard) {
-                updateWizard(wizard, player, now);
+                updateWizard(wizard, player, inGameTime);
             }
             // else: other monster types, if any
         }
@@ -113,28 +107,28 @@ public class MonsterController {
     //                 SUB-METHODS: PER MONSTER TYPE
     // =========================================================
 
-    private void updateFighter(FighterMonster fighter, Player player, long now) {
+    private void updateFighter(FighterMonster fighter, Player player, int inGameTime) {
         // 1) Check adjacency
         if (isAdjacentToPlayer(fighter, player)) {
-            long elapsed = now - fighter.getLastAttackTime();
+            long elapsed = inGameTime - fighter.getLastAttackTime();
             if (elapsed >= GameConfig.MONSTER_ATTACK_COOLDOWN) {
                 // Attack
                 player.loseLife();
                 System.out.println("Fighter Monster stabbed the hero! Lives: " + player.getLives());
                 // Reset cooldown
-                fighter.setLastAttackTime(now);
+                fighter.setLastAttackTime(inGameTime);
             }
         } else {
-            handleMovementCycle(fighter, now, player);
+            handleMovementCycle(fighter, player, inGameTime);
         }
     }
 
-    private void updateArcher(ArcherMonster archer, Player player, long now) {
+    private void updateArcher(ArcherMonster archer, Player player, int inGameTime) {
         // He shoots every 1 second if hero in range (4 tiles), unless hero has cloak
         long lastShotTime = archer.getLastShotTime();
-        if (now - lastShotTime >= 1000) {
+        if (inGameTime - lastShotTime >= GameConfig.MONSTER_ATTACK_COOLDOWN) {
             // Time to shoot
-            archer.setLastShotTime(now);
+            archer.setLastShotTime(inGameTime);
 
             boolean heroHasCloak = player.isCloakActive();  // if you store cloak state in player
             int distancePx = manhattanDistance(archer.getX(), archer.getY(), player.getX(), player.getY());
@@ -146,11 +140,11 @@ public class MonsterController {
         }
     }
 
-    private void updateWizard(WizardMonster wizard, Player player, long now) {
+    private void updateWizard(WizardMonster wizard, Player player, int inGameTime) {
         // Teleport rune every 5 seconds
-        long lastTeleportTime = wizard.getLastTeleportTime();
-        if (now - lastTeleportTime >= 5000) {
-            wizard.setLastTeleportTime(now);
+        int lastTeleportTime = wizard.getLastTeleportTime();
+        if (inGameTime - lastTeleportTime >= 5) {
+            wizard.setLastTeleportTime(inGameTime);
             // e.g., teleport the rune
             buildObjectController.transferRune();
             System.out.println("Wizard teleported the rune!");
@@ -161,7 +155,7 @@ public class MonsterController {
     //               SPAWNING & COLLISION CHECKS
     // =========================================================
 
-    private void spawnRandomMonster() {
+    private void spawnRandomMonster(int inGameTime) {
         int tileSize = GameConfig.TILE_SIZE;
         int mapWidth = GameConfig.NUM_HALL_COLS;
         int mapHeight = GameConfig.NUM_HALL_ROWS;
@@ -195,19 +189,27 @@ public class MonsterController {
         };
     }
 
+    public void tick(int inGameTime) {
+        inGameTime++;
+        if (inGameTime - lastSpawnTime >= spawnIntervalSeconds) {
+            spawnRandomMonster(inGameTime);
+            lastSpawnTime = inGameTime;
+        }
+    }
+
     // =========================================================
     //                  HELPER METHODS
     // =========================================================
 
     //BOZUK DÜZELTİLECEK
-    private void handleMovementCycle(FighterMonster fighter, long now, Player player) {
-        long elapsedInCycle = now - fighter.getLastMoveCycleStart();
-        if (elapsedInCycle >= 2000) {
-            fighter.setLastMoveCycleStart(now);
+    private void handleMovementCycle(FighterMonster fighter, Player player, int inGameTime) {
+        int elapsedInCycle = inGameTime - fighter.getLastMoveCycleStart();
+        if (elapsedInCycle >= 2) {
+            fighter.setLastMoveCycleStart(inGameTime);
             fighter.setMoving(true);
             elapsedInCycle = 0;
         }
-        if (elapsedInCycle < 1000) {
+        if (elapsedInCycle < 1) {
             fighter.setMoving(true);
             /*if (manhattanDistance(fighter.getX(), fighter.getY(), player.getX(), player.getY()) < 2*GameConfig.TILE_SIZE) {
                 if (!fighter.hasMovedThisCycle()) {

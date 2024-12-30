@@ -5,8 +5,8 @@ import tr.edu.ku.comp302.domain.models.Player;
 public class ExtraTimeEnchantment extends Enchantment {
 
     // +5 seconds added to player's timer immediately
-    public ExtraTimeEnchantment(int x, int y, long spawnTime) {
-        super(EnchantmentType.EXTRA_TIME, x, y, spawnTime);
+    public ExtraTimeEnchantment(int x, int y, int spawnGameTime) {
+        super(EnchantmentType.EXTRA_TIME, x, y, spawnGameTime);
     }
 
     @Override

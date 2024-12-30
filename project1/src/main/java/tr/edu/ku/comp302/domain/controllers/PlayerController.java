@@ -73,7 +73,7 @@ public class PlayerController extends EntityController<Player>{
         // Use the inherited collision check
         if (!checkCollision(newX, newY)) {
             // Move the player
-            System.out.println("Player location: " + newX + " " + newY);
+            //System.out.println("Player location: " + newX + " " + newY);
             setLocation(newX, newY);
             // Are we moving at all?
             isWalking = (keyHandler.up || keyHandler.down || keyHandler.left || keyHandler.right);

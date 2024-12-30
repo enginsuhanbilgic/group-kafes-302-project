@@ -4,8 +4,8 @@ import tr.edu.ku.comp302.domain.models.Player;
 
 public class LuringGemEnchantment extends Enchantment {
 
-    public LuringGemEnchantment(int x, int y, long spawnTime) {
-        super(EnchantmentType.LURING_GEM, x, y, spawnTime);
+    public LuringGemEnchantment(int x, int y, int spawnGameTime) {
+        super(EnchantmentType.LURING_GEM, x, y, spawnGameTime);
     }
 
     @Override

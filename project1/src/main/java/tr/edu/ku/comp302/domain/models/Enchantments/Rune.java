@@ -4,8 +4,8 @@ import tr.edu.ku.comp302.domain.models.Player;
 
 public class Rune extends Enchantment {
 
-    public Rune(int x, int y, long spawnTime) {
-        super(EnchantmentType.RUNE, x, y, spawnTime);
+    public Rune(int x, int y, int spawnGameTime) {
+        super(EnchantmentType.RUNE, x, y, spawnGameTime);
     }
 
     @Override

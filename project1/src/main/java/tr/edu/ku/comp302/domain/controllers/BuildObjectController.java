@@ -135,7 +135,7 @@ public class BuildObjectController {
 
                     System.out.println("Spawned a Rune Enchantment at " + enchantX + ", " + enchantY);
 
-                    Enchantment rune = new Rune(enchantX, enchantY, System.currentTimeMillis());
+                    Enchantment rune = new Rune(enchantX, enchantY, 0); //0 is not correct but it doesn't matter here
                     player.getInventory().addItem(rune);
                     // We found the clicked object, so break to avoid multiple clicks registering
                     break;

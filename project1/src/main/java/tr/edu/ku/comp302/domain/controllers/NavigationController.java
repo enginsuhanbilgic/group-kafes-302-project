@@ -178,7 +178,7 @@ public class NavigationController {
     }
 
     // end game to do's when time is up
-    public void endGameAndShowMainMenu() {
+    public void endGameAndShowMainMenu(String message) {
         showMainMenu();
         if (playModeView != null) {
             playModeView.stopGameThread();
@@ -187,7 +187,7 @@ public class NavigationController {
             playModeView = null;
         }
 
-        JOptionPane.showMessageDialog(frame, "Try again next time.");
+        JOptionPane.showMessageDialog(frame, message);
     }
 
     public Component[] getAllPanelsInCardLayout() {

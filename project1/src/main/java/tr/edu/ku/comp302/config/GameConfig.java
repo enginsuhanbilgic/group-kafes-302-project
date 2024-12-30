@@ -21,11 +21,12 @@ public class GameConfig {
 
     // Player default properties
     public static final int PLAYER_SPEED = 12/SCALE;     // Player speed
+    public static final int PLAYER_LIVES = 500;
 
     // Enchantment properties
-    public static final long ENCHANTMENT_SPAWN_INTERVAL = 12_000;
+    public static final int ENCHANTMENT_SPAWN_INTERVAL = 12;
 
     // Monster properties
-    public static final long MONSTER_SPAWN_INTERVAL = 8000; // 8 seconds
-    public static final long MONSTER_ATTACK_COOLDOWN = 1000; // 1 second
+    public static final int MONSTER_SPAWN_INTERVAL = 8; // 8 seconds
+    public static final int MONSTER_ATTACK_COOLDOWN = 2; // 1 second
 }

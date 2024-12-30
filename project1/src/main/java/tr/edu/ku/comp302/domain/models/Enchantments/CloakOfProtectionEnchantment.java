@@ -4,8 +4,8 @@ import tr.edu.ku.comp302.domain.models.Player;
 
 public class CloakOfProtectionEnchantment extends Enchantment {
 
-    public CloakOfProtectionEnchantment(int x, int y, long spawnTime) {
-        super(EnchantmentType.CLOAK_OF_PROTECTION, x, y, spawnTime);
+    public CloakOfProtectionEnchantment(int x, int y, int spawnGameTime) {
+        super(EnchantmentType.CLOAK_OF_PROTECTION, x, y, spawnGameTime);
     }
 
     @Override

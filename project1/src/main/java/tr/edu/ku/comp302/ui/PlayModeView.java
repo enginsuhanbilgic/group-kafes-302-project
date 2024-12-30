@@ -5,7 +5,6 @@ import tr.edu.ku.comp302.domain.controllers.KeyHandler;
 import tr.edu.ku.comp302.domain.controllers.MouseHandler;
 import tr.edu.ku.comp302.domain.controllers.NavigationController;
 import tr.edu.ku.comp302.domain.controllers.PlayModeController;
-import tr.edu.ku.comp302.domain.controllers.TilesController;
 import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
 import tr.edu.ku.comp302.domain.models.Enchantments.EnchantmentType;
 import tr.edu.ku.comp302.domain.models.HallType;
@@ -71,7 +70,7 @@ public class PlayModeView extends JPanel implements Runnable {
                 () -> SwingUtilities.invokeLater(() -> {
                     JOptionPane.showMessageDialog(this, "Süre doldu! Oyun bitti.");
                     keyHandler.resetKeys();
-                    navigationController.endGameAndShowMainMenu();
+                    navigationController.endGameAndShowMainMenu("Game Over! Time is up.");
                 })
         );
 

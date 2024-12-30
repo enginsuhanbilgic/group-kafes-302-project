@@ -8,13 +8,13 @@ public class WizardMonster extends Monster {
 
     // Possibly store last teleport time, 
     // but logic will be in MonsterController
-    private long lastTeleportTime = 0;
+    private int lastTeleportTime = 0;
 
-    public long getLastTeleportTime() {
+    public int getLastTeleportTime() {
         return lastTeleportTime;
     }
 
-    public void setLastTeleportTime(long t) {
+    public void setLastTeleportTime(int t) {
         this.lastTeleportTime = t;
     }
 }

@@ -2,7 +2,6 @@ package tr.edu.ku.comp302.domain.controllers;
 
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.Enchantments.*;
-import tr.edu.ku.comp302.domain.models.Monsters.Monster;
 import tr.edu.ku.comp302.domain.models.Player;
 import tr.edu.ku.comp302.domain.models.Tile;
 
@@ -21,11 +20,13 @@ import javax.imageio.ImageIO;
  */
 public class EnchantmentController {
 
+    private final TilesController tilesController;
+
     private final List<Enchantment> enchantments;
     private final Random random;
-    private final MonsterController monsterController;
-    private long lastSpawnTime;
 
+    private int lastSpawnTime;
+    
     private BufferedImage extraTimeImage;
     private BufferedImage heartImage;
     private BufferedImage revealImage;
@@ -33,11 +34,11 @@ public class EnchantmentController {
     private BufferedImage gemImage;
     private BufferedImage runeImage;
 
-    public EnchantmentController(MonsterController monsterController) {
+    public EnchantmentController(TilesController tilesController) {
         this.enchantments = new ArrayList<>();
         this.random = new Random();
-        this.lastSpawnTime = System.currentTimeMillis();
-        this.monsterController = monsterController;
+        this.tilesController = tilesController;
+        this.lastSpawnTime = 0;
 
         try {
         extraTimeImage = ImageIO.read(getClass().getResourceAsStream("/assets/enchantment_extratime.png"));
@@ -57,19 +58,11 @@ public class EnchantmentController {
      * - Removes expired.
      * - Checks if user left-clicked on an enchantment to collect it.
      */
-    public void update(Player player, TilesController tilesController, Point clickPos) {
-        long now = System.currentTimeMillis();
+    public void update(Player player, Point clickPos) {
 
-        // 1) Spawn check
-        if (now - lastSpawnTime >= GameConfig.ENCHANTMENT_SPAWN_INTERVAL) {
-            spawnRandomEnchantment(tilesController);
-            lastSpawnTime = now;
-        }
+        //Most of the enchantment logic is handled in tick() which is not good
 
-        // 2) Remove expired
-        enchantments.removeIf(Enchantment::isExpired);
-
-        // 3) Check for user left-click
+        // Check for user left-click
         if (clickPos != null) {
             handleClickCollection(clickPos, player);
         }
@@ -122,7 +115,7 @@ public class EnchantmentController {
 
     // ====================== Private Helpers ======================
 
-    private void spawnRandomEnchantment(TilesController tilesController) {
+    private void spawnRandomEnchantment(int inGameTime) {
         int tileSize = GameConfig.TILE_SIZE;
         int mapWidth = GameConfig.NUM_HALL_COLS;
         int mapHeight = GameConfig.NUM_HALL_ROWS;
@@ -136,13 +129,24 @@ public class EnchantmentController {
             Tile t = tilesController.getTileAt(col+GameConfig.KAFES_STARTING_Y, row+GameConfig.KAFES_STARTING_X);
             if (t != null && !t.isCollidable && isLocationAvailable(col, row)) {
                 // create enchantment
-                long now = System.currentTimeMillis();
-                Enchantment e = createRandomEnchantment((col + GameConfig.KAFES_STARTING_X) * tileSize, (row + GameConfig.KAFES_STARTING_Y) * tileSize, now);
+                Enchantment e = createRandomEnchantment((col + GameConfig.KAFES_STARTING_X) * tileSize, (row + GameConfig.KAFES_STARTING_Y) * tileSize, inGameTime);
                 enchantments.add(e);
                 System.out.println("[Spawn] " + e.getType() + " at col=" + col + ", row=" + row);
                 return;
             }
         }
+    }
+
+    public void tick(int inGameTime) {
+        // 1) Attempt spawn logic
+        if (inGameTime - lastSpawnTime >= GameConfig.ENCHANTMENT_SPAWN_INTERVAL) {
+            spawnRandomEnchantment(inGameTime);
+            lastSpawnTime = inGameTime;
+        }
+
+        // 2) Remove expired items
+        // Each enchantment knows how long it lives, e.g. 10s or so
+        enchantments.removeIf(e -> (inGameTime - e.getSpawnGameTime()) > e.getLifetimeSeconds());
     }
 
     public boolean isLocationAvailable(int col, int row) {
@@ -161,14 +165,14 @@ public class EnchantmentController {
         return true;
     }
 
-    private Enchantment createRandomEnchantment(int x, int y, long spawnTime) {
+    private Enchantment createRandomEnchantment(int x, int y, int inGameTime) {
         int r = random.nextInt(5); // 0..4
         return switch (r) {
-            case 0 -> new ExtraTimeEnchantment(x, y, spawnTime);
-            case 1 -> new ExtraLifeEnchantment(x, y, spawnTime);
-            case 2 -> new RevealEnchantment(x, y, spawnTime);
-            case 3 -> new CloakOfProtectionEnchantment(x, y, spawnTime);
-            case 4 -> new LuringGemEnchantment(x, y, spawnTime);
+            case 0 -> new ExtraTimeEnchantment(x, y, inGameTime);
+            case 1 -> new ExtraLifeEnchantment(x, y, inGameTime);
+            case 2 -> new RevealEnchantment(x, y, inGameTime);
+            case 3 -> new CloakOfProtectionEnchantment(x, y, inGameTime);
+            case 4 -> new LuringGemEnchantment(x, y, inGameTime);
             default -> null;
         };
     }

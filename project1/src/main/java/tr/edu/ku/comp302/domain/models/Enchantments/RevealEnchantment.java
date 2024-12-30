@@ -4,8 +4,8 @@ import tr.edu.ku.comp302.domain.models.Player;
 
 public class RevealEnchantment extends Enchantment {
 
-    public RevealEnchantment(int x, int y, long spawnTime) {
-        super(EnchantmentType.REVEAL, x, y, spawnTime);
+    public RevealEnchantment(int x, int y, int spawnGameTime) {
+        super(EnchantmentType.REVEAL, x, y, spawnGameTime);
     }
 
     @Override

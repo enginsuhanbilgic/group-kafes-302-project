@@ -3,36 +3,38 @@ package tr.edu.ku.comp302.domain.models.Monsters;
 public class FighterMonster extends Monster {
 
     // Fields for the "walk-stop" cycle
-    private long lastMoveCycleStart;
+    private int lastMoveCycleStart;
     private boolean isMoving; 
     private boolean hasPickedDirectionThisCycle;
     private int directionForThisCycle;
 
-    private long lastAttackTime = 0;
+    private int lastAttackTime;
 
     private boolean hasMovedThisCycle;
 
     public FighterMonster(int x, int y, int speed) {
         super(x, y, speed);
-        this.lastMoveCycleStart = System.currentTimeMillis();
         this.isMoving = true; // start by moving 
         this.hasPickedDirectionThisCycle = false;
         this.hasMovedThisCycle = false;
         this.directionForThisCycle = -1;
+        this.lastAttackTime = 0;
+        this.lastMoveCycleStart = 0;
+
     }
 
-    public long getLastAttackTime() {
+    public int getLastAttackTime() {
         return lastAttackTime;
     }
 
-    public void setLastAttackTime(long t) {
+    public void setLastAttackTime(int t) {
         lastAttackTime = t;
     }
-    public long getLastMoveCycleStart() {
+    public int getLastMoveCycleStart() {
         return lastMoveCycleStart;
     }
 
-    public void setLastMoveCycleStart(long t) {
+    public void setLastMoveCycleStart(int t) {
         this.lastMoveCycleStart = t;
     }
 

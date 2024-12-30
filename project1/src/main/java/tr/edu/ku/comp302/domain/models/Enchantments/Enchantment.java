@@ -1,5 +1,6 @@
 package tr.edu.ku.comp302.domain.models.Enchantments;
 
+import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.Player;
 
 public abstract class Enchantment {
@@ -7,14 +8,14 @@ public abstract class Enchantment {
     protected final EnchantmentType type;
     protected final int x;  // pixel X (or tile col*tileSize, whichever you prefer)
     protected final int y;  // pixel Y
-    protected final long spawnTime;  // timestamp in milliseconds when spawned
-    protected final int DESPAWN_DELAY = 6000; // 6 seconds
+    protected int spawnGameTime;
+    protected int lifetimeSeconds = GameConfig.ENCHANTMENT_SPAWN_INTERVAL; // or however long it stays
 
-    public Enchantment(EnchantmentType type, int x, int y, long spawnTime) {
+    public Enchantment(EnchantmentType type, int x, int y, int spawnGameTime) {
         this.type = type;
         this.x = x;
         this.y = y;
-        this.spawnTime = spawnTime;
+        this.spawnGameTime = spawnGameTime;
     }
 
     public EnchantmentType getType() {
@@ -33,15 +34,12 @@ public abstract class Enchantment {
         return this.type.toString();
     }
 
-    /**
-     * Returns true if more than 6 seconds have passed since spawn.
-     */
-    public boolean isExpired() {
-        if(this.getType()==EnchantmentType.RUNE){
-            return false;
-        }
-        long now = System.currentTimeMillis();
-        return (now - spawnTime) >= DESPAWN_DELAY;
+    public int getSpawnGameTime() {
+        return spawnGameTime;
+    }
+
+    public int getLifetimeSeconds() {
+        return lifetimeSeconds;
     }
 
     /**

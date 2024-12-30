@@ -4,8 +4,8 @@ import tr.edu.ku.comp302.domain.models.Player;
 
 public class ExtraLifeEnchantment extends Enchantment {
 
-    public ExtraLifeEnchantment(int x, int y, long spawnTime) {
-        super(EnchantmentType.EXTRA_LIFE, x, y, spawnTime);
+    public ExtraLifeEnchantment(int x, int y, int spawnGameTime) {
+        super(EnchantmentType.EXTRA_LIFE, x, y, spawnGameTime);
     }
 
     @Override

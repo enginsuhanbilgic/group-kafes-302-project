@@ -7,8 +7,6 @@ import tr.edu.ku.comp302.domain.models.Player;
 import tr.edu.ku.comp302.domain.models.Tile;
 import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
 import tr.edu.ku.comp302.domain.models.Enchantments.EnchantmentType;
-import tr.edu.ku.comp302.domain.models.Monsters.FighterMonster;
-import tr.edu.ku.comp302.domain.models.Monsters.Monster;
 
 import java.awt.*;
 import java.util.Random;
@@ -38,6 +36,7 @@ public class PlayModeController {
     private GameTimerController gameTimerController;
     private int initialTime = 60;
     private int currentTime;
+    private int inGameTime = 0; // Our "game clock" in seconds
 
     private boolean gameOver = false;
 
@@ -68,7 +67,7 @@ public class PlayModeController {
         this.playerController = new PlayerController(player, this.tilesController, this.keyHandler);
 
         this.monsterController = new MonsterController(this.tilesController, buildObjectController);
-        this.enchantmentController = new EnchantmentController(this.monsterController);
+        this.enchantmentController = new EnchantmentController(this.tilesController);
         //Very bad solution
         monsterController.setEnchantmentController(enchantmentController);
 
@@ -104,11 +103,11 @@ public class PlayModeController {
             playerController.update();
 
             // 2) Update Monsters
-            monsterController.updateAll(playerController.getEntity());
+            monsterController.updateAll(playerController.getEntity(), inGameTime);
 
             Point clickPos = mouseHandler.getLastClickAndConsume();
             // 3) Update Enchantments
-            enchantmentController.update(playerController.getEntity(), tilesController, clickPos);
+            enchantmentController.update(playerController.getEntity(), clickPos);
 
             // 4) Let BuildObjectController do any per-frame logic
             buildObjectController.update(hallType, playerController.getEntity(), clickPos);
@@ -199,7 +198,7 @@ public class PlayModeController {
         pauseGameTimer();
         System.out.println("Game Over! The hero has no more lives.");
         if (navigationController != null) {
-            navigationController.endGameAndShowMainMenu();
+            navigationController.endGameAndShowMainMenu("Game Over! The hero has no more lives.");
         }
     }
 
@@ -249,7 +248,7 @@ public class PlayModeController {
                     Enchantment e4 = player.getInventory().getEnchantmentByType(EnchantmentType.RUNE);
                     player.getInventory().removeItem(e4);
                     player.resetEffects();
-                    navigationController.endGameAndShowMainMenu();
+                    navigationController.endGameAndShowMainMenu("Congratulations! You have completed the game.");
                     break;
             }
         }
@@ -265,6 +264,11 @@ public class PlayModeController {
         gameTimerController = new GameTimerController(
                 time -> {
                     currentTime = time;
+
+                    inGameTime++;
+
+                    monsterController.tick(inGameTime);
+                    enchantmentController.tick(inGameTime);
                     onTick.accept(time);
                     },
                 onTimeUp
@@ -275,7 +279,7 @@ public class PlayModeController {
     private void onTimeUp() {
         System.out.println("Süre doldu! Oyun bitti.");
         if (navigationController != null) {
-            navigationController.endGameAndShowMainMenu();
+            navigationController.endGameAndShowMainMenu("Game Over! Time is up.");
         } else {
             System.out.println("NavigationController atanmamış!");
         }
