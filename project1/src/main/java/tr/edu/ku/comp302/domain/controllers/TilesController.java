@@ -3,10 +3,8 @@ package tr.edu.ku.comp302.domain.controllers;
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.Tile;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 /**
  * TilesController is responsible for managing the grid of tiles in the game.
@@ -43,24 +41,21 @@ public class TilesController {
     /**
      * Loads tile images and populates the tile grid.
      *
-     * @param startingX Starting X-coordinate for placing the "kafes" (hall area).
-     * @param startingY Starting Y-coordinate for placing the "kafes" (hall area).
      */
     public void loadTiles() {
 
-        try {
-            // Load floor and wall tile images
-            BufferedImage floorImage = ImageIO.read(getClass().getResourceAsStream("/assets/floor_plain.png"));
-            BufferedImage wallOuterEastImage = ImageIO.read(getClass().getResourceAsStream("/assets/wall_outer_e.png"));
-            BufferedImage wallOuterWestImage = ImageIO.read(getClass().getResourceAsStream("/assets/wall_outer_w.png"));
-            BufferedImage wallCenterImage = ImageIO.read(getClass().getResourceAsStream("/assets/wall_center.png"));
-            BufferedImage transparentImage = ImageIO.read(getClass().getResourceAsStream("/assets/transparent_tile.png"));
 
-            // Create reusable tile objects
-            Tile floorTile = new Tile(floorImage, false);
-            Tile wallOuterEastTile = new Tile(wallOuterEastImage, true);
-            Tile wallOuterWestTile = new Tile(wallOuterWestImage, true);
-            Tile wallCenterTile = new Tile(wallCenterImage, true);
+            // Load floor and wall tile images
+            BufferedImage floorImage       = ResourceManager.getImage("floor_plain");
+            BufferedImage wallOuterEast    = ResourceManager.getImage("wall_outer_e");
+            BufferedImage wallOuterWest    = ResourceManager.getImage("wall_outer_w");
+            BufferedImage wallCenter       = ResourceManager.getImage("wall_center");
+            BufferedImage transparentImage = ResourceManager.getImage("transparent_tile");
+
+            Tile floorTile         = new Tile(floorImage, false);
+            Tile wallOuterEastTile = new Tile(wallOuterEast, true);
+            Tile wallOuterWestTile = new Tile(wallOuterWest, true);
+            Tile wallCenterTile    = new Tile(wallCenter, true);
             this.transparentCollidableTile = new Tile(transparentImage, true);
 
             // Populate the entire grid with floor tiles
@@ -92,10 +87,7 @@ public class TilesController {
                 }
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Error loading tile images!"); // Debug message
-        }
+
     }
 
 

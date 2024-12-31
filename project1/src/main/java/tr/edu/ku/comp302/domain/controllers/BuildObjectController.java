@@ -4,23 +4,17 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import tr.edu.ku.comp302.config.GameConfig;
-import tr.edu.ku.comp302.domain.models.BuildObject;
-import tr.edu.ku.comp302.domain.models.HallType;
-import tr.edu.ku.comp302.domain.models.Inventory;
-import tr.edu.ku.comp302.domain.models.Player;
+import tr.edu.ku.comp302.domain.models.*;
 import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
 import tr.edu.ku.comp302.domain.models.Enchantments.Rune;
 
 import java.awt.image.BufferedImage;
 import java.awt.*;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
-import javax.imageio.ImageIO;
 
 /**
  * BuildObjectController manages all BuildObjects across all halls,
@@ -171,21 +165,24 @@ public class BuildObjectController {
         int px = obj.getX() * tileSize;
         int py = obj.getY() * tileSize;
 
-        try {
-            BufferedImage image = ImageIO.read(
-                getClass().getResourceAsStream("/assets/" + imageName + ".png"));
+        // 1) Retrieve the cached image from ResourceManager
+        BufferedImage image = ResourceManager.getImage(imageName);
+
+        // 2) If found, draw it. Otherwise fallback.
+        if (image != null) {
             g2.drawImage(image, px, py, tileSize, tileSize, null);
-        } catch (IOException e) {
-            // fallback if not found
+        } else {
+            // fallback
             g2.setColor(Color.GREEN);
             g2.fillRect(px, py, tileSize, tileSize);
         }
 
-        // Optional: If hasRune==true, you could draw a small icon overlay, etc.
+        // 3) Optional overlay if hasRune
         if (obj.getHasRune()) {
-            g2.setColor(new Color(255, 215, 0, 128)); // goldish overlay
+            g2.setColor(new Color(255, 215, 0, 128));
             g2.fillRect(px, py, tileSize, tileSize);
         }
+
     }
 
     /**

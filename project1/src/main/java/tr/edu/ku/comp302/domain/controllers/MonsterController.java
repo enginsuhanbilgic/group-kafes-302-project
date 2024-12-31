@@ -6,12 +6,9 @@ import tr.edu.ku.comp302.domain.models.Monsters.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import javax.imageio.ImageIO;
 
 public class MonsterController {
 
@@ -37,13 +34,9 @@ public class MonsterController {
         this.random = new Random();
         this.lastSpawnTime = 0;
 
-        try {
-        fighterImage = ImageIO.read(getClass().getResourceAsStream("/assets/npc_fighter.png"));
-        archerImage = ImageIO.read(getClass().getResourceAsStream("/assets/npc_archer.png"));
-        wizardImage = ImageIO.read(getClass().getResourceAsStream("/assets/npc_wizard.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        fighterImage = ResourceManager.getImage("npc_fighter");
+        archerImage  = ResourceManager.getImage("npc_archer");
+        wizardImage  = ResourceManager.getImage("npc_wizard");
     }
 
     public void setEnchantmentController(EnchantmentController enchantmentController){
