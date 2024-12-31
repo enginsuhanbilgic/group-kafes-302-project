@@ -2,6 +2,7 @@ package tr.edu.ku.comp302.ui;
 
 import tr.edu.ku.comp302.domain.controllers.BuildModeController;
 import tr.edu.ku.comp302.domain.controllers.NavigationController;
+import tr.edu.ku.comp302.domain.controllers.ResourceManager;
 import tr.edu.ku.comp302.domain.controllers.TilesController;
 import tr.edu.ku.comp302.domain.models.BuildObject;
 import tr.edu.ku.comp302.domain.models.HallType;
@@ -72,32 +73,22 @@ public class BuildModeView extends JPanel {
     }
 
     private void loadTileImages() {
-        try {
-            floorImage = ImageIO.read(getClass().getResourceAsStream("/assets/floor_plain.png"));
-            wallTop = ImageIO.read(getClass().getResourceAsStream("/assets/wall_center.png"));
-            wallBottom = ImageIO.read(getClass().getResourceAsStream("/assets/wall_center.png"));
-            wallLeft = ImageIO.read(getClass().getResourceAsStream("/assets/Wall_outer_w.png"));
-            wallRight = ImageIO.read(getClass().getResourceAsStream("/assets/Wall_outer_e.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // Use ResourceManager to load tile images
+        floorImage = ResourceManager.getImage("floor_plain");
+        wallTop = ResourceManager.getImage("wall_center");
+        wallBottom = ResourceManager.getImage("wall_center");
+        wallLeft = ResourceManager.getImage("wall_outer_w");
+        wallRight = ResourceManager.getImage("wall_outer_e");
     }
+
 
     private void loadObjectImages() {
         objectImages = new HashMap<>();
-        try {
-            BufferedImage boxImg = ImageIO.read(getClass().getResourceAsStream("/assets/box.png"));
-            BufferedImage chestImg = ImageIO.read(getClass().getResourceAsStream("/assets/chest_closed.png"));
-            BufferedImage columnImg = ImageIO.read(getClass().getResourceAsStream("/assets/column_wall.png"));
-            BufferedImage skullImg = ImageIO.read(getClass().getResourceAsStream("/assets/skull.png"));
-
-            objectImages.put("box", boxImg);
-            objectImages.put("chest_closed", chestImg);
-            objectImages.put("column_wall", columnImg);
-            objectImages.put("skull", skullImg);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // Use ResourceManager to load object images
+        objectImages.put("box", ResourceManager.getImage("box"));
+        objectImages.put("chest_closed", ResourceManager.getImage("chest_closed"));
+        objectImages.put("column_wall", ResourceManager.getImage("column_wall"));
+        objectImages.put("skull", ResourceManager.getImage("skull"));
     }
 
     private JPanel createCanvasPanel() {
