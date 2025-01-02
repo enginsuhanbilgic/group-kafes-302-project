@@ -24,6 +24,9 @@ public class Player extends Entity{
 
     private int bonusTimeRequested;
 
+    private boolean drawDamageBox = false;
+    private long damageBoxEndTime;
+
     public Player(int x, int y, int speed) {
         super(x, y, speed);
         this.lives = GameConfig.PLAYER_LIVES; // 3 canla başla
@@ -51,6 +54,8 @@ public class Player extends Entity{
         if (this.lives < 0) {
             this.lives = 0;
         }
+        this.drawDamageBox = true;
+        this.damageBoxEndTime = System.currentTimeMillis() + 500; // 0.5 seconds
     }
 
     public void addLife() {
@@ -140,6 +145,14 @@ public class Player extends Entity{
             System.out.println("No Luring Gem in inventory!");
         }
     }
+    public boolean isDrawDamageBox() {
+        if (drawDamageBox && System.currentTimeMillis() > damageBoxEndTime) {
+            drawDamageBox = false; // reset when time is up.
+        }
+        return drawDamageBox;
+    }
+
+    
 
     public void resetEffects(){
         this.cloakActive = false;

@@ -31,6 +31,7 @@ public class PlayModeController {
     private final HallType hallType;
     private final String jsonData;
     private final MouseHandler mouseHandler;
+    
 
     // Timer via GameTimerController
     private GameTimerController gameTimerController;
@@ -148,6 +149,8 @@ public class PlayModeController {
 
         // 5) Draw player
         playerController.draw(g2);
+
+        
 
         // If player has reveal active, you might highlight a 4x4 area around the rune
         if (playerController.getEntity().isRevealActive() && buildObjectController.getRuneHolder()!=null) {

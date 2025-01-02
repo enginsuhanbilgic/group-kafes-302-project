@@ -175,6 +175,12 @@ public class PlayModeView extends JPanel implements Runnable {
 
         playModeController.draw(g2);
 
+        // when lives is down 
+    if (playModeController.getPlayerController().getEntity().isDrawDamageBox()) {
+        g2.setColor(new Color(255, 0, 0, 120)); 
+        g2.fillRect(0, 0, getWidth(), getHeight()); 
+    }
+
         // Timer in the top-left corner
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Arial", Font.BOLD, 16));
