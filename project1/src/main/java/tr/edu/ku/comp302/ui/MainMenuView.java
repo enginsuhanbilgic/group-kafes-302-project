@@ -1,17 +1,25 @@
 package tr.edu.ku.comp302.ui;
 
-import tr.edu.ku.comp302.domain.controllers.NavigationController;
-
-import javax.swing.*;
-
-import net.miginfocom.swing.MigLayout;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.imageio.ImageIO;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+
+import net.miginfocom.swing.MigLayout;
+import tr.edu.ku.comp302.domain.controllers.NavigationController;
 
 /*
  * MainMenuView extends JPanel since all of the views are a part of Card Layout.
@@ -30,9 +38,7 @@ public class MainMenuView extends JPanel {
                 "[]push[]20[]15[]15[]15[]push" // GÜNCELLENDİ: satır aralığı artırdık
         ));
 
-        // Title Panel
-        JPanel titlePanel = createOutlinedTextPanel("Welcome to Kafes game", 48);
-        add(titlePanel, "growx, wrap");
+       
 
         // Buttons
         JButton startButton = createStyledButton("Start Game");
@@ -54,10 +60,10 @@ public class MainMenuView extends JPanel {
         helpButton.addActionListener(e -> controller.showHelpMenu(evt -> controller.showMainMenu()));
         exitButton.addActionListener(e -> System.exit(0));
 
-        add(startButton,    "align center, wrap");
-        add(buildModeButton,"align center, wrap"); // GÜNCELLENDİ
-        add(helpButton,     "align center, wrap");
-        add(exitButton,     "align center");
+        add(startButton,    "pos 300px 43%, wrap"); 
+        add(buildModeButton,"pos 300px 50%, wrap"); 
+        add(helpButton,     "pos 300px 57%, wrap");
+        add(exitButton,     "pos 300px 64%");      
 
         setOpaque(false);
     }
@@ -65,7 +71,7 @@ public class MainMenuView extends JPanel {
     private void loadBackgroundImage() {
         try {
             // Load the image from the resources folder
-            InputStream imageStream = getClass().getClassLoader().getResourceAsStream("assets/mainMenuBackground.jpg");
+            InputStream imageStream = getClass().getClassLoader().getResourceAsStream("assets/mainMenu.png");
             if (imageStream != null) {
                 backgroundImage = ImageIO.read(imageStream);
             } else {
@@ -126,7 +132,7 @@ public class MainMenuView extends JPanel {
         button.setContentAreaFilled(false);
         button.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
         button.setUI(new FaintBackgroundButtonUI());
-        button.setPreferredSize(new Dimension(400, 30));
+        button.setPreferredSize(new Dimension(500, 40));
         return button;
     }
 

@@ -1,12 +1,12 @@
 package tr.edu.ku.comp302.domain.controllers;
 
-import tr.edu.ku.comp302.config.GameConfig;
-import tr.edu.ku.comp302.domain.models.Player;
-
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+
+import tr.edu.ku.comp302.config.GameConfig;
+import tr.edu.ku.comp302.domain.models.Player;
 
 /**
  * The PlayerController class manages the player's movement, state, and animations.
@@ -14,7 +14,7 @@ import java.util.List;
 public class PlayerController extends EntityController<Player>{
 
     private Player player;
-    
+    private boolean isFacingLeft = false; // Default facing right
     // Animation Images
     private List<BufferedImage> walkImages;
     private BufferedImage standImage;
@@ -41,27 +41,41 @@ public class PlayerController extends EntityController<Player>{
         walkImages.add(ResourceManager.getImage("player_walk_1"));
         walkImages.add(ResourceManager.getImage("player_walk_2"));
         standImage = ResourceManager.getImage("player_stand");
+        
     }
 
     @Override
     public void update() {
         boolean isWalking = false;
+        boolean isLeftWalking = false;
+
 
         // Calculate new proposed positions
         int newX = entity.getX();
+
         int newY = entity.getY();
+        boolean movingHorizontally = keyHandler.left || keyHandler.right;
+        boolean movingVertically = keyHandler.up || keyHandler.down;
+
+        // For normalizing speed
+        double speed = entity.getSpeed();
+        if (movingHorizontally && movingVertically) {
+            speed /= Math.sqrt(2);
+        }
 
         if (keyHandler.up) {
-            newY -= entity.getSpeed();
+            newY -= speed;
         }
         if (keyHandler.down) {
-            newY += entity.getSpeed();
+            newY += speed;
         }
         if (keyHandler.left) {
-            newX -= entity.getSpeed();
+            newX -= speed;
+            isFacingLeft = true; // Flip to face left
         }
         if (keyHandler.right) {
-            newX += entity.getSpeed();
+            newX += speed;
+            isFacingLeft = false; // Flip to face left
         }
 
         // Use the inherited collision check
@@ -70,7 +84,7 @@ public class PlayerController extends EntityController<Player>{
             //System.out.println("Player location: " + newX + " " + newY);
             setLocation(newX, newY);
             // Are we moving at all?
-            isWalking = (keyHandler.up || keyHandler.down || keyHandler.left || keyHandler.right);
+            isWalking = (keyHandler.up || keyHandler.down ||  keyHandler.right ||  keyHandler.left);
         } else {
             isWalking = false;
         }
@@ -96,11 +110,19 @@ public class PlayerController extends EntityController<Player>{
 
     @Override
     public void draw(Graphics2D g2) {
-        BufferedImage currentImage = entity.isWalking() ? walkImages.get(currentFrame) : standImage;
-        g2.drawImage(currentImage, entity.getX(), entity.getY(),
-                     GameConfig.TILE_SIZE,
-                     GameConfig.TILE_SIZE, null);
+    BufferedImage currentImage = entity.isWalking() ? walkImages.get(currentFrame) : standImage;
+
+    int x = entity.getX();
+    int y = entity.getY();
+    int width = GameConfig.TILE_SIZE;
+    int height = GameConfig.TILE_SIZE;
+
+    if (isFacingLeft) {
+        g2.drawImage(currentImage, x + width, y, -width, height, null);
+    } else {
+        g2.drawImage(currentImage, x, y, width, height, null);
     }
+}
 
     public void setLocation(int x, int y){
         player.setX(x);
