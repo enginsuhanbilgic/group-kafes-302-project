@@ -47,22 +47,23 @@ public class PlayerController extends EntityController<Player>{
     @Override
     public void update() {
         boolean isWalking = false;
-        boolean isLeftWalking = false;
-
 
         // Calculate new proposed positions
         int newX = entity.getX();
 
         int newY = entity.getY();
+
         boolean movingHorizontally = keyHandler.left || keyHandler.right;
         boolean movingVertically = keyHandler.up || keyHandler.down;
 
         // For normalizing speed
-        double speed = entity.getSpeed();
+        // Kind of normalizing because our speed is integer
+        int speed = entity.getSpeed();
         if (movingHorizontally && movingVertically) {
-            speed /= Math.sqrt(2);
+            speed /= 1.5;
+            speed++;
         }
-
+        System.out.println("speed:" + speed);
         if (keyHandler.up) {
             newY -= speed;
         }
@@ -75,7 +76,7 @@ public class PlayerController extends EntityController<Player>{
         }
         if (keyHandler.right) {
             newX += speed;
-            isFacingLeft = false; // Flip to face left
+            isFacingLeft = false; // Flip to face right
         }
 
         // Use the inherited collision check
