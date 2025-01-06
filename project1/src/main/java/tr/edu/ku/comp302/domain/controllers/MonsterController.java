@@ -1,15 +1,21 @@
 package tr.edu.ku.comp302.domain.controllers;
 
 import tr.edu.ku.comp302.config.GameConfig;
-import tr.edu.ku.comp302.domain.models.*;
+import tr.edu.ku.comp302.domain.models.Player;
+import tr.edu.ku.comp302.domain.models.Tile;
+import tr.edu.ku.comp302.domain.models.BuildObject;
+import tr.edu.ku.comp302.domain.models.HallType;
 import tr.edu.ku.comp302.domain.models.Monsters.*;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * MonsterController
+ * Manages spawning, updating, and drawing of monsters.
+ */
 public class MonsterController {
 
     private final TilesController tilesController;
@@ -25,6 +31,11 @@ public class MonsterController {
     //In game time count
     private int lastSpawnTime;
     private static int spawnIntervalSeconds = GameConfig.MONSTER_SPAWN_INTERVAL;
+
+    /**
+     * NEW FIELD: The (x,y) in pixels where a Luring Gem was thrown. Null if no gem is active.
+     */
+    private Point luringGemLocation = null;
 
     public MonsterController(TilesController tilesController, BuildObjectController buildObjectController) {
         this.tilesController = tilesController;
@@ -42,6 +53,7 @@ public class MonsterController {
     public void setEnchantmentController(EnchantmentController enchantmentController){
         this.enchantmentController = enchantmentController;
     }
+
     /**
      * Called every game frame. Updates all monsters, spawns new ones if needed, etc.
      */
@@ -51,17 +63,16 @@ public class MonsterController {
         for (Monster m : monsters) {
             if (m instanceof FighterMonster fighter) {
                 updateFighter(fighter, player, inGameTime);
-            } 
+            }
             else if (m instanceof ArcherMonster archer) {
                 updateArcher(archer, player, inGameTime);
-            } 
+            }
             else if (m instanceof WizardMonster wizard) {
                 updateWizard(wizard, player, inGameTime);
             }
-            // else: other monster types, if any
         }
 
-        // 3) You can also remove dead monsters, check transitions to next hall, etc.
+        // 3) You can remove dead monsters, etc., if you wanted.
     }
 
     /**
@@ -72,21 +83,21 @@ public class MonsterController {
             if (m instanceof FighterMonster) {
                 if (fighterImage != null) {
                     g2.drawImage(fighterImage, m.getX(), m.getY(),
-                                 GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
+                            GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
                 }
-            } 
+            }
             else if (m instanceof ArcherMonster) {
                 if (archerImage != null) {
                     g2.drawImage(archerImage, m.getX(), m.getY(),
-                                 GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
+                            GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
                 }
             }
             else if (m instanceof WizardMonster) {
                 if (wizardImage != null) {
                     g2.drawImage(wizardImage, m.getX(), m.getY(),
-                                 GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
+                            GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
                 }
-            } 
+            }
             else {
                 // fallback if some other monster type
                 g2.setColor(Color.GRAY);
@@ -94,10 +105,17 @@ public class MonsterController {
             }
         }
     }
-    
+
+    /**
+     * If the hero moves to the next hall, we can clear the list
+     * so they won't follow.
+     */
+    public void clearMonsters() {
+        monsters.clear();
+    }
 
     // =========================================================
-    //                 SUB-METHODS: PER MONSTER TYPE
+    //              FIGHTER MONSTER UPDATE
     // =========================================================
 
     private void updateFighter(FighterMonster fighter, Player player, int inGameTime) {
@@ -112,18 +130,117 @@ public class MonsterController {
                 fighter.setLastAttackTime(inGameTime);
             }
         } else {
+            // If not adjacent, handle normal or gem logic
             handleMovementCycle(fighter, player, inGameTime);
         }
     }
 
+    private void handleMovementCycle(FighterMonster fighter, Player player, int inGameTime) {
+        int elapsedInCycle = inGameTime - fighter.getLastMoveCycleStart();
+        if (elapsedInCycle >= 2) {
+            fighter.setLastMoveCycleStart(inGameTime);
+            fighter.setMoving(true);
+            elapsedInCycle = 0;
+        }
+        if (elapsedInCycle < 1) {
+            fighter.setMoving(true);
+
+            // If a Luring Gem is active, chase gem
+            if (hasLuringGem()) {
+                if (!fighter.hasMovedThisCycle()) {
+                    doOneStepTowardGem(fighter);
+                    fighter.setHasMovedThisCycle(true);
+                }
+            }
+            // Otherwise, do random movement or chase the player if you want:
+            else {
+                if (!fighter.hasPickedDirectionThisCycle()) {
+                    int direction = random.nextInt(4);
+                    fighter.setDirectionForThisCycle(direction);
+                    fighter.setHasPickedDirectionThisCycle(true);
+                }
+                doOneStepInStoredDirection(fighter);
+            }
+        } else {
+            fighter.setMoving(false);
+            fighter.setHasPickedDirectionThisCycle(false);
+            fighter.setHasMovedThisCycle(false);
+        }
+    }
+
+    private void doOneStepInStoredDirection(FighterMonster fighter) {
+        int direction = fighter.getDirectionForThisCycle();
+        int newX = fighter.getX();
+        int newY = fighter.getY();
+
+        int speed = fighter.getSpeed(); // typically 1 tile
+        switch (direction) {
+            case 0 -> newY -= speed; // up
+            case 1 -> newY += speed; // down
+            case 2 -> newX -= speed; // left
+            case 3 -> newX += speed; // right
+        }
+
+        if (!checkCollision(newX, newY)) {
+            fighter.setX(newX);
+            fighter.setY(newY);
+        }
+    }
+
+    /**
+     * Move one tile in the direction of the Luring Gem.
+     * If the monster is adjacent to gem, remove the gem.
+     */
+    private void doOneStepTowardGem(FighterMonster fighter) {
+        if (luringGemLocation == null) return;
+
+        int tileSize = GameConfig.TILE_SIZE;
+        // Convert monster's coords to tile coords
+        int fighterCol = fighter.getX() / tileSize;
+        int fighterRow = fighter.getY() / tileSize;
+
+        // Convert gem's coords to tile coords
+        int gemCol = luringGemLocation.x / tileSize;
+        int gemRow = luringGemLocation.y / tileSize;
+
+        // Check distance in pixels to see if we've "reached" it
+        int distPx = manhattanDistance(fighter.getX(), fighter.getY(), luringGemLocation.x, luringGemLocation.y);
+        if (distPx <= tileSize) {
+            System.out.println("Fighter Monster reached the gem!");
+            clearLuringGemLocation();
+            return;
+        }
+
+        // Move 1 tile toward gem
+        int dCol = 0;
+        int dRow = 0;
+        if (gemCol > fighterCol) dCol = 1;
+        else if (gemCol < fighterCol) dCol = -1;
+        if (gemRow > fighterRow) dRow = 1;
+        else if (gemRow < fighterRow) dRow = -1;
+
+        int newCol = fighterCol + dCol;
+        int newRow = fighterRow + dRow;
+        int newX = newCol * tileSize;
+        int newY = newRow * tileSize;
+
+        if (!checkCollision(newX, newY)) {
+            fighter.setX(newX);
+            fighter.setY(newY);
+        }
+    }
+
+    // =========================================================
+    //                ARCHER AND WIZARD UPDATES
+    // =========================================================
+
     private void updateArcher(ArcherMonster archer, Player player, int inGameTime) {
-        // He shoots every 1 second if hero in range (4 tiles), unless hero has cloak
+        // He shoots every MONSTER_ATTACK_COOLDOWN if hero in range (4 tiles), unless hero has cloak
         long lastShotTime = archer.getLastShotTime();
         if (inGameTime - lastShotTime >= GameConfig.MONSTER_ATTACK_COOLDOWN) {
-            // Time to shoot
             archer.setLastShotTime(inGameTime);
 
-            boolean heroHasCloak = player.isCloakActive();  // if you store cloak state in player
+            boolean heroHasCloak = player.isCloakActive();
             int distancePx = manhattanDistance(archer.getX(), archer.getY(), player.getX(), player.getY());
             int rangePx = 4 * GameConfig.TILE_SIZE;
             if (!heroHasCloak && distancePx < rangePx) {
@@ -138,35 +255,43 @@ public class MonsterController {
         int lastTeleportTime = wizard.getLastTeleportTime();
         if (inGameTime - lastTeleportTime >= 5) {
             wizard.setLastTeleportTime(inGameTime);
-            // e.g., teleport the rune
             buildObjectController.transferRune();
             System.out.println("Wizard teleported the rune!");
         }
     }
 
     // =========================================================
-    //               SPAWNING & COLLISION CHECKS
+    //                   MONSTER SPAWNING
     // =========================================================
+
+    public void tick(int inGameTime) {
+        inGameTime++;
+        if (inGameTime - lastSpawnTime >= spawnIntervalSeconds) {
+            spawnRandomMonster(inGameTime);
+            lastSpawnTime = inGameTime;
+        }
+    }
 
     private void spawnRandomMonster(int inGameTime) {
         int tileSize = GameConfig.TILE_SIZE;
         int mapWidth = GameConfig.NUM_HALL_COLS;
         int mapHeight = GameConfig.NUM_HALL_ROWS;
 
-        // We'll try a few times to find a free tile
         for (int attempt = 0; attempt < 50; attempt++) {
             int col = random.nextInt(mapWidth);
             int row = random.nextInt(mapHeight);
 
-            Tile tile = tilesController.getTileAt(col+GameConfig.KAFES_STARTING_X, row+GameConfig.KAFES_STARTING_Y);
+            Tile tile = tilesController.getTileAt(col + GameConfig.KAFES_STARTING_X, row + GameConfig.KAFES_STARTING_Y);
             if (tile != null && !tile.isCollidable && enchantmentController.isLocationAvailable(col, row)) {
-                // pick a random monster type
-                Monster monster = createRandomMonster((col + GameConfig.KAFES_STARTING_X) * tileSize, (row + GameConfig.KAFES_STARTING_Y) * tileSize);
+                Monster monster = createRandomMonster((col + GameConfig.KAFES_STARTING_X) * tileSize,
+                        (row + GameConfig.KAFES_STARTING_Y) * tileSize);
                 monsters.add(monster);
-                if(!(monster instanceof FighterMonster))
-                tilesController.setTransparentTileAt((col + GameConfig.KAFES_STARTING_X), (row + GameConfig.KAFES_STARTING_Y));
-                System.out.println("Spawned " + monster.getClass().getSimpleName() +
-                                   " at col=" + col + ", row=" + row);
+
+                if (!(monster instanceof FighterMonster))
+                    tilesController.setTransparentTileAt((col + GameConfig.KAFES_STARTING_X),
+                            (row + GameConfig.KAFES_STARTING_Y));
+                System.out.println("Spawned " + monster.getClass().getSimpleName()
+                        + " at col=" + col + ", row=" + row);
                 return;
             }
         }
@@ -182,113 +307,38 @@ public class MonsterController {
         };
     }
 
-    public void tick(int inGameTime) {
-        inGameTime++;
-        if (inGameTime - lastSpawnTime >= spawnIntervalSeconds) {
-            spawnRandomMonster(inGameTime);
-            lastSpawnTime = inGameTime;
-        }
-    }
-
     // =========================================================
-    //                  HELPER METHODS
+    //               HELPER METHODS + GEM LOGIC
     // =========================================================
-
-    //BOZUK DÜZELTİLECEK
-    private void handleMovementCycle(FighterMonster fighter, Player player, int inGameTime) {
-        int elapsedInCycle = inGameTime - fighter.getLastMoveCycleStart();
-        if (elapsedInCycle >= 2) {
-            fighter.setLastMoveCycleStart(inGameTime);
-            fighter.setMoving(true);
-            elapsedInCycle = 0;
-        }
-        if (elapsedInCycle < 1) {
-            fighter.setMoving(true);
-            /*if (manhattanDistance(fighter.getX(), fighter.getY(), player.getX(), player.getY()) < 2*GameConfig.TILE_SIZE) {
-                if (!fighter.hasMovedThisCycle()) {
-                    System.out.println("Player coordinates: " + player.getX() + " " + player.getY());
-                    System.out.println("Monster coordinates: " + fighter.getX() + " " + fighter.getY());
-                    doOneStepTowardPlayer(fighter, player);
-                    fighter.setHasMovedThisCycle(true);
-                }
-            } else {*/
-                // random
-                if (!fighter.hasPickedDirectionThisCycle()) {
-                    int direction = random.nextInt(4);
-                    fighter.setDirectionForThisCycle(direction);
-                    fighter.setHasPickedDirectionThisCycle(true);
-                }
-                doOneStepInStoredDirection(fighter);
-            //}
-        } else {
-            fighter.setMoving(false);
-            fighter.setHasPickedDirectionThisCycle(false);
-        }
-    }
-    
-
-    private void doOneStepInStoredDirection(FighterMonster fighter) {
-        int direction = fighter.getDirectionForThisCycle();
-        int newX = fighter.getX();
-        int newY = fighter.getY();
-    
-        int speed = fighter.getSpeed(); // typically 1 tile
-        switch (direction) {
-            case 0 -> newY -= speed; // up
-            case 1 -> newY += speed; // down
-            case 2 -> newX -= speed; // left
-            case 3 -> newX += speed; // right
-        }
-    
-        if (!checkCollision(newX, newY)) {
-            fighter.setX(newX);
-            fighter.setY(newY);
-        }
-    }
-    
-    //BOZUK DÜZELTİLECEK
-    private void doOneStepTowardPlayer(FighterMonster fighter, Player player) {
-        int tileSize = GameConfig.TILE_SIZE;
-    
-        // Convert fighter's pixel coords to tile coords
-        int fighterCol = fighter.getX() / tileSize - GameConfig.KAFES_STARTING_X;
-        int fighterRow = fighter.getY() / tileSize - GameConfig.KAFES_STARTING_Y;
-    
-        // Convert player's pixel coords to tile coords
-        int playerCol = player.getX() / tileSize - GameConfig.KAFES_STARTING_X;
-        int playerRow = player.getY() / tileSize - GameConfig.KAFES_STARTING_Y;
-    
-        // Move just 1 tile in the direction of the player
-        int dCol = 0;
-        int dRow = 0;
-    
-        if (playerCol > fighterCol) dCol = 1;
-        else if (playerCol < fighterCol) dCol = -1;
-    
-        if (playerRow > fighterRow) dRow = 1;
-        else if (playerRow < fighterRow) dRow = -1;
-    
-        // Proposed new tile coords: exactly one tile step
-        int newCol = fighterCol + dCol;
-        int newRow = fighterRow + dRow;
-    
-        // Convert back to pixel coords
-        int newX = (newCol + GameConfig.KAFES_STARTING_X) * tileSize;
-        int newY = (newRow + GameConfig.KAFES_STARTING_Y) * tileSize;
-    
-        // Check collision
-        if (!checkCollision(newX, newY)) {
-            fighter.setX(newX);
-            fighter.setY(newY);
-        }
-    }
-    
-    
 
     /**
-     * A bounding box approach that checks if the monster's new bounding box 
-     * intersects a collidable tile. If yes, returns true for collision.
+     * Set the location of the thrown Luring Gem.
      */
+    public void setLuringGemLocation(Point gemLoc) {
+        this.luringGemLocation = gemLoc;
+    }
+
+    /**
+     * Clear the gem location (when reached or expired).
+     */
+    public void clearLuringGemLocation() {
+        this.luringGemLocation = null;
+    }
+
+    /**
+     * Whether we currently have a gem thrown.
+     */
+    public boolean hasLuringGem() {
+        return (luringGemLocation != null);
+    }
+
+    /**
+     * Return the gem location (or null).
+     */
+    public Point getLuringGemLocation() {
+        return luringGemLocation;
+    }
+
     private boolean checkCollision(int x, int y) {
         int tileSize = GameConfig.TILE_SIZE;
 
@@ -314,25 +364,13 @@ public class MonsterController {
     }
 
     private boolean isAdjacentToPlayer(Monster monster, Player player) {
-        // Fighter monster must be right next to hero 
-        // (within 1 tile in x,y or so).
-        // Let's do a simple bounding box approach:
         int tileSize = GameConfig.TILE_SIZE;
         int dx = Math.abs(monster.getX() - player.getX());
         int dy = Math.abs(monster.getY() - player.getY());
-        // If truly adjacent in tile terms:
         return (dx <= tileSize && dy <= tileSize);
     }
 
     private int manhattanDistance(int x1, int y1, int x2, int y2) {
         return Math.abs(x1 - x2) + Math.abs(y1 - y2);
-    }
-
-    /**
-     * If the hero moves to the next hall, we can clear the list
-     * so they won't follow. 
-     */
-    public void clearMonsters() {
-        monsters.clear();
     }
 }

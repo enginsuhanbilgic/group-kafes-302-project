@@ -31,7 +31,7 @@ public class PlayModeController {
     private final HallType hallType;
     private final String jsonData;
     private final MouseHandler mouseHandler;
-    
+
 
     // Timer via GameTimerController
     private GameTimerController gameTimerController;
@@ -47,7 +47,7 @@ public class PlayModeController {
         this.jsonData = jsonData;
         this.mouseHandler = mouseHandler;
         this.player = player;
-        
+
         // Initialize TilesController
         this.tilesController = new TilesController();
         this.tilesController.loadTiles();
@@ -63,7 +63,7 @@ public class PlayModeController {
                     }
                 }
             });
-        
+
         // Initialize PlayerController
         this.playerController = new PlayerController(player, this.tilesController, this.keyHandler);
 
@@ -73,8 +73,8 @@ public class PlayModeController {
         monsterController.setEnchantmentController(enchantmentController);
 
         initializePlayerLocation();
-    }  
-    
+    }
+
     public void initializePlayerLocation(){
         int tileSize = GameConfig.TILE_SIZE;
         int mapWidth = GameConfig.NUM_HALL_COLS;
@@ -150,14 +150,14 @@ public class PlayModeController {
         // 5) Draw player
         playerController.draw(g2);
 
-        
+
 
         // If player has reveal active, you might highlight a 4x4 area around the rune
         if (playerController.getEntity().isRevealActive() && buildObjectController.getRuneHolder()!=null) {
             // For demonstration, let's just draw a red rectangle somewhere
             // e.g., if your game tracks the rune location as (runeX, runeY) in TilesController
             // we do a simple 4x4 highlight
-            
+
             //Point runeTile = tilesController.getRuneTile(); // hypothetical
             //if (runeTile != null) {
                 int rectX = buildObjectController.getRuneHolder().getX() * GameConfig.TILE_SIZE - GameConfig.TILE_SIZE;
@@ -180,21 +180,26 @@ public class PlayModeController {
             playerController.getEntity().useCloakOfProtection();
             keyHandler.p = false;
         }
-        // For Luring Gem: we press B, then a direction:
-        if (keyHandler.isBPressed() && buildObjectController.getRuneHolder()!=null) {
+
+        // For Luring Gem: press B, then a direction
+        if (keyHandler.isBPressed()) {
             char direction = ' ';
             if (keyHandler.up) direction = 'W';
             else if (keyHandler.down) direction = 'S';
             else if (keyHandler.left) direction = 'A';
             else if (keyHandler.right) direction = 'D';
+
             if (direction != ' ') {
-                playerController.getEntity().useLuringGem(direction);
-                
+                // This does both: remove gem from inventory, compute location, and inform MonsterController
+                playerController.getEntity().useLuringGem(direction, monsterController);
+
+                // reset the keys so we don’t keep throwing repeatedly
                 keyHandler.b = false;
                 keyHandler.up = keyHandler.down = keyHandler.left = keyHandler.right = false;
             }
         }
     }
+
 
     private void onGameOver() {
         gameOver = true;
