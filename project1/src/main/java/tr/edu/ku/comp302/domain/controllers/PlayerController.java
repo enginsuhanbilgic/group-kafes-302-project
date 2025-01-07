@@ -50,7 +50,6 @@ public class PlayerController extends EntityController<Player>{
 
         // Calculate new proposed positions
         int newX = entity.getX();
-
         int newY = entity.getY();
 
         boolean movingHorizontally = keyHandler.left || keyHandler.right;
@@ -64,34 +63,45 @@ public class PlayerController extends EntityController<Player>{
             speed++;
         }
         System.out.println("speed:" + speed);
+
+        // Check vertical movement
         if (keyHandler.up) {
-            newY -= speed;
+            int proposedY = newY - speed;
+            if (!checkCollision(newX, proposedY)) {
+                newY = proposedY;
+                isWalking = true;
+            }
         }
         if (keyHandler.down) {
-            newY += speed;
+            int proposedY = newY + speed;
+            if (!checkCollision(newX, proposedY)) {
+                newY = proposedY;
+                isWalking = true;
+            }
         }
+
+        // Check horizontal movement
         if (keyHandler.left) {
-            newX -= speed;
-            isFacingLeft = true; // Flip to face left
+            int proposedX = newX - speed;
+            if (!checkCollision(proposedX, newY)) {
+                newX = proposedX;
+                isFacingLeft = true; // Flip to face left
+                isWalking = true;
+            }
         }
         if (keyHandler.right) {
-            newX += speed;
-            isFacingLeft = false; // Flip to face right
+            int proposedX = newX + speed;
+            if (!checkCollision(proposedX, newY)) {
+                newX = proposedX;
+                isFacingLeft = false; // Flip to face right
+                isWalking = true;
+            }
         }
 
-        // Use the inherited collision check
-        if (!checkCollision(newX, newY)) {
-            // Move the player
-            //System.out.println("Player location: " + newX + " " + newY);
-            setLocation(newX, newY);
-            // Are we moving at all?
-            isWalking = (keyHandler.up || keyHandler.down ||  keyHandler.right ||  keyHandler.left);
-        } else {
-            isWalking = false;
-        }
+        // Move the player
+        setLocation(newX, newY);
 
         entity.setWalking(isWalking);
-        updateAnimationFrame();
     }
 
     /**
