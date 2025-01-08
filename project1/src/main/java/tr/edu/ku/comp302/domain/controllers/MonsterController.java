@@ -148,7 +148,7 @@ public class MonsterController {
     //               SPAWNING & COLLISION CHECKS
     // =========================================================
 
-    private void spawnRandomMonster(int inGameTime) {
+    private void spawnRandomMonster(int inGameTime, Player player) {
         int tileSize = GameConfig.TILE_SIZE;
         int mapWidth = GameConfig.NUM_HALL_COLS;
         int mapHeight = GameConfig.NUM_HALL_ROWS;
@@ -157,9 +157,12 @@ public class MonsterController {
         for (int attempt = 0; attempt < 50; attempt++) {
             int col = random.nextInt(mapWidth);
             int row = random.nextInt(mapHeight);
+            
+            Boolean isPlayerNear = false;
+            if(Math.sqrt((player.getX() - col*GameConfig.TILE_SIZE)^2 + (player.getY() - row*GameConfig.TILE_SIZE)^2) <= GameConfig.TILE_SIZE*2) isPlayerNear = true;
 
             Tile tile = tilesController.getTileAt(col+GameConfig.KAFES_STARTING_X, row+GameConfig.KAFES_STARTING_Y);
-            if (tile != null && !tile.isCollidable && enchantmentController.isLocationAvailable(col, row)) {
+            if (tile != null && !tile.isCollidable && enchantmentController.isLocationAvailable(col, row) && !isPlayerNear) {
                 // pick a random monster type
                 Monster monster = createRandomMonster((col + GameConfig.KAFES_STARTING_X) * tileSize, (row + GameConfig.KAFES_STARTING_Y) * tileSize);
                 monsters.add(monster);
@@ -182,10 +185,10 @@ public class MonsterController {
         };
     }
 
-    public void tick(int inGameTime) {
+    public void tick(int inGameTime, Player player) {
         inGameTime++;
         if (inGameTime - lastSpawnTime >= spawnIntervalSeconds) {
-            spawnRandomMonster(inGameTime);
+            spawnRandomMonster(inGameTime, player);
             lastSpawnTime = inGameTime;
         }
     }

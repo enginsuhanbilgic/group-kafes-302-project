@@ -1,11 +1,13 @@
 package tr.edu.ku.comp302.domain.controllers;
 
 import java.awt.Graphics2D;
-
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.Entity;
 import tr.edu.ku.comp302.domain.models.Tile;
 
+/**
+ * The abstract controller for any Entity (Player, Monster, etc.).
+ */
 public abstract class EntityController<T extends Entity> {
     
     protected T entity;
@@ -18,7 +20,7 @@ public abstract class EntityController<T extends Entity> {
 
     /**
      * Updates the entity's state. For Player, this might be reading keyboard input.
-     * For a monster, this might be AI logic.
+     * For a Monster, this might be AI logic.
      */
     public abstract void update();
 
@@ -33,7 +35,7 @@ public abstract class EntityController<T extends Entity> {
      *
      * @param x proposed new X coordinate
      * @param y proposed new Y coordinate
-     * @return true if there is collision at (x, y), false otherwise
+     * @return true if there is a collision at (x, y), false otherwise
      */
     protected boolean checkCollision(int x, int y) {
         int tileSize = GameConfig.TILE_SIZE;

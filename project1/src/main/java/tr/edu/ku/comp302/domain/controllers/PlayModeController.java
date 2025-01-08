@@ -96,7 +96,6 @@ public class PlayModeController {
         }
     }
 
-
     public void update() {
         if (gameOver) return;
         if (!keyHandler.isEscPressed()) {
@@ -270,7 +269,7 @@ public class PlayModeController {
 
                     inGameTime++;
 
-                    monsterController.tick(inGameTime);
+                    monsterController.tick(inGameTime, player);
                     enchantmentController.tick(inGameTime);
                     onTick.accept(time);
                     },
