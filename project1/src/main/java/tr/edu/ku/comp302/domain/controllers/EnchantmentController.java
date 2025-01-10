@@ -12,17 +12,25 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * EnchantmentController handles spawning of enchantments, 
- * despawns them if not collected, and collects them via mouse click.
+ * Constructor: Initializes the EnchantmentController with necessary resources.
+ *
+ * @param tilesController The TilesController instance used to verify tile properties.
+ * @requires tilesController is not null.
+ * @modifies this.enchantments, this.random, this.extraTimeImage, this.heartImage,
+ *           this.revealImage, this.cloakImage, this.gemImage, this.runeImage
+ * @effects 
+ *   - Initializes enchantments as an empty list.
+ *   - Initializes random number generator.
+ *   - Loads images for various enchantments using ResourceManager.
  */
 public class EnchantmentController {
 
     private final TilesController tilesController;
 
-    private final List<Enchantment> enchantments;
+    protected final List<Enchantment> enchantments;
     private final Random random;
 
-    private int lastSpawnTime;
+    protected int lastSpawnTime;
     
     private BufferedImage extraTimeImage;
     private BufferedImage heartImage;
@@ -46,10 +54,19 @@ public class EnchantmentController {
     }
 
     /**
-     * Called every frame from PlayModeController to update enchantments.
-     * - Spawns new enchantment if 12s has passed.
-     * - Removes expired.
-     * - Checks if user left-clicked on an enchantment to collect it.
+     * Updates the state of enchantments each frame.
+     * - Spawns new enchantments if the spawn interval has passed.
+     * - Removes expired enchantments.
+     * - Handles collection of enchantments via player click.
+     *
+     * @param player   The Player instance collecting enchantments.
+     * @param clickPos The position where the player clicked, or null if no click occurred.
+     * @requires player is not null.
+     * @modifies this.enchantments, player.inventory, this.lastSpawnTime
+     * @effects 
+     *   - If spawn interval has passed, spawns a new enchantment.
+     *   - Removes enchantments that have exceeded their lifetime.
+     *   - If clickPos is within an enchantment's bounds, collects that enchantment.
      */
     public void update(Player player, Point clickPos) {
 
@@ -62,7 +79,13 @@ public class EnchantmentController {
     }
 
     /**
-     * Draw the current enchantments on the screen.
+     * Draws all active enchantments on the provided Graphics2D context.
+     *
+     * @param g2 The Graphics2D context used for rendering.
+     * @requires g2 is not null.
+     * @modifies g2
+     * @effects 
+     *   - Renders each enchantment's image at its (x, y) position.
      */
     public void draw(Graphics2D g2) {
         for (Enchantment e : enchantments) {
@@ -108,6 +131,17 @@ public class EnchantmentController {
 
     // ====================== Private Helpers ======================
 
+    /**
+     * Attempts to spawn a random enchantment at a free tile within the hall.
+     *
+     * @param inGameTime The current in-game time in seconds.
+     * @requires inGameTime is non-negative.
+     * @modifies this.enchantments, this.lastSpawnTime
+     * @effects 
+     *   - If a free tile is found within 50 attempts, adds a new Enchantment to enchantments.
+     *   - Updates lastSpawnTime to inGameTime.
+     *   - Logs the spawned enchantment.
+     */
     private void spawnRandomEnchantment(int inGameTime) {
         int tileSize = GameConfig.TILE_SIZE;
         int mapWidth = GameConfig.NUM_HALL_COLS;
@@ -130,6 +164,18 @@ public class EnchantmentController {
         }
     }
 
+    /**
+     * Updates enchantments based on the current in-game time.
+     * - Spawns new enchantments if spawn interval has passed.
+     * - Removes enchantments that have expired.
+     *
+     * @param inGameTime The current in-game time in seconds.
+     * @requires inGameTime is non-negative.
+     * @modifies this.enchantments, this.lastSpawnTime
+     * @effects 
+     *   - Potentially adds new enchantments.
+     *   - Removes expired enchantments from enchantments list.
+     */
     public void tick(int inGameTime) {
         // 1) Attempt spawn logic
         if (inGameTime - lastSpawnTime >= GameConfig.ENCHANTMENT_SPAWN_INTERVAL) {
@@ -142,6 +188,17 @@ public class EnchantmentController {
         enchantments.removeIf(e -> (inGameTime - e.getSpawnGameTime()) > e.getLifetimeSeconds());
     }
 
+    /**
+     * Checks if a specific tile location is available for spawning an enchantment.
+     *
+     * @param col The column index within the hall.
+     * @param row The row index within the hall.
+     * @return True if the location is available, false otherwise.
+     * @requires 0 <= col < GameConfig.NUM_HALL_COLS, 0 <= row < GameConfig.NUM_HALL_ROWS
+     * @modifies none
+     * @effects 
+     *   - Returns true if no existing enchantment occupies the specified (col, row).
+     */
     public boolean isLocationAvailable(int col, int row) {
         int tileSize = GameConfig.TILE_SIZE;
     
@@ -158,6 +215,18 @@ public class EnchantmentController {
         return true;
     }
 
+    /**
+     * Creates a random Enchantment instance based on random selection.
+     *
+     * @param x          The x-coordinate (in pixels) for the enchantment.
+     * @param y          The y-coordinate (in pixels) for the enchantment.
+     * @param inGameTime The current in-game time in seconds.
+     * @return A new Enchantment instance.
+     * @requires none
+     * @modifies none
+     * @effects 
+     *   - Returns a new instance of one of the Enchantment subclasses.
+     */
     private Enchantment createRandomEnchantment(int x, int y, int inGameTime) {
         int r = random.nextInt(5); // 0..4
         return switch (r) {
@@ -170,6 +239,16 @@ public class EnchantmentController {
         };
     }
 
+    /**
+     * Handles the collection of enchantments when the player clicks on them.
+     *
+     * @param clickPos The position where the player clicked.
+     * @param player   The Player instance collecting the enchantment.
+     * @requires clickPos is not null, player is not null.
+     * @modifies this.enchantments, player.inventory
+     * @effects 
+     *   - If an enchantment is clicked, invokes its onCollect method and removes it from enchantments.
+     */
     private void handleClickCollection(Point clickPos, Player player) {
         int clickX = clickPos.x;
         int clickY = clickPos.y;
@@ -193,6 +272,16 @@ public class EnchantmentController {
         }
     }
 
+    /**
+     * Retrieves the image associated with a specific EnchantmentType.
+     *
+     * @param e The EnchantmentType for which to retrieve the image.
+     * @return The corresponding BufferedImage, or null if not available.
+     * @requires e is not null.
+     * @modifies none
+     * @effects 
+     *   - Returns the image associated with the given EnchantmentType.
+     */
     public BufferedImage getImage(EnchantmentType e){
         switch (e) {
             case EXTRA_TIME -> {
@@ -215,5 +304,9 @@ public class EnchantmentController {
             }
         }
         return null;
+    }
+
+    public List<Enchantment> getEnchantments() {
+        return List.copyOf(enchantments);
     }
 }
