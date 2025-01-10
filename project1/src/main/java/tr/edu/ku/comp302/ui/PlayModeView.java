@@ -175,11 +175,14 @@ public class PlayModeView extends JPanel implements Runnable {
 
         playModeController.draw(g2);
 
+        // Draw damage indicators
+        drawDamageIndicators(g2);
+
         // when lives is down 
-    if (playModeController.getPlayerController().getEntity().isDrawDamageBox()) {
-        g2.setColor(new Color(255, 0, 0, 120)); 
-        g2.fillRect(0, 0, getWidth(), getHeight()); 
-    }
+        if (playModeController.getPlayerController().getEntity().isDrawDamageBox()) {
+            g2.setColor(new Color(255, 0, 0, 120)); 
+            g2.fillRect(0, 0, getWidth(), getHeight()); 
+        }
 
         // Timer in the top-left corner
         g2.setColor(Color.WHITE);
@@ -190,6 +193,88 @@ public class PlayModeView extends JPanel implements Runnable {
         g2.drawString("Inventory", 1000, 20);
         int itemsPerRow = 3; // Number of items per row
         int spacing = GameConfig.TILE_SIZE + 10; // Spacing between items (tile size + extra space)
+
+        // Draw Active Enchantments (moved to right side)
+        int activeEffectsX = 1200; // Yeni x koordinatı
+        g2.drawString("Active Effects:", activeEffectsX, 20);
+        if (playModeController.getPlayerController().getEntity().isCloakActive()) {
+            g2.drawImage(playModeController.getEnchantmentController().getImage(EnchantmentType.CLOAK_OF_PROTECTION), 
+                        activeEffectsX, 30, GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
+            long remainingCloakTime = (playModeController.getPlayerController().getEntity().getCloakEndTime() - System.currentTimeMillis()) / 1000;
+            g2.drawString("Cloak Active (" + remainingCloakTime + "s)", activeEffectsX + GameConfig.TILE_SIZE + 5, 30 + GameConfig.TILE_SIZE/2);
+            
+            // Draw time bar for Cloak
+            int barWidth = 100;
+            int barHeight = 5;
+            int barX = activeEffectsX + GameConfig.TILE_SIZE + 5;
+            int barY = 30 + GameConfig.TILE_SIZE/2 + 8;
+            
+            // Background (gray bar)
+            g2.setColor(new Color(60, 60, 60));
+            g2.fillRect(barX, barY, barWidth, barHeight);
+            
+            // Calculate remaining ratio (20 seconds total for Cloak)
+            float remainingRatio = (float)(remainingCloakTime) / 20.0f;
+            remainingRatio = Math.max(0, Math.min(1, remainingRatio)); // Clamp between 0 and 1
+            
+            // Choose color based on remaining time
+            Color barColor;
+            if (remainingCloakTime <= 3) {
+                // Yanıp sönme efekti için zamanı kontrol et
+                if (System.currentTimeMillis() % 500 < 250) { // Her 0.5 saniyede bir yanıp sön
+                    barColor = Color.RED;
+                } else {
+                    barColor = new Color(180, 0, 0);
+                }
+            } else if (remainingCloakTime <= 7) {
+                barColor = new Color(255, 165, 0); // Turuncu
+            } else {
+                barColor = new Color(0, 255, 0); // Yeşil
+            }
+            
+            g2.setColor(barColor);
+            g2.fillRect(barX, barY, (int)(barWidth * remainingRatio), barHeight);
+        }
+        if (playModeController.getPlayerController().getEntity().isRevealActive()) {
+            int revealY = playModeController.getPlayerController().getEntity().isCloakActive() ? 
+                         30 + GameConfig.TILE_SIZE + 5 : 30;
+            g2.drawImage(playModeController.getEnchantmentController().getImage(EnchantmentType.REVEAL), 
+                        activeEffectsX, revealY, GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
+            long remainingRevealTime = (playModeController.getPlayerController().getEntity().getRevealEndTime() - System.currentTimeMillis()) / 1000;
+            g2.drawString("Reveal Active (" + remainingRevealTime + "s)", activeEffectsX + GameConfig.TILE_SIZE + 5, revealY + GameConfig.TILE_SIZE/2);
+            
+            // Draw time bar for Reveal
+            int barWidth = 100;
+            int barHeight = 5;
+            int barX = activeEffectsX + GameConfig.TILE_SIZE + 5;
+            int barY = revealY + GameConfig.TILE_SIZE/2 + 8;
+            
+            // Background (gray bar)
+            g2.setColor(new Color(60, 60, 60));
+            g2.fillRect(barX, barY, barWidth, barHeight);
+            
+            // Calculate remaining ratio (10 seconds total for Reveal)
+            float remainingRatio = (float)(remainingRevealTime) / 10.0f;
+            remainingRatio = Math.max(0, Math.min(1, remainingRatio)); // Clamp between 0 and 1
+            
+            // Choose color based on remaining time
+            Color barColor;
+            if (remainingRevealTime <= 3) {
+                // Yanıp sönme efekti için zamanı kontrol et
+                if (System.currentTimeMillis() % 500 < 250) { // Her 0.5 saniyede bir yanıp sön
+                    barColor = Color.RED;
+                } else {
+                    barColor = new Color(180, 0, 0);
+                }
+            } else if (remainingRevealTime <= 5) {
+                barColor = new Color(255, 165, 0); // Turuncu
+            } else {
+                barColor = new Color(0, 255, 0); // Yeşil
+            }
+            
+            g2.setColor(barColor);
+            g2.fillRect(barX, barY, (int)(barWidth * remainingRatio), barHeight);
+        }
 
         i = 0; // Reset i to 0
         for (Enchantment e : playModeController.getPlayerController().getEntity().getInventory().getAllItems()) {
@@ -225,7 +310,53 @@ public class PlayModeView extends JPanel implements Runnable {
             i++;
         }
         g2.drawString(hallType.toString(), 300, 20);
-        g2.dispose();
+    }
+
+    private void drawDamageIndicators(Graphics2D g2) {
+        // Archer monster range indicator
+        for (var monster : playModeController.getMonsterController().getMonsters()) {
+            if (monster.getType().equals("ARCHER")) {
+                int monsterX = monster.getX();
+                int monsterY = monster.getY();
+                int range = 3 * GameConfig.TILE_SIZE;
+                
+                // Archer'ın menzilini gösteren yarı saydam mavi daire
+                if (!playModeController.getPlayerController().getEntity().isCloakActive()) {
+                    // Dış daire (maksimum menzil)
+                    g2.setColor(new Color(0, 0, 255, 30)); // Açık mavi, çok saydam
+                    g2.fillOval(monsterX - range, 
+                               monsterY - range, 
+                               range * 2 + GameConfig.TILE_SIZE, 
+                               range * 2 + GameConfig.TILE_SIZE);
+                    
+                    // Menzil sınırını gösteren çizgi
+                    g2.setColor(new Color(0, 0, 255, 50));
+                    g2.drawOval(monsterX - range, 
+                               monsterY - range, 
+                               range * 2 + GameConfig.TILE_SIZE, 
+                               range * 2 + GameConfig.TILE_SIZE);
+                }
+            } else if (monster.getType().equals("FIGHTER")) {
+                int monsterX = monster.getX();
+                int monsterY = monster.getY();
+                
+                // Fighter'ın yakın mesafe tehlike alanı (yarım kare mesafe)
+                if (!playModeController.getPlayerController().getEntity().isCloakActive()) {
+                    g2.setColor(new Color(255, 0, 0, 30)); // Kırmızı, çok saydam
+                    g2.fillRect(monsterX - GameConfig.TILE_SIZE/2, 
+                               monsterY - GameConfig.TILE_SIZE/2,
+                               GameConfig.TILE_SIZE * 2, 
+                               GameConfig.TILE_SIZE * 2);
+                    
+                    // Tehlike alanı sınırı
+                    g2.setColor(new Color(255, 0, 0, 50));
+                    g2.drawRect(monsterX - GameConfig.TILE_SIZE/2, 
+                               monsterY - GameConfig.TILE_SIZE/2,
+                               GameConfig.TILE_SIZE * 2, 
+                               GameConfig.TILE_SIZE * 2);
+                }
+            }
+        }
     }
 
     public KeyHandler getKeyHandler() {

@@ -8,4 +8,10 @@ public abstract class Monster extends Entity {
         super(x, y, speed);
     }
 
+    public String getType() {
+        if (this instanceof FighterMonster) return "FIGHTER";
+        if (this instanceof ArcherMonster) return "ARCHER";
+        if (this instanceof WizardMonster) return "WIZARD";
+        return "UNKNOWN";
+    }
 }

@@ -242,7 +242,7 @@ public class MonsterController {
 
             boolean heroHasCloak = player.isCloakActive();
             int distancePx = manhattanDistance(archer.getX(), archer.getY(), player.getX(), player.getY());
-            int rangePx = 4 * GameConfig.TILE_SIZE;
+            int rangePx = 4 * GameConfig.TILE_SIZE; // 4 kare menzil
             if (!heroHasCloak && distancePx < rangePx) {
                 player.loseLife();
                 System.out.println("Archer Monster shot the hero! Lives: " + player.getLives());
@@ -370,10 +370,14 @@ public class MonsterController {
         int tileSize = GameConfig.TILE_SIZE;
         int dx = Math.abs(monster.getX() - player.getX());
         int dy = Math.abs(monster.getY() - player.getY());
-        return (dx <= tileSize && dy <= tileSize);
+        return (dx <= tileSize && dy <= tileSize); // 1 kare mesafe
     }
 
     private int manhattanDistance(int x1, int y1, int x2, int y2) {
         return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+    }
+
+    public List<Monster> getMonsters() {
+        return monsters;
     }
 }
