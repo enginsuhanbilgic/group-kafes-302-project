@@ -1,6 +1,5 @@
 package tr.edu.ku.comp302.domain.controllers;
 
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;

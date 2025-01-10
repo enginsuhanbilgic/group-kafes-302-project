@@ -20,32 +20,30 @@ import java.util.Random;
  * OVERVIEW:
  * BuildObjectController manages all BuildObjects across all halls,
  * including loading from JSON and ensuring only one BuildObject can have a rune.
- * 
- * 
+ *
  * ABSTRACT FUNCTION:
- * AF(c) = {
-  hallType -> the HallType associated with this controller,
-  worldObjectsMap -> a mapping from each HallType h to a List<BuildObject> belonging to hall h,
-  runeHolder -> the (unique) BuildObject that currently holds the Rune (or null if none)
-}
-
+ *   AF(c) = {
+ *      hallType -> the HallType associated with this controller,
+ *      worldObjectsMap -> a mapping from each HallType h to a List<BuildObject> belonging to hall h,
+ *      runeHolder -> the (unique) BuildObject that currently holds the Rune (or null if none)
+ *   }
+ *
  * REPRESENTATION INVARIANT:
- * 1) worldObjectsMap is never null.
- * 2) For each (HallType -> List<BuildObject>) entry in worldObjectsMap, that list is non-null (though it may be empty).
- * 3) At most one BuildObject in all lists (across all HallTypes) has hasRune == true.
- * 4) If runeHolder != null, then runeHolder.getHasRune() is true, and runeHolder is present in the corresponding list in worldObjectsMap.
- * 5) If there is any BuildObject with hasRune == true, it must be the same object as runeHolder.
- * 
- * 
+ *   1) worldObjectsMap is never null.
+ *   2) For each (HallType -> List<BuildObject>) entry in worldObjectsMap, that list is non-null (though it may be empty).
+ *   3) At most one BuildObject in all lists (across all HallTypes) has hasRune == true.
+ *   4) If runeHolder != null, then runeHolder.getHasRune() is true, and runeHolder is present in the corresponding list in worldObjectsMap.
+ *   5) If there is any BuildObject with hasRune == true, it must be the same object as runeHolder.
  */
-
 public class BuildObjectController {
 
     private final HallType hallType;
 
+    // Key: HallType, Value: list of BuildObjects in that hall
     private Map<HallType, List<BuildObject>> worldObjectsMap;
+
+    // The single BuildObject that currently holds the rune (or null)
     private BuildObject runeHolder;
-    private Rune rune;
 
     public BuildObjectController(HallType hallType) {
         this.hallType = hallType;
@@ -57,6 +55,13 @@ public class BuildObjectController {
     /**
      * Loads the BuildObjects from JSON data, storing them by HallType.
      * If any objects were previously loaded, they are replaced.
+     *
+     * @requires jsonData may be null or empty (in which case the controller resets).
+     * @modifies this.worldObjectsMap, this.runeHolder
+     * @effects
+     *   - If jsonData is valid, replaces worldObjectsMap with the contents of the JSON.
+     *   - Picks one random object from the specified hallType to hold the rune (if any exist).
+     *   - If jsonData is null/empty or invalid, resets the map and runeHolder to empty.
      */
     public void loadWorldFromJson(String jsonData) {
         if (jsonData == null || jsonData.isEmpty()) {
@@ -84,6 +89,7 @@ public class BuildObjectController {
             }
             this.worldObjectsMap = finalMap;
 
+            // Randomly assign the rune to one object in the given hallType
             if(getObjectsForHall(hallType).size()!=0){
                 Random rand = new Random();
                 int randIndex = rand.nextInt(getObjectsForHall(hallType).size());
@@ -91,7 +97,6 @@ public class BuildObjectController {
                 getObjectsForHall(hallType).get(randIndex).setHasRune(true);
                 this.runeHolder = getObjectsForHall(hallType).get(randIndex);
             }
-            // If you want to preserve some previous state of the rune, you'd handle that differently.
         } catch (Exception e) {
             e.printStackTrace();
             this.worldObjectsMap = new HashMap<>();
@@ -99,6 +104,13 @@ public class BuildObjectController {
         }
     }
 
+    /**
+     * @requires No special external requirements
+     * @modifies May modify the runeHolder if the user clicks on it,
+     *           might modify player's inventory.
+     * @effects  If the user clicked on a BuildObject with a rune and is close enough,
+     *           the rune is removed from that object and added to the player's inventory.
+     */
     public void update (HallType hallType, Player player, Point clickPos){
         if (clickPos != null) {
             handleClickCollection(clickPos, player);
@@ -117,7 +129,6 @@ public class BuildObjectController {
         // We check each BuildObject in the current hall
         List<BuildObject> objects = getObjectsForHall(hallType);
         for (BuildObject obj : objects) {
-            // 1) Does the bounding box contain the click?
             int tileSize = GameConfig.TILE_SIZE;
             int objPX = obj.getX() * tileSize;
             int objPY = obj.getY() * tileSize;
@@ -131,18 +142,15 @@ public class BuildObjectController {
 
             if (clickedOnObject && obj.getHasRune()) {
                 System.out.println("Clicked on object");
-                // 2) Check if player is close enough
+                // Check if player is close enough
                 if (isPlayerCloseEnough(player, obj)) {
                     System.out.println("Player is close enough");
-                    // 3) "Remove" the rune from the object
+                    // Remove the rune from the object
                     obj.setHasRune(false);
-                    // also un-set the global holder if it's the same
                     if (runeHolder == obj) {
                         runeHolder = null;
                     }
 
-                    // 4) Spawn a new "rune enchantment" above the object 
-                    //    (slightly above means e.g. objPY - tileSize)
                     int enchantX = objPX;
                     int enchantY = objPY - tileSize; // "above" the object
 
@@ -150,7 +158,6 @@ public class BuildObjectController {
 
                     Enchantment rune = new Rune(enchantX, enchantY, 0); //0 is not correct but it doesn't matter here
                     player.getInventory().addItem(rune);
-                    // We found the clicked object, so break to avoid multiple clicks registering
                     break;
                 }
             }
@@ -220,8 +227,12 @@ public class BuildObjectController {
     }
 
     /**
-     * Sets the rune on the specified BuildObject, removing it from any previous holder.
-     * If the object is already the holder, this does nothing special.
+     * @requires newHolder != null and must exist in worldObjectsMap
+     * @modifies this.runeHolder, the hasRune property of oldHolder and newHolder
+     * @effects 
+     *   - Removes the rune from the old holder (if any).
+     *   - Sets hasRune = true on newHolder.
+     *   - Updates this.runeHolder accordingly.
      */
     public void setRune(BuildObject newHolder) {
         // If we have an old holder, remove the rune from it
@@ -234,7 +245,9 @@ public class BuildObjectController {
     }
 
     /**
-     * Removes the rune from whichever BuildObject currently has it, if any.
+     * @requires none
+     * @modifies this.runeHolder, the hasRune property of that holder
+     * @effects If a runeHolder exists, sets hasRune = false on it and sets runeHolder to null.
      */
     public void removeRune() {
         if (this.runeHolder != null) {
@@ -244,8 +257,14 @@ public class BuildObjectController {
     }
 
     /**
-     * Transfers the rune from an old BuildObject to a new BuildObject.
-     * If oldObj does not actually have the rune, it just sets it on newObj.
+     * A “non-trivial” method to randomly choose a new BuildObject for the rune and move it there.
+     *
+     * @requires getObjectsForHall(hallType) is not empty (otherwise does nothing)
+     * @modifies this.runeHolder, hasRune on build objects
+     * @effects 
+     *  - If a build object already holds the rune, unsets that object’s hasRune.
+     *  - Picks a different random BuildObject in the current hall, sets hasRune = true, updates runeHolder.
+     *  - Might do nothing if it fails to find a new valid object after 50 tries.
      */
     public void transferRune() {
         Random rand = new Random();

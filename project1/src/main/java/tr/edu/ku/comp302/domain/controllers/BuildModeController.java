@@ -117,7 +117,14 @@ public class BuildModeController {
     
 
     /**
-     * Bir JSON string'den hall objelerini geri yükler.
+     * Reads hall data from JSON and replaces the local hallObjectsMap.
+     *
+     * @requires json may be null or empty
+     * @modifies this.hallObjectsMap
+     * @effects 
+     *   - If json is null or empty, hallObjectsMap will remain as-is or be replaced with an empty map (implementation choice).
+     *   - If json is valid, replaces existing hallObjectsMap with the parsed data.
+     *   - If json is invalid, may result in a partial or empty map.
      */
     public void importFromJson(String json) {
         Type type = new TypeToken<Map<HallType, List<BuildObject>>>(){}.getType();

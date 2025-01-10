@@ -7,7 +7,6 @@ import tr.edu.ku.comp302.domain.models.Enchantments.EnchantmentType;
 
 /**
  * The Player class represents the player's state in the game.
- * It stores position, movement speed, lives, inventory, etc.
  */
 public class Player extends Entity {
 
@@ -18,17 +17,8 @@ public class Player extends Entity {
     // -- Additional fields for acceleration-based movement --
     private float velocityX = 0f;
     private float velocityY = 0f;
-    /**
-     * How quickly the player accelerates upon key-press.
-     */
     private float acceleration = 0.5f;
-    /**
-     * How quickly the player decelerates.
-     */
     private float friction = 0.05f;
-    /**
-     * Maximum speed on either axis.
-     */
     private float maxSpeed = 5.0f;
 
     // Active buffs
@@ -206,11 +196,15 @@ public class Player extends Entity {
 
     // ==================== LURING GEM LOGIC ====================
     /**
-     * Throw a luring gem in a given direction. The gem is removed from inventory
-     * and placed some tiles away. Then we notify MonsterController.
+     * Throws a luring gem in a given direction, if available.
      *
-     * @param direction 'W', 'S', 'A', or 'D'
-     * @param monsterController the monster controller to set the gem location
+     * @requires direction is one of {'W','S','A','D'} and the inventory may contain a LURING_GEM.
+     * @modifies this.inventory (removes the gem if found)
+     * @effects
+     *   - If a Luring Gem is in the inventory, remove it and place a "gem lure" location
+     *     2 tiles away in the specified direction. Then monsterController is updated with that location.
+     *   - If no gem is found, does nothing.
+     *   - If direction is invalid, does nothing.
      */
     public void useLuringGem(char direction, MonsterController monsterController) {
         Enchantment gem = inventory.getEnchantmentByType(EnchantmentType.LURING_GEM);
@@ -218,10 +212,7 @@ public class Player extends Entity {
             System.out.println("No Luring Gem in inventory!");
             return;
         }
-        // Remove from inventory
-        inventory.removeItem(gem);
-        System.out.println("Luring Gem thrown to direction: " + direction);
-
+        
         // For simplicity, place the gem 2 tiles away in that direction
         int tileSize = GameConfig.TILE_SIZE;
         int throwDistanceTiles = 2;
@@ -230,10 +221,34 @@ public class Player extends Entity {
         int gemX = this.x;
         int gemY = this.y;
         switch (direction) {
-            case 'W' -> gemY -= offset;
-            case 'S' -> gemY += offset;
-            case 'A' -> gemX -= offset;
-            case 'D' -> gemX += offset;
+            case 'W' -> {
+                gemY -= offset;
+                // Remove from inventory
+                inventory.removeItem(gem);
+                System.out.println("Luring Gem thrown to direction: " + direction);
+            }
+            case 'S' -> {
+                gemY += offset;
+                // Remove from inventory
+                inventory.removeItem(gem);
+                System.out.println("Luring Gem thrown to direction: " + direction);
+            }
+            case 'A' -> {
+                gemX -= offset;
+                // Remove from inventory
+                inventory.removeItem(gem);
+                System.out.println("Luring Gem thrown to direction: " + direction);
+            }
+            case 'D' -> {
+                gemX += offset;
+                // Remove from inventory
+                inventory.removeItem(gem);
+                System.out.println("Luring Gem thrown to direction: " + direction);
+            }
+            default -> {
+                System.out.println("Invalid direction for luring gem: " + direction);
+                return;
+            }
         }
 
         // Notify MonsterController that a gem is thrown at gemX, gemY
