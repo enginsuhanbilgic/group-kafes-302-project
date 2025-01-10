@@ -88,6 +88,7 @@ public class HelpMenuView extends JPanel {
                         + "      <h2 style='font-size: 22px; text-decoration: underline;'>Movement</h2>"
                         + "      <p>Use the arrow keys (←, →, ↑, ↓) to move your hero around the hall. You cannot pass through walls. "
                         + "         Your main goal is to find hidden runes in each hall to unlock the door.</p>"
+                        + "      <p>Press 'H' key to toggle damage range indicators for monsters.</p>"
 
                         + "      <h2 style='font-size: 22px; text-decoration: underline;'>Runes &amp; Doors</h2>"
                         + "      <p>Each hall has a hidden rune. Click on objects (only those you are adjacent to) to check if the rune is underneath. "

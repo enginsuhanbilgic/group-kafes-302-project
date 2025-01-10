@@ -12,6 +12,8 @@ import tr.edu.ku.comp302.domain.models.Player;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.RenderingHints;
 
 public class PlayModeView extends JPanel implements Runnable {
 
@@ -23,6 +25,7 @@ public class PlayModeView extends JPanel implements Runnable {
     private boolean pauseMenuShown = false;
     private final HallType hallType;
     private final String jsonData;
+    private boolean showDamageIndicators = false; // Varsayılan olarak kapalı
 
     // Eski constructor (no JSON)
     public PlayModeView(NavigationController navigationController, JFrame parentFrame, HallType hallType, Player player) {
@@ -51,6 +54,7 @@ public class PlayModeView extends JPanel implements Runnable {
         this.navigationController = navigationController;
         playModeController = new PlayModeController(keyHandler, mouseHandler, jsonData, hallType, player);
         playModeController.setNavigationController(this.navigationController);
+        playModeController.setPlayModeView(this);
 
         // Timer
         playModeController.startGameTimer(
@@ -175,11 +179,14 @@ public class PlayModeView extends JPanel implements Runnable {
 
         playModeController.draw(g2);
 
+        // Draw damage indicators
+        drawDamageIndicators(g2);
+
         // when lives is down 
-    if (playModeController.getPlayerController().getEntity().isDrawDamageBox()) {
-        g2.setColor(new Color(255, 0, 0, 120)); 
-        g2.fillRect(0, 0, getWidth(), getHeight()); 
-    }
+        if (playModeController.getPlayerController().getEntity().isDrawDamageBox()) {
+            g2.setColor(new Color(255, 0, 0, 120)); 
+            g2.fillRect(0, 0, getWidth(), getHeight()); 
+        }
 
         // Timer in the top-left corner
         g2.setColor(Color.WHITE);
@@ -190,6 +197,88 @@ public class PlayModeView extends JPanel implements Runnable {
         g2.drawString("Inventory", 1000, 20);
         int itemsPerRow = 3; // Number of items per row
         int spacing = GameConfig.TILE_SIZE + 10; // Spacing between items (tile size + extra space)
+
+        // Draw Active Enchantments (moved to right side)
+        int activeEffectsX = 1200; // Yeni x koordinatı
+        g2.drawString("Active Effects:", activeEffectsX, 20);
+        if (playModeController.getPlayerController().getEntity().isCloakActive()) {
+            g2.drawImage(playModeController.getEnchantmentController().getImage(EnchantmentType.CLOAK_OF_PROTECTION), 
+                        activeEffectsX, 30, GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
+            long remainingCloakTime = (playModeController.getPlayerController().getEntity().getCloakEndTime() - System.currentTimeMillis()) / 1000;
+            g2.drawString("Cloak Active (" + remainingCloakTime + "s)", activeEffectsX + GameConfig.TILE_SIZE + 5, 30 + GameConfig.TILE_SIZE/2);
+            
+            // Draw time bar for Cloak
+            int barWidth = 100;
+            int barHeight = 5;
+            int barX = activeEffectsX + GameConfig.TILE_SIZE + 5;
+            int barY = 30 + GameConfig.TILE_SIZE/2 + 8;
+            
+            // Background (gray bar)
+            g2.setColor(new Color(60, 60, 60));
+            g2.fillRect(barX, barY, barWidth, barHeight);
+            
+            // Calculate remaining ratio (20 seconds total for Cloak)
+            float remainingRatio = (float)(remainingCloakTime) / 20.0f;
+            remainingRatio = Math.max(0, Math.min(1, remainingRatio)); // Clamp between 0 and 1
+            
+            // Choose color based on remaining time
+            Color barColor;
+            if (remainingCloakTime <= 3) {
+                // Yanıp sönme efekti için zamanı kontrol et
+                if (System.currentTimeMillis() % 500 < 250) { // Her 0.5 saniyede bir yanıp sön
+                    barColor = Color.RED;
+                } else {
+                    barColor = new Color(180, 0, 0);
+                }
+            } else if (remainingCloakTime <= 7) {
+                barColor = new Color(255, 165, 0); // Turuncu
+            } else {
+                barColor = new Color(0, 255, 0); // Yeşil
+            }
+            
+            g2.setColor(barColor);
+            g2.fillRect(barX, barY, (int)(barWidth * remainingRatio), barHeight);
+        }
+        if (playModeController.getPlayerController().getEntity().isRevealActive()) {
+            int revealY = playModeController.getPlayerController().getEntity().isCloakActive() ? 
+                         30 + GameConfig.TILE_SIZE + 5 : 30;
+            g2.drawImage(playModeController.getEnchantmentController().getImage(EnchantmentType.REVEAL), 
+                        activeEffectsX, revealY, GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
+            long remainingRevealTime = (playModeController.getPlayerController().getEntity().getRevealEndTime() - System.currentTimeMillis()) / 1000;
+            g2.drawString("Reveal Active (" + remainingRevealTime + "s)", activeEffectsX + GameConfig.TILE_SIZE + 5, revealY + GameConfig.TILE_SIZE/2);
+            
+            // Draw time bar for Reveal
+            int barWidth = 100;
+            int barHeight = 5;
+            int barX = activeEffectsX + GameConfig.TILE_SIZE + 5;
+            int barY = revealY + GameConfig.TILE_SIZE/2 + 8;
+            
+            // Background (gray bar)
+            g2.setColor(new Color(60, 60, 60));
+            g2.fillRect(barX, barY, barWidth, barHeight);
+            
+            // Calculate remaining ratio (10 seconds total for Reveal)
+            float remainingRatio = (float)(remainingRevealTime) / 10.0f;
+            remainingRatio = Math.max(0, Math.min(1, remainingRatio)); // Clamp between 0 and 1
+            
+            // Choose color based on remaining time
+            Color barColor;
+            if (remainingRevealTime <= 3) {
+                // Yanıp sönme efekti için zamanı kontrol et
+                if (System.currentTimeMillis() % 500 < 250) { // Her 0.5 saniyede bir yanıp sön
+                    barColor = Color.RED;
+                } else {
+                    barColor = new Color(180, 0, 0);
+                }
+            } else if (remainingRevealTime <= 5) {
+                barColor = new Color(255, 165, 0); // Turuncu
+            } else {
+                barColor = new Color(0, 255, 0); // Yeşil
+            }
+            
+            g2.setColor(barColor);
+            g2.fillRect(barX, barY, (int)(barWidth * remainingRatio), barHeight);
+        }
 
         i = 0; // Reset i to 0
         for (Enchantment e : playModeController.getPlayerController().getEntity().getInventory().getAllItems()) {
@@ -225,10 +314,72 @@ public class PlayModeView extends JPanel implements Runnable {
             i++;
         }
         g2.drawString(hallType.toString(), 300, 20);
-        g2.dispose();
+    }
+
+    private void drawDamageIndicators(Graphics2D g2) {
+        if (!showDamageIndicators) return; // Eğer kapalıysa hiç çizme
+        
+        // Orijinal çizim kalitesini sakla
+        Object originalHint = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+        Composite originalComposite = g2.getComposite();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        for (var monster : playModeController.getMonsterController().getMonsters()) {
+            if (monster.getType().equals("ARCHER")) {
+                int monsterX = monster.getX();
+                int monsterY = monster.getY();
+                
+                if (!playModeController.getPlayerController().getEntity().isCloakActive()) {
+                    int range = 3 * GameConfig.TILE_SIZE;
+                    int centerX = monsterX + GameConfig.TILE_SIZE/2;
+                    int centerY = monsterY + GameConfig.TILE_SIZE/2;
+                    
+                    // Dış daire (turkuaz)
+                    g2.setColor(new Color(0, 255, 255, 6));
+                    g2.fillOval(centerX - range, centerY - range, range * 2, range * 2);
+                    
+                    // İç daire (açık mavi)
+                    int innerRange = (int)(range * 0.7);
+                    g2.setColor(new Color(135, 206, 235, 4));
+                    g2.fillOval(centerX - innerRange, centerY - innerRange, innerRange * 2, innerRange * 2);
+                }
+            } else if (monster.getType().equals("FIGHTER")) {
+                int monsterX = monster.getX();
+                int monsterY = monster.getY();
+                
+                if (!playModeController.getPlayerController().getEntity().isCloakActive()) {
+                    int size = GameConfig.TILE_SIZE;
+                    int[][] directions = {{0,-1}, {0,1}, {-1,0}, {1,0}}; // üst, alt, sol, sağ
+                    
+                    // Mercan kırmızısı kareler
+                    g2.setColor(new Color(255, 99, 71, 10));
+                    for (int[] dir : directions) {
+                        int x = monsterX + dir[0] * size;
+                        int y = monsterY + dir[1] * size;
+                        g2.fillRect(x, y, size, size);
+                        
+                        // Hafif gradient efekti
+                        g2.setColor(new Color(250, 128, 114, 6));
+                        g2.fillRect(x + size/4, y + size/4, size/2, size/2);
+                    }
+                }
+            }
+        }
+        
+        // Orijinal çizim ayarlarını geri yükle
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, originalHint);
+        g2.setComposite(originalComposite);
     }
 
     public KeyHandler getKeyHandler() {
         return keyHandler;
+    }
+
+    public void toggleDamageIndicators() {
+        showDamageIndicators = !showDamageIndicators;
+    }
+
+    public boolean isShowingDamageIndicators() {
+        return showDamageIndicators;
     }
 }

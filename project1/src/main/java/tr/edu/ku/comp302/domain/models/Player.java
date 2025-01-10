@@ -164,6 +164,10 @@ public class Player extends Entity {
         return cloakActive;
     }
 
+    public long getCloakEndTime() {
+        return cloakEndTime;
+    }
+
     public void useCloakOfProtection() {
         Enchantment cloak = inventory.getEnchantmentByType(EnchantmentType.CLOAK_OF_PROTECTION);
         if (cloak != null) {
@@ -182,6 +186,10 @@ public class Player extends Entity {
             revealActive = false;
         }
         return revealActive;
+    }
+
+    public long getRevealEndTime() {
+        return revealEndTime;
     }
 
     public void useReveal() {

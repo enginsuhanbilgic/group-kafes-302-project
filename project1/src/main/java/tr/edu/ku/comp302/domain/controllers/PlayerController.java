@@ -1,6 +1,11 @@
 package tr.edu.ku.comp302.domain.controllers;
 
+import java.awt.AlphaComposite;
+import java.awt.Composite;
 import java.awt.Graphics2D;
+import java.awt.Color;
+import java.awt.RadialGradientPaint;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +33,13 @@ public class PlayerController extends EntityController<Player> {
     private int currentFrame = 0;
     private int frameCounter = 0;
     private final int frameDelay = 15;
+
+    // Cloak effect variables
+    private float cloakAlpha = 0.5f;
+    private boolean alphaIncreasing = false;
+    private static final float ALPHA_MIN = 0.3f;
+    private static final float ALPHA_MAX = 0.7f;
+    private static final float ALPHA_STEP = 0.03f;
 
     // Key input
     private final KeyHandler keyHandler;
@@ -100,6 +112,26 @@ public class PlayerController extends EntityController<Player> {
 
         // 7. Update animation
         updateAnimationFrame();
+
+        // Update cloak effect
+        if (player.isCloakActive()) {
+            if (alphaIncreasing) {
+                cloakAlpha += ALPHA_STEP;
+                if (cloakAlpha >= ALPHA_MAX) {
+                    cloakAlpha = ALPHA_MAX;
+                    alphaIncreasing = false;
+                }
+            } else {
+                cloakAlpha -= ALPHA_STEP;
+                if (cloakAlpha <= ALPHA_MIN) {
+                    cloakAlpha = ALPHA_MIN;
+                    alphaIncreasing = true;
+                }
+            }
+        } else {
+            cloakAlpha = 0.5f;
+            alphaIncreasing = false;
+        }
     }
 
     /**
@@ -126,12 +158,37 @@ public class PlayerController extends EntityController<Player> {
         int width = GameConfig.TILE_SIZE;
         int height = GameConfig.TILE_SIZE;
 
+        // Save the original composite
+        Composite originalComposite = g2.getComposite();
+
+        if (player.isCloakActive()) {
+            // Draw glow effect
+            Color glowColor = new Color(135, 206, 250, 100); // Light blue, semi-transparent
+            Color transparentColor = new Color(135, 206, 250, 0);
+            
+            Point2D center = new Point2D.Float(x + width/2, y + height/2);
+            float radius = width * 0.8f;
+            float[] dist = {0.0f, 0.7f, 1.0f};
+            Color[] colors = {glowColor, glowColor, transparentColor};
+            
+            RadialGradientPaint glow = new RadialGradientPaint(center, radius, dist, colors);
+            g2.setPaint(glow);
+            g2.fillOval(x - width/4, y - height/4, width * 3/2, height * 3/2);
+
+            // Set player transparency with pulsing effect
+            AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, cloakAlpha);
+            g2.setComposite(alphaComposite);
+        }
+
         // Flip horizontally if facing left
         if (isFacingLeft) {
             g2.drawImage(currentImage, x + width, y, -width, height, null);
         } else {
             g2.drawImage(currentImage, x, y, width, height, null);
         }
+
+        // Restore the original composite
+        g2.setComposite(originalComposite);
     }
 
     /**

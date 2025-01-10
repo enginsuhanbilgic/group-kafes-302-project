@@ -7,6 +7,7 @@ public class KeyHandler implements KeyListener {
     public boolean up, down, left, right;
     public boolean b, p, r;
     public boolean escPressed = false;
+    public boolean hPressed;
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -42,6 +43,9 @@ public class KeyHandler implements KeyListener {
             escPressed = !escPressed;
             //System.out.println(escPressed);
         }
+        if (move == KeyEvent.VK_H) {
+            hPressed = true;
+        }
     }
 
     @Override
@@ -59,6 +63,9 @@ public class KeyHandler implements KeyListener {
         }
         if (move == KeyEvent.VK_RIGHT) {
             right = false;
+        }
+        if (move == KeyEvent.VK_H) {
+            hPressed = false;
         }
     }
 
