@@ -216,26 +216,28 @@ public class MonsterController {
             clearLuringGemLocation();
             return;
         }
-    
-        double dx = luringGemLocation.getX() - (double) fighter.getX();
-        double dy = luringGemLocation.getY() - (double) fighter.getY();
-        double length = Math.sqrt(dx * dx + dy * dy);
+        
+        if (luringGemLocation!=null){
+            double dx = luringGemLocation.getX() - (double) fighter.getX();
+            double dy = luringGemLocation.getY() - (double) fighter.getY();
+            double length = Math.sqrt(dx * dx + dy * dy);
 
-        if (length != 0) {
-            dx = (dx / (length/2)) * (double) speed;
-            dy = (dy / (length/2)) * (double) speed;
-        }
+            if (length != 0) {
+                dx = (dx / (length/2)) * (double) speed;
+                dy = (dy / (length/2)) * (double) speed;
+            }
 
-        System.out.println("Dx: " + dx + " " + "Dy: " + dy);
-    
-        int newX = fighter.getX() + (int) Math.round(dx);
-        if(!checkCollision(newX, fighter.getY())){
-            fighter.setX(newX);
-        }
+            System.out.println("Dx: " + dx + " " + "Dy: " + dy);
+        
+            int newX = fighter.getX() + (int) Math.round(dx);
+            if(!checkCollision(newX, fighter.getY())){
+                fighter.setX(newX);
+            }
 
-        int newY = fighter.getY() + (int) Math.round(dy);
-        if(!checkCollision(fighter.getX(), newY)){
-            fighter.setY(newY);
+            int newY = fighter.getY() + (int) Math.round(dy);
+            if(!checkCollision(fighter.getX(), newY)){
+                fighter.setY(newY);
+            }
         }
 
     }
