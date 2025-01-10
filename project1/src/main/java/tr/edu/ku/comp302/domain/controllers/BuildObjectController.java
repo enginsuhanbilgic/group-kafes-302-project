@@ -17,9 +17,28 @@ import java.util.Map;
 import java.util.Random;
 
 /**
+ * OVERVIEW:
  * BuildObjectController manages all BuildObjects across all halls,
  * including loading from JSON and ensuring only one BuildObject can have a rune.
+ * 
+ * 
+ * ABSTRACT FUNCTION:
+ * AF(c) = {
+  hallType -> the HallType associated with this controller,
+  worldObjectsMap -> a mapping from each HallType h to a List<BuildObject> belonging to hall h,
+  runeHolder -> the (unique) BuildObject that currently holds the Rune (or null if none)
+}
+
+ * REPRESENTATION INVARIANT:
+ * 1) worldObjectsMap is never null.
+ * 2) For each (HallType -> List<BuildObject>) entry in worldObjectsMap, that list is non-null (though it may be empty).
+ * 3) At most one BuildObject in all lists (across all HallTypes) has hasRune == true.
+ * 4) If runeHolder != null, then runeHolder.getHasRune() is true, and runeHolder is present in the corresponding list in worldObjectsMap.
+ * 5) If there is any BuildObject with hasRune == true, it must be the same object as runeHolder.
+ * 
+ * 
  */
+
 public class BuildObjectController {
 
     private final HallType hallType;
@@ -268,5 +287,51 @@ public class BuildObjectController {
         }
         return null;
     }
+
+    /**
+     * Checks the representation invariant.
+     */
+    public boolean repOk() {
+        if (worldObjectsMap == null) return false;
+    
+        int runeCount = 0;
+        BuildObject actualRuneObject = null;
+    
+        // For each HallType and its objects
+        for (Map.Entry<HallType, List<BuildObject>> entry : worldObjectsMap.entrySet()) {
+            List<BuildObject> objects = entry.getValue();
+            if (objects == null) return false;  // lists should not be null
+    
+            // Count how many BuildObjects have the Rune
+            for (BuildObject obj : objects) {
+                if (obj.getHasRune()) {
+                    runeCount++;
+                    actualRuneObject = obj;
+                }
+            }
+        }
+    
+        // If there's more than one object with hasRune=true, break the invariant
+        if (runeCount > 1) return false;
+    
+        // If runeHolder is not null, it must be the same as the object we found
+        if (runeHolder != null) {
+            if (!runeHolder.getHasRune()) {
+                // The runeHolder must always have 'hasRune' set to true
+                return false;
+            }
+            if (runeHolder != actualRuneObject) {
+                // If there's exactly 1 runed object, it must be the same as runeHolder
+                return false;
+            }
+        } else {
+            // If runeHolder == null, then no object should have hasRune=true
+            if (runeCount != 0) return false;
+        }
+    
+        return true;
+    }
+    
+
 
 }

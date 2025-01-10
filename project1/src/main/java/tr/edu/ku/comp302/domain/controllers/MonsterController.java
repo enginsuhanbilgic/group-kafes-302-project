@@ -135,23 +135,6 @@ public class MonsterController {
         }
     }
 
-    /**
-     * Handles the movement cycle of a FighterMonster.
-     *
-     * Requires:
-     * - `fighter` is not null and is an instance of FighterMonster.
-     * - `player` is not null and is an instance of Player.
-     * - `inGameTime` is a non-negative integer representing the current game time in seconds.
-     *
-     * Modifies:
-     * - The position and movement state of the `fighter`.
-     *
-     * Effects:
-     * - Determines if the fighter should move based on the elapsed time in the current cycle.
-     * - If a Luring Gem is active, the fighter moves towards it.
-     * - Otherwise, the fighter moves in a random direction or towards the player.
-     * - Resets movement state at the end of the cycle.
-     */
     private void handleMovementCycle(FighterMonster fighter, Player player, int inGameTime) {
         int elapsedInCycle = inGameTime - fighter.getLastMoveCycleStart();
         if (elapsedInCycle >= 2) {
