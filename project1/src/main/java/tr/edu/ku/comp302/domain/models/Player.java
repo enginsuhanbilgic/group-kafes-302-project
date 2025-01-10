@@ -1,11 +1,13 @@
 package tr.edu.ku.comp302.domain.models;
 
 import tr.edu.ku.comp302.config.GameConfig;
+import tr.edu.ku.comp302.domain.controllers.MonsterController;
 import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
 import tr.edu.ku.comp302.domain.models.Enchantments.EnchantmentType;
 
 /**
- * The Player class represents the player character's state in the game.
+ * The Player class represents the player's state in the game.
+ * It stores position, movement speed, lives, inventory, etc.
  */
 public class Player extends Entity {
 
@@ -40,7 +42,7 @@ public class Player extends Entity {
 
     public Player(int x, int y, int speed) {
         super(x, y, speed);
-        this.lives = GameConfig.PLAYER_LIVES; // e.g., start with 3 lives
+        this.lives = GameConfig.PLAYER_LIVES;
         this.inventory = new Inventory();
         this.cloakActive = false;
         this.revealActive = false;
@@ -143,17 +145,11 @@ public class Player extends Entity {
         return inventory;
     }
 
-    /**
-     * Called by an ExtraTimeEnchantment; we accumulate requests here,
-     * and the PlayModeController can poll for bonusTime each update cycle.
-     */
+    // --- Extra Time usage: stored for the PlayModeController to consume
     public void requestExtraTime(int seconds) {
         this.bonusTimeRequested += seconds;
     }
 
-    /**
-     * Retrieve requested extra time and zero out the counter.
-     */
     public int consumeBonusTime() {
         int temp = bonusTimeRequested;
         bonusTimeRequested = 0;
@@ -201,25 +197,49 @@ public class Player extends Entity {
     }
 
     // ==================== LURING GEM LOGIC ====================
-    public void useLuringGem(char direction) {
+    /**
+     * Throw a luring gem in a given direction. The gem is removed from inventory
+     * and placed some tiles away. Then we notify MonsterController.
+     *
+     * @param direction 'W', 'S', 'A', or 'D'
+     * @param monsterController the monster controller to set the gem location
+     */
+    public void useLuringGem(char direction, MonsterController monsterController) {
         Enchantment gem = inventory.getEnchantmentByType(EnchantmentType.LURING_GEM);
-        if (gem != null) {
-            inventory.removeItem(gem);
-            System.out.println("Luring Gem thrown to direction: " + direction);
-            // In a real game, you'd place the gem at some location and cause Fighter monsters to walk there.
-        } else {
+        if (gem == null) {
             System.out.println("No Luring Gem in inventory!");
+            return;
         }
+        // Remove from inventory
+        inventory.removeItem(gem);
+        System.out.println("Luring Gem thrown to direction: " + direction);
+
+        // For simplicity, place the gem 2 tiles away in that direction
+        int tileSize = GameConfig.TILE_SIZE;
+        int throwDistanceTiles = 2;
+        int offset = throwDistanceTiles * tileSize;
+
+        int gemX = this.x;
+        int gemY = this.y;
+        switch (direction) {
+            case 'W' -> gemY -= offset;
+            case 'S' -> gemY += offset;
+            case 'A' -> gemX -= offset;
+            case 'D' -> gemX += offset;
+        }
+
+        // Notify MonsterController that a gem is thrown at gemX, gemY
+        monsterController.setLuringGemLocation(new java.awt.Point(gemX, gemY));
     }
 
     public boolean isDrawDamageBox() {
         if (drawDamageBox && System.currentTimeMillis() > damageBoxEndTime) {
-            drawDamageBox = false; // reset when time is up.
+            drawDamageBox = false;
         }
         return drawDamageBox;
     }
 
-    public void resetEffects() {
+    public void resetEffects(){
         this.cloakActive = false;
         this.revealActive = false;
     }
