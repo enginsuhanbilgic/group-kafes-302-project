@@ -20,13 +20,15 @@ public class GameConfig {
     public static final int NUM_HALL_ROWS = 16; // Number of rows
 
     // Player default properties
-    public static final int PLAYER_SPEED = 12/SCALE;     // Player speed
+    public static final int PLAYER_SPEED = 12/SCALE;     // Player speed in tiles
     public static final int PLAYER_LIVES = 500;
 
     // Enchantment properties
-    public static final int ENCHANTMENT_SPAWN_INTERVAL = 3;
+    public static final int ENCHANTMENT_SPAWN_INTERVAL = 3; // seconds
+    public static final int GEM_LIFETIME_SECONDS = 6; // seconds
 
     // Monster properties
-    public static final int MONSTER_SPAWN_INTERVAL = 8; // 8 seconds
-    public static final int MONSTER_ATTACK_COOLDOWN = 2; // 1 second
+    public static final int MONSTER_SPAWN_INTERVAL = 8; // seconds
+    public static final int MONSTER_ATTACK_COOLDOWN = 2; // seconds
+    public static final int FIGHTER_CHASE_DISTANCE = 3; // In tiles
 }

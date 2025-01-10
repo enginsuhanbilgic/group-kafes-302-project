@@ -3,8 +3,6 @@ package tr.edu.ku.comp302.domain.controllers;
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.Player;
 import tr.edu.ku.comp302.domain.models.Tile;
-import tr.edu.ku.comp302.domain.models.BuildObject;
-import tr.edu.ku.comp302.domain.models.HallType;
 import tr.edu.ku.comp302.domain.models.Monsters.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -23,10 +21,12 @@ public class MonsterController {
     private EnchantmentController enchantmentController;
     private final List<Monster> monsters;
     private final Random random;
+    private int inGameTime = 0;
 
     private BufferedImage fighterImage;
     private BufferedImage archerImage;
     private BufferedImage wizardImage;
+    private BufferedImage luringGemImage;
 
     //In game time count
     private int lastSpawnTime;
@@ -36,6 +36,7 @@ public class MonsterController {
      * NEW FIELD: The (x,y) in pixels where a Luring Gem was thrown. Null if no gem is active.
      */
     private Point luringGemLocation = null;
+    private int gemSpawnTime = -1;
 
     public MonsterController(TilesController tilesController, BuildObjectController buildObjectController) {
         this.tilesController = tilesController;
@@ -48,6 +49,7 @@ public class MonsterController {
         fighterImage = ResourceManager.getImage("npc_fighter");
         archerImage  = ResourceManager.getImage("npc_archer");
         wizardImage  = ResourceManager.getImage("npc_wizard");
+        luringGemImage = ResourceManager.getImage("enchantment_gem");
     }
 
     public void setEnchantmentController(EnchantmentController enchantmentController){
@@ -104,6 +106,10 @@ public class MonsterController {
                 g2.fillRect(m.getX(), m.getY(), GameConfig.TILE_SIZE, GameConfig.TILE_SIZE);
             }
         }
+        if(luringGemLocation!=null){
+            g2.drawImage(luringGemImage, (int) (luringGemLocation.getX()), (int) (luringGemLocation.getY()), 
+                    GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
+        }
     }
 
     /**
@@ -129,10 +135,25 @@ public class MonsterController {
                 // Reset cooldown
                 fighter.setLastAttackTime(inGameTime);
             }
-        } else {
-            // If not adjacent, handle normal or gem logic
-            handleMovementCycle(fighter, player, inGameTime);
+            return;
         }
+
+        if (hasLuringGem()){
+            doOneStepTowardGem(fighter);
+        }else{
+            int dx = player.getX() - fighter.getX();
+            int dy = player.getY() - fighter.getY();
+            double distToPlayer = Math.sqrt(dx * dx + dy * dy);
+
+            if (distToPlayer <= GameConfig.FIGHTER_CHASE_DISTANCE*GameConfig.TILE_SIZE) {
+                // Within chase distance => move toward player
+                doOneStepTowardPlayer(fighter, player);
+            } else {
+                // Use your old movement logic (random moves, etc.)
+                handleMovementCycle(fighter, player, inGameTime);
+            }
+        }
+
     }
 
     private void handleMovementCycle(FighterMonster fighter, Player player, int inGameTime) {
@@ -145,22 +166,13 @@ public class MonsterController {
         if (elapsedInCycle < 1) {
             fighter.setMoving(true);
 
-            // If a Luring Gem is active, chase gem
-            if (hasLuringGem()) {
-                if (!fighter.hasMovedThisCycle()) {
-                    doOneStepTowardGem(fighter);
-                    fighter.setHasMovedThisCycle(true);
-                }
+            if (!fighter.hasPickedDirectionThisCycle()) {
+                int direction = random.nextInt(4);
+                fighter.setDirectionForThisCycle(direction);
+                fighter.setHasPickedDirectionThisCycle(true);
             }
-            // Otherwise, do random movement or chase the player if you want:
-            else {
-                if (!fighter.hasPickedDirectionThisCycle()) {
-                    int direction = random.nextInt(4);
-                    fighter.setDirectionForThisCycle(direction);
-                    fighter.setHasPickedDirectionThisCycle(true);
-                }
-                doOneStepInStoredDirection(fighter);
-            }
+            doOneStepInStoredDirection(fighter);
+
         } else {
             fighter.setMoving(false);
             fighter.setHasPickedDirectionThisCycle(false);
@@ -193,42 +205,64 @@ public class MonsterController {
      */
     private void doOneStepTowardGem(FighterMonster fighter) {
         if (luringGemLocation == null) return;
-
-        int tileSize = GameConfig.TILE_SIZE;
-        // Convert monster's coords to tile coords
-        int fighterCol = fighter.getX() / tileSize;
-        int fighterRow = fighter.getY() / tileSize;
-
-        // Convert gem's coords to tile coords
-        int gemCol = luringGemLocation.x / tileSize;
-        int gemRow = luringGemLocation.y / tileSize;
-
-        // Check distance in pixels to see if we've "reached" it
-        int distPx = manhattanDistance(fighter.getX(), fighter.getY(), luringGemLocation.x, luringGemLocation.y);
-        if (distPx <= tileSize) {
+    
+        int speed = fighter.getSpeed();
+        double distPx = Math.sqrt(((fighter.getX()-(int)luringGemLocation.getX())*GameConfig.TILE_SIZE)^2 + 
+                                    ((fighter.getY()-(int)luringGemLocation.getY())*GameConfig.TILE_SIZE)^2);
+        System.out.println("Luring gem location: " + luringGemLocation.getX() + " " + luringGemLocation.getY() + 
+                            " Fighter location: " + fighter.getX() + " " + fighter.getY());
+        if (distPx <= speed*GameConfig.TILE_SIZE/2) {
             System.out.println("Fighter Monster reached the gem!");
             clearLuringGemLocation();
             return;
         }
+    
+        double dx = luringGemLocation.getX() - (double) fighter.getX();
+        double dy = luringGemLocation.getY() - (double) fighter.getY();
+        double length = Math.sqrt(dx * dx + dy * dy);
 
-        // Move 1 tile toward gem
-        int dCol = 0;
-        int dRow = 0;
-        if (gemCol > fighterCol) dCol = 1;
-        else if (gemCol < fighterCol) dCol = -1;
-        if (gemRow > fighterRow) dRow = 1;
-        else if (gemRow < fighterRow) dRow = -1;
+        if (length != 0) {
+            dx = (dx / (length/2)) * (double) speed;
+            dy = (dy / (length/2)) * (double) speed;
+        }
 
-        int newCol = fighterCol + dCol;
-        int newRow = fighterRow + dRow;
-        int newX = newCol * tileSize;
-        int newY = newRow * tileSize;
+        System.out.println("Dx: " + dx + " " + "Dy: " + dy);
+    
+        int newX = fighter.getX() + (int) Math.round(dx);
+        if(!checkCollision(newX, fighter.getY())){
+            fighter.setX(newX);
+        }
 
+        int newY = fighter.getY() + (int) Math.round(dy);
+        if(!checkCollision(fighter.getX(), newY)){
+            fighter.setY(newY);
+        }
+
+    }
+
+    private void doOneStepTowardPlayer(FighterMonster fighter, Player player) {
+        int speed = fighter.getSpeed();
+    
+        int dx = player.getX() - fighter.getX();
+        int dy = player.getY() - fighter.getY();
+    
+        double length = Math.sqrt(dx*dx + dy*dy);
+        if (length != 0) {
+            // Move "speed" pixels/tiles in that direction
+            dx = (int) Math.round(dx / length * speed);
+            dy = (int) Math.round(dy / length * speed);
+        }
+    
+        int newX = fighter.getX() + dx;
+        int newY = fighter.getY() + dy;
+    
+        // Check collisions before committing
         if (!checkCollision(newX, newY)) {
             fighter.setX(newX);
             fighter.setY(newY);
         }
     }
+    
 
     // =========================================================
     //                ARCHER AND WIZARD UPDATES
@@ -316,11 +350,15 @@ public class MonsterController {
         };
     }
 
-    public void tick(int inGameTime, Player player) {
-        inGameTime++;
+    public void tick(int inGameTime2, Player player) {
+        this.inGameTime = inGameTime2;
         if (inGameTime - lastSpawnTime >= spawnIntervalSeconds) {
             spawnRandomMonster(inGameTime, player);
             lastSpawnTime = inGameTime;
+        }
+        if (luringGemLocation!=null && inGameTime-gemSpawnTime>=GameConfig.GEM_LIFETIME_SECONDS){
+            luringGemLocation=null;
+            gemSpawnTime=-1;
         }
     }
 
@@ -333,6 +371,7 @@ public class MonsterController {
      */
     public void setLuringGemLocation(Point gemLoc) {
         this.luringGemLocation = gemLoc;
+        this.gemSpawnTime = inGameTime;
     }
 
     /**

@@ -12,8 +12,6 @@ import tr.edu.ku.comp302.domain.models.Player;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.BasicStroke;
-import java.awt.RenderingHints;
 
 public class PlayModeView extends JPanel implements Runnable {
 
@@ -179,9 +177,6 @@ public class PlayModeView extends JPanel implements Runnable {
 
         playModeController.draw(g2);
 
-        // Draw damage indicators
-        drawDamageIndicators(g2);
-
         // when lives is down 
         if (playModeController.getPlayerController().getEntity().isDrawDamageBox()) {
             g2.setColor(new Color(255, 0, 0, 120)); 
@@ -290,13 +285,10 @@ public class PlayModeView extends JPanel implements Runnable {
 
             switch (e.getType()) {
                 case EXTRA_TIME -> {
-                    // Draw a blue rectangle
-                    g2.setColor(Color.BLUE);
-                    g2.fillRect(x, y, GameConfig.TILE_SIZE, GameConfig.TILE_SIZE);
+                    //Extra time is not added to inventory
                 }
                 case EXTRA_LIFE -> {
-                    g2.drawImage(playModeController.getEnchantmentController().getImage(EnchantmentType.EXTRA_LIFE), x, y,
-                            GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, null);
+                    //Extra life is not added to inventory
                 }
                 case REVEAL -> {
                     g2.drawImage(playModeController.getEnchantmentController().getImage(EnchantmentType.REVEAL), x, y,
@@ -313,7 +305,11 @@ public class PlayModeView extends JPanel implements Runnable {
             }
             i++;
         }
+        g2.setColor(Color.WHITE);
         g2.drawString(hallType.toString(), 300, 20);
+
+        // Draw damage indicators
+        drawDamageIndicators(g2);
     }
 
     private void drawDamageIndicators(Graphics2D g2) {
@@ -335,33 +331,39 @@ public class PlayModeView extends JPanel implements Runnable {
                     int centerY = monsterY + GameConfig.TILE_SIZE/2;
                     
                     // Dış daire (turkuaz)
-                    g2.setColor(new Color(0, 255, 255, 6));
+                    g2.setColor(new Color(0, 255, 255, 10));
                     g2.fillOval(centerX - range, centerY - range, range * 2, range * 2);
                     
                     // İç daire (açık mavi)
                     int innerRange = (int)(range * 0.7);
-                    g2.setColor(new Color(135, 206, 235, 4));
+                    g2.setColor(new Color(135, 206, 235, 15));
                     g2.fillOval(centerX - innerRange, centerY - innerRange, innerRange * 2, innerRange * 2);
                 }
             } else if (monster.getType().equals("FIGHTER")) {
                 int monsterX = monster.getX();
                 int monsterY = monster.getY();
                 
-                if (!playModeController.getPlayerController().getEntity().isCloakActive()) {
-                    int size = GameConfig.TILE_SIZE;
-                    int[][] directions = {{0,-1}, {0,1}, {-1,0}, {1,0}}; // üst, alt, sol, sağ
+                int size = GameConfig.TILE_SIZE;
+                int[][] directions = {{0,-1}, {0,1}, {-1,0}, {1,0}}; // üst, alt, sol, sağ
+                
+                int chaseRange = GameConfig.FIGHTER_CHASE_DISTANCE * GameConfig.TILE_SIZE;
+                int centerX = monsterX + GameConfig.TILE_SIZE/2;
+                int centerY = monsterY + GameConfig.TILE_SIZE/2;
+
+                // Draw the chase distance
+                g2.setColor(new Color(255, 165, 0, 40));
+                g2.fillOval(centerX - chaseRange, centerY - chaseRange, chaseRange * 2, chaseRange * 2);
+
+                // Mercan kırmızısı kareler
+                g2.setColor(new Color(255, 99, 71, 20));
+                for (int[] dir : directions) {
+                    int x = monsterX + dir[0] * size;
+                    int y = monsterY + dir[1] * size;
+                    g2.fillRect(x, y, size, size);
                     
-                    // Mercan kırmızısı kareler
-                    g2.setColor(new Color(255, 99, 71, 10));
-                    for (int[] dir : directions) {
-                        int x = monsterX + dir[0] * size;
-                        int y = monsterY + dir[1] * size;
-                        g2.fillRect(x, y, size, size);
-                        
-                        // Hafif gradient efekti
-                        g2.setColor(new Color(250, 128, 114, 6));
-                        g2.fillRect(x + size/4, y + size/4, size/2, size/2);
-                    }
+                    // Hafif gradient efekti
+                    g2.setColor(new Color(250, 128, 114, 12));
+                    g2.fillRect(x + size/4, y + size/4, size/2, size/2);
                 }
             }
         }
