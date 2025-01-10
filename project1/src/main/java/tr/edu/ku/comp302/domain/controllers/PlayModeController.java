@@ -275,7 +275,7 @@ public class PlayModeController {
 
                     inGameTime++;
 
-                    monsterController.tick(inGameTime);
+                    monsterController.tick(inGameTime, player);
                     enchantmentController.tick(inGameTime);
                     onTick.accept(time);
                     },
