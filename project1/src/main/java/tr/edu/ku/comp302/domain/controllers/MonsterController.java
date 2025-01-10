@@ -264,14 +264,6 @@ public class MonsterController {
     //                   MONSTER SPAWNING
     // =========================================================
 
-    public void tick(int inGameTime, Player player) {
-        inGameTime++;
-        if (inGameTime - lastSpawnTime >= spawnIntervalSeconds) {
-            spawnRandomMonster(inGameTime, player);
-            lastSpawnTime = inGameTime;
-        }
-    }
-
     private void spawnRandomMonster(int inGameTime, Player player) {
         int tileSize = GameConfig.TILE_SIZE;
         int mapWidth = GameConfig.NUM_HALL_COLS;
@@ -280,7 +272,7 @@ public class MonsterController {
         for (int attempt = 0; attempt < 50; attempt++) {
             int col = random.nextInt(mapWidth);
             int row = random.nextInt(mapHeight);
-
+            
             Boolean isPlayerNear = false;
             if(Math.sqrt((player.getX() - col*GameConfig.TILE_SIZE)^2 + (player.getY() - row*GameConfig.TILE_SIZE)^2) <= GameConfig.TILE_SIZE*2) isPlayerNear = true;
 
@@ -308,6 +300,14 @@ public class MonsterController {
             case 2 -> new WizardMonster(x, y, 0);
             default -> null;
         };
+    }
+
+    public void tick(int inGameTime, Player player) {
+        inGameTime++;
+        if (inGameTime - lastSpawnTime >= spawnIntervalSeconds) {
+            spawnRandomMonster(inGameTime, player);
+            lastSpawnTime = inGameTime;
+        }
     }
 
     // =========================================================

@@ -15,15 +15,28 @@ public class Player extends Entity {
     private int lives;
     private final Inventory inventory;
 
+    // -- Additional fields for acceleration-based movement --
+    private float velocityX = 0f;
+    private float velocityY = 0f;
+    /**
+     * How quickly the player accelerates upon key-press.
+     */
+    private float acceleration = 0.5f;
+    /**
+     * How quickly the player decelerates.
+     */
+    private float friction = 0.05f;
+    /**
+     * Maximum speed on either axis.
+     */
+    private float maxSpeed = 5.0f;
+
     // Active buffs
     private boolean cloakActive;
     private long cloakEndTime;
-
     private boolean revealActive;
     private long revealEndTime;
-
     private int bonusTimeRequested;
-
     private boolean drawDamageBox = false;
     private long damageBoxEndTime;
 
@@ -36,6 +49,73 @@ public class Player extends Entity {
         this.bonusTimeRequested = 0;
     }
 
+    // ============ Movement Mechanics ============
+
+    /**
+     * Accelerate in X direction.
+     */
+    public void accelerateX(float amt) {
+        velocityX += amt;
+    }
+
+    /**
+     * Accelerate in Y direction.
+     */
+    public void accelerateY(float amt) {
+        velocityY += amt;
+    }
+
+    /**
+     * Apply friction (or “drag”) to gradually slow the player when no keys are pressed.
+     */
+    public void applyFriction() {
+        // If velocity is small, set to 0 to avoid floating point accumulation
+        if (Math.abs(velocityX) < 0.03f) {
+            velocityX = 0;
+        } else {
+            // reduce velocity by friction factor
+            velocityX *= (0.96f - friction);
+        }
+
+        if (Math.abs(velocityY) < 0.03f) {
+            velocityY = 0;
+        } else {
+            velocityY *= (0.96f - friction);
+        }
+    }
+
+    /**
+     * Ensure velocity never exceeds maxSpeed on any axis.
+     */
+    public void clampSpeed() {
+        if (velocityX > maxSpeed) velocityX = maxSpeed;
+        if (velocityX < -maxSpeed) velocityX = -maxSpeed;
+        if (velocityY > maxSpeed) velocityY = maxSpeed;
+        if (velocityY < -maxSpeed) velocityY = -maxSpeed;
+    }
+
+    public float getVelocityX() {
+        return velocityX;
+    }
+
+    public float getVelocityY() {
+        return velocityY;
+    }
+
+    public float getAcceleration() {
+        return acceleration;
+    }
+
+    public float getFriction() {
+        return friction;
+    }
+
+    public float getMaxSpeed() {
+        return maxSpeed;
+    }
+
+    // ============ Getters / Setters ============
+
     public boolean isWalking() {
         return walking;
     }
@@ -44,7 +124,6 @@ public class Player extends Entity {
         this.walking = walking;
     }
 
-    //Lives
     public int getLives() {
         return lives;
     }
@@ -89,7 +168,6 @@ public class Player extends Entity {
         Enchantment cloak = inventory.getEnchantmentByType(EnchantmentType.CLOAK_OF_PROTECTION);
         if (cloak != null) {
             inventory.removeItem(cloak);
-
             cloakActive = true;
             cloakEndTime = System.currentTimeMillis() + 20_000; // 20 seconds
             System.out.println("Cloak of Protection is now active for 20s!");
@@ -110,7 +188,6 @@ public class Player extends Entity {
         Enchantment reveal = inventory.getEnchantmentByType(EnchantmentType.REVEAL);
         if (reveal != null) {
             inventory.removeItem(reveal);
-
             revealActive = true;
             revealEndTime = System.currentTimeMillis() + 10_000; // 10 seconds
             System.out.println("Reveal is active for 10s! A 4x4 area around the rune is highlighted.");

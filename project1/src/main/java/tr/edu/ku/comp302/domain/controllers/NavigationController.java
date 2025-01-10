@@ -9,7 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.Random;
-import tr.edu.ku.comp302.domain.controllers.TilesController;
 
 /**
  * The NavigationController class controls View switching.

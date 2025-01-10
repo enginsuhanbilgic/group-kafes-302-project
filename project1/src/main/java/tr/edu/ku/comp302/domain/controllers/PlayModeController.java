@@ -96,7 +96,6 @@ public class PlayModeController {
         }
     }
 
-
     public void update() {
         if (gameOver) return;
         if (!keyHandler.isEscPressed()) {
