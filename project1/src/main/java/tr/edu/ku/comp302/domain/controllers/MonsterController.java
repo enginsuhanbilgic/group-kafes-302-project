@@ -235,15 +235,29 @@ public class MonsterController {
     // =========================================================
 
     private void updateArcher(ArcherMonster archer, Player player, int inGameTime) {
-        // He shoots every MONSTER_ATTACK_COOLDOWN if hero in range (4 tiles), unless hero has cloak
+        // He shoots every MONSTER_ATTACK_COOLDOWN if hero in range, unless hero has cloak
         long lastShotTime = archer.getLastShotTime();
         if (inGameTime - lastShotTime >= GameConfig.MONSTER_ATTACK_COOLDOWN) {
             archer.setLastShotTime(inGameTime);
 
             boolean heroHasCloak = player.isCloakActive();
-            int distancePx = manhattanDistance(archer.getX(), archer.getY(), player.getX(), player.getY());
-            int rangePx = 4 * GameConfig.TILE_SIZE; // 4 kare menzil
-            if (!heroHasCloak && distancePx < rangePx) {
+            
+            // Merkez noktaları
+            double archerCenterX = archer.getX() + GameConfig.TILE_SIZE / 2.0;
+            double archerCenterY = archer.getY() + GameConfig.TILE_SIZE / 2.0;
+            double playerCenterX = player.getX() + GameConfig.TILE_SIZE / 2.0;
+            double playerCenterY = player.getY() + GameConfig.TILE_SIZE / 2.0;
+            
+            // Öklid mesafesi hesaplama
+            double distance = Math.sqrt(
+                Math.pow(archerCenterX - playerCenterX, 2) + 
+                Math.pow(archerCenterY - playerCenterY, 2)
+            );
+            
+            // Mesafe 3 kare olsun
+            double maxRange = 3.0 * GameConfig.TILE_SIZE;
+            
+            if (!heroHasCloak && distance < maxRange) {
                 player.loseLife();
                 System.out.println("Archer Monster shot the hero! Lives: " + player.getLives());
             }
@@ -367,10 +381,14 @@ public class MonsterController {
     }
 
     private boolean isAdjacentToPlayer(Monster monster, Player player) {
-        int tileSize = GameConfig.TILE_SIZE;
-        int dx = Math.abs(monster.getX() - player.getX());
-        int dy = Math.abs(monster.getY() - player.getY());
-        return (dx <= tileSize && dy <= tileSize); // 1 kare mesafe
+        // Grid bazlı mesafe hesaplama
+        int monsterCol = monster.getX() / GameConfig.TILE_SIZE;
+        int monsterRow = monster.getY() / GameConfig.TILE_SIZE;
+        int playerCol = player.getX() / GameConfig.TILE_SIZE;
+        int playerRow = player.getY() / GameConfig.TILE_SIZE;
+        
+        // Tam yanında olma kontrolü (yatay veya dikey komşu)
+        return (Math.abs(monsterCol - playerCol) + Math.abs(monsterRow - playerRow)) == 1;
     }
 
     private int manhattanDistance(int x1, int y1, int x2, int y2) {

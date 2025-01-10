@@ -12,6 +12,8 @@ import tr.edu.ku.comp302.domain.models.Player;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.RenderingHints;
 
 public class PlayModeView extends JPanel implements Runnable {
 
@@ -23,6 +25,7 @@ public class PlayModeView extends JPanel implements Runnable {
     private boolean pauseMenuShown = false;
     private final HallType hallType;
     private final String jsonData;
+    private boolean showDamageIndicators = false; // Varsayılan olarak kapalı
 
     // Eski constructor (no JSON)
     public PlayModeView(NavigationController navigationController, JFrame parentFrame, HallType hallType, Player player) {
@@ -51,6 +54,7 @@ public class PlayModeView extends JPanel implements Runnable {
         this.navigationController = navigationController;
         playModeController = new PlayModeController(keyHandler, mouseHandler, jsonData, hallType, player);
         playModeController.setNavigationController(this.navigationController);
+        playModeController.setPlayModeView(this);
 
         // Timer
         playModeController.startGameTimer(
@@ -313,53 +317,69 @@ public class PlayModeView extends JPanel implements Runnable {
     }
 
     private void drawDamageIndicators(Graphics2D g2) {
-        // Archer monster range indicator
+        if (!showDamageIndicators) return; // Eğer kapalıysa hiç çizme
+        
+        // Orijinal çizim kalitesini sakla
+        Object originalHint = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+        Composite originalComposite = g2.getComposite();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
         for (var monster : playModeController.getMonsterController().getMonsters()) {
             if (monster.getType().equals("ARCHER")) {
                 int monsterX = monster.getX();
                 int monsterY = monster.getY();
-                int range = 3 * GameConfig.TILE_SIZE;
                 
-                // Archer'ın menzilini gösteren yarı saydam mavi daire
                 if (!playModeController.getPlayerController().getEntity().isCloakActive()) {
-                    // Dış daire (maksimum menzil)
-                    g2.setColor(new Color(0, 0, 255, 30)); // Açık mavi, çok saydam
-                    g2.fillOval(monsterX - range, 
-                               monsterY - range, 
-                               range * 2 + GameConfig.TILE_SIZE, 
-                               range * 2 + GameConfig.TILE_SIZE);
+                    int range = 3 * GameConfig.TILE_SIZE;
+                    int centerX = monsterX + GameConfig.TILE_SIZE/2;
+                    int centerY = monsterY + GameConfig.TILE_SIZE/2;
                     
-                    // Menzil sınırını gösteren çizgi
-                    g2.setColor(new Color(0, 0, 255, 50));
-                    g2.drawOval(monsterX - range, 
-                               monsterY - range, 
-                               range * 2 + GameConfig.TILE_SIZE, 
-                               range * 2 + GameConfig.TILE_SIZE);
+                    // Dış daire (turkuaz)
+                    g2.setColor(new Color(0, 255, 255, 6));
+                    g2.fillOval(centerX - range, centerY - range, range * 2, range * 2);
+                    
+                    // İç daire (açık mavi)
+                    int innerRange = (int)(range * 0.7);
+                    g2.setColor(new Color(135, 206, 235, 4));
+                    g2.fillOval(centerX - innerRange, centerY - innerRange, innerRange * 2, innerRange * 2);
                 }
             } else if (monster.getType().equals("FIGHTER")) {
                 int monsterX = monster.getX();
                 int monsterY = monster.getY();
                 
-                // Fighter'ın yakın mesafe tehlike alanı (yarım kare mesafe)
                 if (!playModeController.getPlayerController().getEntity().isCloakActive()) {
-                    g2.setColor(new Color(255, 0, 0, 30)); // Kırmızı, çok saydam
-                    g2.fillRect(monsterX - GameConfig.TILE_SIZE/2, 
-                               monsterY - GameConfig.TILE_SIZE/2,
-                               GameConfig.TILE_SIZE * 2, 
-                               GameConfig.TILE_SIZE * 2);
+                    int size = GameConfig.TILE_SIZE;
+                    int[][] directions = {{0,-1}, {0,1}, {-1,0}, {1,0}}; // üst, alt, sol, sağ
                     
-                    // Tehlike alanı sınırı
-                    g2.setColor(new Color(255, 0, 0, 50));
-                    g2.drawRect(monsterX - GameConfig.TILE_SIZE/2, 
-                               monsterY - GameConfig.TILE_SIZE/2,
-                               GameConfig.TILE_SIZE * 2, 
-                               GameConfig.TILE_SIZE * 2);
+                    // Mercan kırmızısı kareler
+                    g2.setColor(new Color(255, 99, 71, 10));
+                    for (int[] dir : directions) {
+                        int x = monsterX + dir[0] * size;
+                        int y = monsterY + dir[1] * size;
+                        g2.fillRect(x, y, size, size);
+                        
+                        // Hafif gradient efekti
+                        g2.setColor(new Color(250, 128, 114, 6));
+                        g2.fillRect(x + size/4, y + size/4, size/2, size/2);
+                    }
                 }
             }
         }
+        
+        // Orijinal çizim ayarlarını geri yükle
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, originalHint);
+        g2.setComposite(originalComposite);
     }
 
     public KeyHandler getKeyHandler() {
         return keyHandler;
+    }
+
+    public void toggleDamageIndicators() {
+        showDamageIndicators = !showDamageIndicators;
+    }
+
+    public boolean isShowingDamageIndicators() {
+        return showDamageIndicators;
     }
 }

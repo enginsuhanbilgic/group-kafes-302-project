@@ -7,6 +7,7 @@ import tr.edu.ku.comp302.domain.models.Player;
 import tr.edu.ku.comp302.domain.models.Tile;
 import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
 import tr.edu.ku.comp302.domain.models.Enchantments.EnchantmentType;
+import tr.edu.ku.comp302.ui.PlayModeView;
 
 import java.awt.*;
 import java.util.Random;
@@ -40,6 +41,8 @@ public class PlayModeController {
     private int inGameTime = 0; // Our "game clock" in seconds
 
     private boolean gameOver = false;
+
+    private PlayModeView playModeView;
 
     public PlayModeController(KeyHandler keyHandler, MouseHandler mouseHandler, String jsonData, HallType hallType, Player player) {
         this.keyHandler = keyHandler;
@@ -129,6 +132,12 @@ public class PlayModeController {
             // 8) Check if rune is collected
             if (playerController.getEntity().getInventory().hasRune()){
                 onGameComplete();
+            }
+
+            // Hasar göstergeleri için tuş kontrolü
+            if (keyHandler.hPressed) {
+                keyHandler.hPressed = false; // Tuşu sıfırla
+                playModeView.toggleDamageIndicators(); // Göstergeleri aç/kapat
             }
         }
     }
@@ -323,5 +332,9 @@ public class PlayModeController {
 
     public EnchantmentController getEnchantmentController(){
         return this.enchantmentController;
+    }
+
+    public void setPlayModeView(PlayModeView view) {
+        this.playModeView = view;
     }
 }
