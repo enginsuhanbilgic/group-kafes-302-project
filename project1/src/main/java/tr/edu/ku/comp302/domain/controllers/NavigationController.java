@@ -45,7 +45,23 @@ public class NavigationController {
         this.frame.getContentPane().add(cardPanel, BorderLayout.CENTER);
     }
 
-    // Create a new Player object with initial state
+        /**
+     * REQUIRES:
+     *  - The TilesController must have loaded tile information before this method is called.
+     *  - The area defined by the cage boundaries must have at least one non-collidable tile.
+     *
+     * MODIFIES:
+     *  - Random object is used to generate position, but does not modify external state.
+     *  - Internally reads tile information from TilesController to verify collidability.
+     *
+     * EFFECTS:
+     *  - Repeatedly attempts to find a tile (x,y) such that:
+     *      - x is in the horizontal range [ (KAFES_STARTING_X + 1)*TILE_SIZE, (KAFES_STARTING_X + NUM_HALL_COLS - 2)*TILE_SIZE ).
+     *      - y is in the vertical range [ (KAFES_STARTING_Y + 1)*TILE_SIZE, (KAFES_STARTING_Y + NUM_HALL_ROWS - 2)*TILE_SIZE ).
+     *      - The tile at (tileX, tileY) is not collidable.
+     *  - Returns a new Player object with the found (x,y) and default PLAYER_SPEED.
+     */
+
     private Player createNewPlayer() {
         Random random = new Random();
         TilesController tilesController = new TilesController();
