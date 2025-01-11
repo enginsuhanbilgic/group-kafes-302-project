@@ -16,6 +16,23 @@ class PlayerTest {
     private Player player;
     private MonsterController monsterController;
 
+
+    /**
+     * Test valid usage of the Luring Gem.
+     *
+     * Requires:
+     * - The player has a Luring Gem in their inventory.
+     * - A valid direction ('W', 'A', 'S', 'D') is provided.
+     *
+     * Modifies:
+     * - The player's inventory (removes the Luring Gem).
+     * - The MonsterController's gem location.
+     *
+     * Effects:
+     * - Removes the Luring Gem from the player's inventory.
+     * - Sets the gem location in the MonsterController based on the player's position and direction.
+     */
+
     @BeforeEach
     void setUp() {
         player = new Player(64, 64, 3);

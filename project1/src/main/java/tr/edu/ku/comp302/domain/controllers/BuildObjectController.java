@@ -16,25 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-/**
- * OVERVIEW:
- * BuildObjectController manages all BuildObjects across all halls,
- * including loading from JSON and ensuring only one BuildObject can have a rune.
- *
- * ABSTRACT FUNCTION:
- *   AF(c) = {
- *      hallType -> the HallType associated with this controller,
- *      worldObjectsMap -> a mapping from each HallType h to a List<BuildObject> belonging to hall h,
- *      runeHolder -> the (unique) BuildObject that currently holds the Rune (or null if none)
- *   }
- *
- * REPRESENTATION INVARIANT:
- *   1) worldObjectsMap is never null.
- *   2) For each (HallType -> List<BuildObject>) entry in worldObjectsMap, that list is non-null (though it may be empty).
- *   3) At most one BuildObject in all lists (across all HallTypes) has hasRune == true.
- *   4) If runeHolder != null, then runeHolder.getHasRune() is true, and runeHolder is present in the corresponding list in worldObjectsMap.
- *   5) If there is any BuildObject with hasRune == true, it must be the same object as runeHolder.
- */
+
 public class BuildObjectController {
 
     private final HallType hallType;
