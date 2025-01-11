@@ -34,6 +34,8 @@ import java.util.Random;
  *   3) At most one BuildObject in all lists (across all HallTypes) has hasRune == true.
  *   4) If runeHolder != null, then runeHolder.getHasRune() is true, and runeHolder is present in the corresponding list in worldObjectsMap.
  *   5) If there is any BuildObject with hasRune == true, it must be the same object as runeHolder.
+ * 
+ * 
  */
 public class BuildObjectController {
 
