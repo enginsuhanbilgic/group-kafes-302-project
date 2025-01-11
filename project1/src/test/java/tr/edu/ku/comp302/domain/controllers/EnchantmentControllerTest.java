@@ -2,8 +2,6 @@ package tr.edu.ku.comp302.domain.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.Enchantments.*;
 import tr.edu.ku.comp302.domain.models.Player;

@@ -62,15 +62,17 @@ public class MonsterController {
     public void updateAll(Player player, int inGameTime) {
 
         // 2) Update each monster's behavior
-        for (Monster m : monsters) {
-            if (m instanceof FighterMonster fighter) {
-                updateFighter(fighter, player, inGameTime);
-            }
-            else if (m instanceof ArcherMonster archer) {
-                updateArcher(archer, player, inGameTime);
-            }
-            else if (m instanceof WizardMonster wizard) {
-                updateWizard(wizard, player, inGameTime);
+        if(!monsters.isEmpty()){
+            for (Monster m : monsters) {
+                if (m instanceof FighterMonster fighter) {
+                    updateFighter(fighter, player, inGameTime);
+                }
+                else if (m instanceof ArcherMonster archer) {
+                    updateArcher(archer, player, inGameTime);
+                }
+                else if (m instanceof WizardMonster wizard) {
+                    updateWizard(wizard, player, inGameTime);
+                }
             }
         }
 
