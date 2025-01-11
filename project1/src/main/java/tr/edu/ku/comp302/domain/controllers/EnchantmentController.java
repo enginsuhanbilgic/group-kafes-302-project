@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Constructor: Initializes the EnchantmentController with necessary resources.
@@ -40,7 +41,7 @@ public class EnchantmentController {
     private BufferedImage runeImage;
 
     public EnchantmentController(TilesController tilesController) {
-        this.enchantments = new ArrayList<>();
+        this.enchantments = new CopyOnWriteArrayList<>();
         this.random = new Random();
         this.tilesController = tilesController;
         this.lastSpawnTime = 0;
@@ -229,14 +230,15 @@ public class EnchantmentController {
      */
     private Enchantment createRandomEnchantment(int x, int y, int inGameTime) {
         int r = random.nextInt(5); // 0..4
-        return switch (r) {
-            case 0 -> new ExtraTimeEnchantment(x, y, inGameTime);
+        return new RevealEnchantment(x, y, inGameTime);
+        /*return switch (r) {
+          case 0 -> new ExtraTimeEnchantment(x, y, inGameTime);
             case 1 -> new ExtraLifeEnchantment(x, y, inGameTime);
             case 2 -> new RevealEnchantment(x, y, inGameTime);
             case 3 -> new CloakOfProtectionEnchantment(x, y, inGameTime);
             case 4 -> new LuringGemEnchantment(x, y, inGameTime);
             default -> null;
-        };
+        };*/
     }
 
     /**

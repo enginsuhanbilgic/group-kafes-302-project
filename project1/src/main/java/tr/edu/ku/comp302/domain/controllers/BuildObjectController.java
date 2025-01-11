@@ -2,7 +2,6 @@ package tr.edu.ku.comp302.domain.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.*;
 import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
@@ -27,6 +26,8 @@ public class BuildObjectController {
     // The single BuildObject that currently holds the rune (or null)
     private BuildObject runeHolder;
 
+    private Random random = new Random();
+
     public BuildObjectController(HallType hallType) {
         this.hallType = hallType;
         // Initialize an empty map
@@ -48,6 +49,7 @@ public class BuildObjectController {
     public void loadWorldFromJson(String jsonData) {
         if (jsonData == null || jsonData.isEmpty()) {
             worldObjectsMap = new HashMap<>();
+            this.runeHolder = null;
             return;
         }
         try {
@@ -71,13 +73,22 @@ public class BuildObjectController {
             }
             this.worldObjectsMap = finalMap;
 
+            // Reinitialize Random for each BuildObject
+            for (List<BuildObject> objects : worldObjectsMap.values()) {
+                for (BuildObject obj : objects) {
+                    obj.initializeRandom();
+                }
+            }
+
             // Randomly assign the rune to one object in the given hallType
-            if(getObjectsForHall(hallType).size()!=0){
-                Random rand = new Random();
-                int randIndex = rand.nextInt(getObjectsForHall(hallType).size());
-                // Clear the existing runeHolder, because we reloaded data
-                getObjectsForHall(hallType).get(randIndex).setHasRune(true);
-                this.runeHolder = getObjectsForHall(hallType).get(randIndex);
+            List<BuildObject> currentHallObjects = getObjectsForHall(hallType);
+            if (!currentHallObjects.isEmpty()) {
+                int randIndex = random.nextInt(currentHallObjects.size());
+                BuildObject selectedObj = currentHallObjects.get(randIndex);
+                selectedObj.setHasRune(true);
+                this.runeHolder = selectedObj;
+            } else {
+                this.runeHolder = null;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -93,7 +104,7 @@ public class BuildObjectController {
      * @effects  If the user clicked on a BuildObject with a rune and is close enough,
      *           the rune is removed from that object and added to the player's inventory.
      */
-    public void update (HallType hallType, Player player, Point clickPos){
+    public void update(HallType hallType, Player player, Point clickPos){
         if (clickPos != null) {
             handleClickCollection(clickPos, player);
         }
@@ -103,11 +114,6 @@ public class BuildObjectController {
         int clickX = clickPos.x;
         int clickY = clickPos.y;
 
-        for(BuildObject obj : getObjectsForHall(hallType)){
-            System.out.println(obj.toString());
-            System.out.println();
-        }
-
         // We check each BuildObject in the current hall
         List<BuildObject> objects = getObjectsForHall(hallType);
         for (BuildObject obj : objects) {
@@ -115,8 +121,8 @@ public class BuildObjectController {
             int objPX = obj.getX() * tileSize;
             int objPY = obj.getY() * tileSize;
             if(obj.getHasRune()){
-                System.out.println("Object coordinates: " + objPX + " " + "" + objPY);
-                System.out.println("Click coordinates: " + clickX+ " " + "" + clickY);
+                System.out.println("Object coordinates: " + objPX + " " + objPY);
+                System.out.println("Click coordinates: " + clickX + " " + clickY);
             }
             boolean clickedOnObject = 
                 (clickX >= objPX && clickX < objPX + tileSize) &&
@@ -138,7 +144,7 @@ public class BuildObjectController {
 
                     System.out.println("Spawned a Rune Enchantment at " + enchantX + ", " + enchantY);
 
-                    Enchantment rune = new Rune(enchantX, enchantY, 0); //0 is not correct but it doesn't matter here
+                    Enchantment rune = new Rune(enchantX, enchantY, 0); // 0 is not correct but it doesn't matter here
                     player.getInventory().addItem(rune);
                     break;
                 }
@@ -156,7 +162,7 @@ public class BuildObjectController {
         int dx = Math.abs(player.getX() - objPX);
         int dy = Math.abs(player.getY() - objPY);
         // If within 1 tile distance in each direction:
-        if(dx + dy < 3*tileSize) return true;
+        if(dx + dy < 3 * tileSize) return true;
         return false;
     }
 
@@ -190,7 +196,6 @@ public class BuildObjectController {
             g2.setColor(new Color(255, 215, 0, 128));
             g2.fillRect(px, py, tileSize, tileSize);
         }
-
     }
 
     /**
@@ -249,23 +254,27 @@ public class BuildObjectController {
      *  - Might do nothing if it fails to find a new valid object after 50 tries.
      */
     public void transferRune() {
-        Random rand = new Random();
+        List<BuildObject> objects = getObjectsForHall(hallType);
+        if (objects.isEmpty()) return;
+
         BuildObject newObj = null;
-        if(getObjectsForHall(hallType).size()!=0){
-            for(int i = 0; i<50; i++){
-                int randIndex = rand.nextInt(getObjectsForHall(hallType).size());
-                if(getObjectsForHall(hallType).get(randIndex).getHasRune()!=true){
-                    newObj = getObjectsForHall(hallType).get(randIndex);
-                }
+
+        // Attempt to find a new object that doesn't currently hold the rune
+        for(int i = 0; i < 50; i++) {
+            int randIndex = random.nextInt(objects.size());
+            BuildObject candidate = objects.get(randIndex);
+            if(!candidate.getHasRune()) {
+                newObj = candidate;
+                break; // Exit loop once a suitable object is found
             }
         }
-        
-        if(newObj!=null && getRuneHolder()!=null){
+
+        if(newObj != null && getRuneHolder() != null) {
+            System.out.println("Transferring rune from (" + getRuneHolder().getX() + ", " + getRuneHolder().getY() + ") to (" + newObj.getX() + ", " + newObj.getY() + ")");
             getRuneHolder().setHasRune(false);
             newObj.setHasRune(true);
             this.runeHolder = newObj;
         }
-        
     }
 
     /**
@@ -294,15 +303,15 @@ public class BuildObjectController {
      */
     public boolean repOk() {
         if (worldObjectsMap == null) return false;
-    
+
         int runeCount = 0;
         BuildObject actualRuneObject = null;
-    
+
         // For each HallType and its objects
         for (Map.Entry<HallType, List<BuildObject>> entry : worldObjectsMap.entrySet()) {
             List<BuildObject> objects = entry.getValue();
             if (objects == null) return false;  // lists should not be null
-    
+
             // Count how many BuildObjects have the Rune
             for (BuildObject obj : objects) {
                 if (obj.getHasRune()) {
@@ -311,10 +320,10 @@ public class BuildObjectController {
                 }
             }
         }
-    
+
         // If there's more than one object with hasRune=true, break the invariant
         if (runeCount > 1) return false;
-    
+
         // If runeHolder is not null, it must be the same as the object we found
         if (runeHolder != null) {
             if (!runeHolder.getHasRune()) {
@@ -329,10 +338,7 @@ public class BuildObjectController {
             // If runeHolder == null, then no object should have hasRune=true
             if (runeCount != 0) return false;
         }
-    
+
         return true;
     }
-    
-
-
 }
