@@ -266,4 +266,8 @@ public class Player extends Entity {
         this.cloakActive = false;
         this.revealActive = false;
     }
+
+    public void setLives(int i) {
+        lives = i;
+    }
 }
