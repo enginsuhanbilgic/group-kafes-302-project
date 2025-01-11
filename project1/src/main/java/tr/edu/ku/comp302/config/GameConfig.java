@@ -24,7 +24,7 @@ public class GameConfig {
     public static final int PLAYER_LIVES = 500;
 
     // Enchantment properties
-    public static final int ENCHANTMENT_SPAWN_INTERVAL = 12; // seconds
+    public static final int ENCHANTMENT_SPAWN_INTERVAL = 4; // seconds
     public static final int GEM_LIFETIME_SECONDS = 6; // seconds
 
     // Monster properties

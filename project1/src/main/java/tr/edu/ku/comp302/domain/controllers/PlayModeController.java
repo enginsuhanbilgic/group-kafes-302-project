@@ -33,6 +33,7 @@ public class PlayModeController {
     private final String jsonData;
     private final MouseHandler mouseHandler;
 
+    private final Random random;
 
     // Timer via GameTimerController
     private GameTimerController gameTimerController;
@@ -50,6 +51,7 @@ public class PlayModeController {
         this.jsonData = jsonData;
         this.mouseHandler = mouseHandler;
         this.player = player;
+        this.random = new Random();
 
         // Initialize TilesController
         this.tilesController = new TilesController();
@@ -82,7 +84,6 @@ public class PlayModeController {
         int tileSize = GameConfig.TILE_SIZE;
         int mapWidth = GameConfig.NUM_HALL_COLS;
         int mapHeight = GameConfig.NUM_HALL_ROWS;
-        Random random = new Random();
 
         // We'll try a few times to find a free tile
         for (int attempt = 0; attempt < 50; attempt++) {
@@ -162,20 +163,14 @@ public class PlayModeController {
 
         // If player has reveal active, you might highlight a 4x4 area around the rune
         if (playerController.getEntity().isRevealActive() && buildObjectController.getRuneHolder()!=null) {
-            // For demonstration, let's just draw a red rectangle somewhere
-            // e.g., if your game tracks the rune location as (runeX, runeY) in TilesController
-            // we do a simple 4x4 highlight
+            
+            int width = GameConfig.TILE_SIZE*4;
+            
+            int objectX = buildObjectController.getRuneHolder().getX()*GameConfig.TILE_SIZE-buildObjectController.getRuneHolder().getOffset();
+            int objectY = buildObjectController.getRuneHolder().getY()*GameConfig.TILE_SIZE-buildObjectController.getRuneHolder().getOffset();
 
-            //Point runeTile = tilesController.getRuneTile(); // hypothetical
-            //if (runeTile != null) {
-                int rectX = buildObjectController.getRuneHolder().getX() * GameConfig.TILE_SIZE - GameConfig.TILE_SIZE;
-                int rectY = buildObjectController.getRuneHolder().getY() * GameConfig.TILE_SIZE - GameConfig.TILE_SIZE;
-                int rectWidth = 4 * GameConfig.TILE_SIZE;
-                int rectHeight = 4 * GameConfig.TILE_SIZE;
-
-                g2.setColor(new Color(255, 0, 0, 80));
-                g2.fillRect(rectX, rectY, rectWidth, rectHeight);
-            //}
+            g2.setColor(new Color(255, 0, 0, 80));
+            g2.fillRect(objectX, objectY, width, width);
         }
     }
 

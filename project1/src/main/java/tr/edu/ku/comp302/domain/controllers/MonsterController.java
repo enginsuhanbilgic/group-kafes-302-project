@@ -6,9 +6,9 @@ import tr.edu.ku.comp302.domain.models.Tile;
 import tr.edu.ku.comp302.domain.models.Monsters.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * MonsterController
@@ -42,7 +42,7 @@ public class MonsterController {
         this.tilesController = tilesController;
         this.buildObjectController = buildObjectController;
         this.enchantmentController = null;
-        this.monsters = new ArrayList<>();
+        this.monsters = new CopyOnWriteArrayList<>();
         this.random = new Random();
         this.lastSpawnTime = 0;
 
@@ -128,7 +128,7 @@ public class MonsterController {
 
     private void updateFighter(FighterMonster fighter, Player player, int inGameTime) {
         // 1) Check adjacency
-        if (isAdjacentToPlayer(fighter, player)) {
+        if (isAdjacentToPlayer(fighter, player) && luringGemLocation==null) {
             long elapsed = inGameTime - fighter.getLastAttackTime();
             if (elapsed >= GameConfig.MONSTER_ATTACK_COOLDOWN) {
                 // Attack
@@ -209,11 +209,12 @@ public class MonsterController {
         if (luringGemLocation == null) return;
     
         int speed = fighter.getSpeed();
-        double distPx = Math.sqrt(((fighter.getX()-(int)luringGemLocation.getX())*GameConfig.TILE_SIZE)^2 + 
-                                    ((fighter.getY()-(int)luringGemLocation.getY())*GameConfig.TILE_SIZE)^2);
-        System.out.println("Luring gem location: " + luringGemLocation.getX() + " " + luringGemLocation.getY() + 
-                            " Fighter location: " + fighter.getX() + " " + fighter.getY());
-        if (distPx <= speed*GameConfig.TILE_SIZE/2) {
+        double distx = (fighter.getX() - luringGemLocation.getX()) * GameConfig.TILE_SIZE;
+        double disty = (fighter.getY() - luringGemLocation.getY()) * GameConfig.TILE_SIZE;
+        double dist = Math.sqrt(distx * distx + disty * disty);
+        System.out.println("Distance before: " + dist);
+        if (dist <= speed*GameConfig.TILE_SIZE) {
+            System.out.println("Dist: " + dist);
             System.out.println("Fighter Monster reached the gem!");
             clearLuringGemLocation();
             return;
@@ -228,8 +229,6 @@ public class MonsterController {
                 dx = (dx / (length/2)) * (double) speed;
                 dy = (dy / (length/2)) * (double) speed;
             }
-
-            System.out.println("Dx: " + dx + " " + "Dy: " + dy);
         
             int newX = fighter.getX() + (int) Math.round(dx);
             if(!checkCollision(newX, fighter.getY())){
@@ -326,7 +325,12 @@ public class MonsterController {
             int row = random.nextInt(mapHeight);
             
             Boolean isPlayerNear = false;
-            if(Math.sqrt((player.getX() - col*GameConfig.TILE_SIZE)^2 + (player.getY() - row*GameConfig.TILE_SIZE)^2) <= GameConfig.TILE_SIZE*2) isPlayerNear = true;
+            if (Math.sqrt(
+                    Math.pow(player.getX() - col * GameConfig.TILE_SIZE, 2) +
+                    Math.pow(player.getY() - row * GameConfig.TILE_SIZE, 2)
+                ) <= GameConfig.TILE_SIZE * 2) {
+                isPlayerNear = true;
+            }
 
             Tile tile = tilesController.getTileAt(col + GameConfig.KAFES_STARTING_X, row + GameConfig.KAFES_STARTING_Y);
             if (tile != null && !tile.isCollidable && enchantmentController.isLocationAvailable(col, row) && !isPlayerNear) {

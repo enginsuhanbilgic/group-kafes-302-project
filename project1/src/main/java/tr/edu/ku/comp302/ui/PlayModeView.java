@@ -234,6 +234,7 @@ public class PlayModeView extends JPanel implements Runnable {
             g2.setColor(barColor);
             g2.fillRect(barX, barY, (int)(barWidth * remainingRatio), barHeight);
         }
+        
         if (playModeController.getPlayerController().getEntity().isRevealActive()) {
             int revealY = playModeController.getPlayerController().getEntity().isCloakActive() ? 
                          30 + GameConfig.TILE_SIZE + 5 : 30;
