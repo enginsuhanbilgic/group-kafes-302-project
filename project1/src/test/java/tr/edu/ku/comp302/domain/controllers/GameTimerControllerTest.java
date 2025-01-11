@@ -1,118 +1,98 @@
 package tr.edu.ku.comp302.domain.controllers;
 
-
-import java.util.function.Consumer;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import tr.edu.ku.comp302.domain.models.GameTimer;
-
-/**
- * Test suite for the GameTimerController class.
- * Verifies the controller's functionality for managing the game timer's lifecycle.
- */
 class GameTimerControllerTest {
 
-    private GameTimerController gameTimerController; // The controller being tested
-    private GameTimer mockGameTimer; // Mocked GameTimer instance
-    private Consumer<Integer> mockOnTick; // Mocked Consumer for tick updates
-    private Runnable mockOnTimeUp; // Mocked Runnable for time-up callback
-
-    /**
-     * Sets up the test environment before each test.
-     * Initializes mocks and injects the mocked GameTimer into the controller.
-     */
+    private GameTimerController timerController;
+    private CountDownLatch latch;
+    
     @BeforeEach
     void setUp() {
-        mockOnTick = mock(Consumer.class); // Mock the onTick callback
-        mockOnTimeUp = mock(Runnable.class); // Mock the onTimeUp callback
-        mockGameTimer = mock(GameTimer.class); // Mock the GameTimer object
-
-        // Initialize the GameTimerController with mocked callbacks
-        gameTimerController = new GameTimerController(mockOnTick, mockOnTimeUp);
-
-        // Inject the mocked GameTimer into the controller
-        GameTimerController gameTimerControllerSpy = spy(gameTimerController);
-        doReturn(mockGameTimer).when(gameTimerControllerSpy).start(anyInt());
+        // Create a CountDownLatch for synchronization with the timer's onTick callback
+        latch = new CountDownLatch(1);
+        
+        // Create a GameTimerController with callbacks
+        timerController = new GameTimerController(
+                timeRemaining -> {
+                    // Dummy callback to simulate onTick, which will count down time
+                    System.out.println("Time remaining: " + timeRemaining);
+                    if (timeRemaining == 0) {
+                        latch.countDown(); // Release the latch when time reaches 0
+                    }
+                },
+                () -> System.out.println("Time's up!")
+        );
     }
 
     @Test
-    void testStart_ValidInitialTime() {
-        // Act: Start the timer with an initial time of 60 seconds
-        gameTimerController.start(60);
+    void testStartTimer() throws InterruptedException {
+        timerController.start(5);  // Start the timer with 5 seconds
 
-        // Assert: Verify that the start method is called on the mockGameTimer
-        verify(mockGameTimer).start(60);
+        // Wait for the timer to reach 0 (up to 6 seconds for safety)
+        boolean finishedInTime = latch.await(6, TimeUnit.SECONDS);
+        
+        assertTrue(finishedInTime, "Timer should stop after 5 seconds.");
+        assertEquals(0, timerController.getTimeRemaining(), "Time remaining should be 0 after time's up.");
     }
 
     @Test
-    void testPause_WhenGameTimerExists() {
-        // Arrange: Start the timer to initialize the GameTimer object
-        gameTimerController.start(60);
+    void testPauseAndResumeTimer() throws InterruptedException {
+        timerController.start(5);  // Start the timer with 5 seconds
 
-        // Act: Pause the timer
-        gameTimerController.pause();
+        // Wait for 2 seconds
+        Thread.sleep(2000);
+        timerController.pause();  // Pause the timer
 
-        // Assert: Verify that the pause method is called on the mockGameTimer
-        verify(mockGameTimer).pause();
+        int timeBeforeResume = timerController.getTimeRemaining();
+        assertTrue(timeBeforeResume <= 3, "Timer should have paused with time remaining.");
+
+        // Wait for 2 seconds, ensuring the timer is paused
+        Thread.sleep(2000);
+
+        // Time should not have changed
+        assertEquals(timeBeforeResume, timerController.getTimeRemaining(), "Time should remain the same after pausing.");
+
+        // Resume the timer and wait for it to finish
+        timerController.resume();
+        boolean finishedInTime = latch.await(6, TimeUnit.SECONDS);
+
+        assertTrue(finishedInTime, "Timer should finish after resuming.");
     }
 
     @Test
-    void testResume_WhenGameTimerExists() {
-        // Arrange: Start the timer to initialize the GameTimer object
-        gameTimerController.start(60);
+    void testStopTimer() throws InterruptedException {
+        timerController.start(5);  // Start the timer with 5 seconds
 
-        // Act: Resume the timer
-        gameTimerController.resume();
+        // Wait for 2 seconds
+        Thread.sleep(2000);
+        timerController.stop();  // Stop the timer
 
-        // Assert: Verify that the resume method is called on the mockGameTimer
-        verify(mockGameTimer).resume();
+        // Timer should have stopped, time remaining should still be 3 or more
+        int remainingAfterStop = timerController.getTimeRemaining();
+        assertTrue(remainingAfterStop > 0, "Timer should have stopped but not reset the time.");
     }
 
     @Test
-    void testStop_WhenGameTimerExists() {
-        // Arrange: Start the timer to initialize the GameTimer object
-        gameTimerController.start(60);
+    void testAddTime() throws InterruptedException {
+        timerController.start(3);  // Start the timer with 3 seconds
 
-        // Act: Stop the timer
-        gameTimerController.stop();
+        // Wait for 1 second
+        Thread.sleep(1000);
 
-        // Assert: Verify that the stop method is called on the mockGameTimer
-        verify(mockGameTimer).stop();
+        timerController.addTime(2);  // Add 2 seconds to the timer
+
+        assertEquals(4, timerController.getTimeRemaining(), "Time remaining should be 4 seconds after adding time.");
+        
+        // Wait for the timer to finish
+        boolean finishedInTime = latch.await(6, TimeUnit.SECONDS);
+        
+        assertTrue(finishedInTime, "Timer should finish after adding time.");
     }
-
-    @Test
-    void testAddTime_WhenGameTimerExists() {
-        // Arrange: Start the timer to initialize the GameTimer object
-        gameTimerController.start(60);
-
-        // Act: Add extra time to the timer
-        gameTimerController.addTime(30);
-
-        // Assert: Verify that the addTime method is called on the mockGameTimer with the correct value
-        verify(mockGameTimer).addTime(30);
-    }
-
-    @Test
-    void testGetTimeRemaining_WhenGameTimerExists() {
-        // Arrange: Mock the return value for getTimeRemaining
-        when(mockGameTimer.getTimeRemaining()).thenReturn(45);
-
-        // Act: Start the timer and get the remaining time
-        gameTimerController.start(60);
-        int timeRemaining = gameTimerController.getTimeRemaining();
-
-        // Assert: Verify that the remaining time is returned correctly
-        assertEquals(45, timeRemaining, "The remaining time should match the mocked value.");
-    }
-
-   
 }
