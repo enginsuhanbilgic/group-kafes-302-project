@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.*;
-import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
-import tr.edu.ku.comp302.domain.models.Enchantments.Rune;
+import tr.edu.ku.comp302.domain.models.enchantments.Enchantment;
+import tr.edu.ku.comp302.domain.models.enchantments.Rune;
 
 import java.awt.image.BufferedImage;
 import java.awt.*;

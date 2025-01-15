@@ -50,7 +50,7 @@ class MonsterControllerTest {
         mockEnchantController = Mockito.mock(EnchantmentController.class);
 
         // Create the MonsterController with mocks
-        monsterController = new MonsterController(mockTilesController, mockBuildController);
+        monsterController = new MonsterController(mockTilesController, mockBuildController, 30);
         monsterController.setEnchantmentController(mockEnchantController);
 
         // Create a simple Player
@@ -78,7 +78,7 @@ class MonsterControllerTest {
 
         // When not enough time has passed, tick() should NOT spawn a monster.
         int partialTime = GameConfig.MONSTER_SPAWN_INTERVAL - 1; // e.g., if spawn interval is 12, we use 11
-        monsterController.tick(partialTime, mockPlayer);
+        monsterController.tick(partialTime, 30, mockPlayer);
         assertTrue(monsterController.getMonsters().isEmpty(),
                    "No monster should spawn before reaching the spawn interval.");
 
@@ -87,7 +87,7 @@ class MonsterControllerTest {
         when(mockEnchantController.isLocationAvailable(anyInt(), anyInt())).thenReturn(true);
 
         // Once we reach the spawn interval
-        monsterController.tick(GameConfig.MONSTER_SPAWN_INTERVAL, mockPlayer);
+        monsterController.tick(GameConfig.MONSTER_SPAWN_INTERVAL, 10, mockPlayer);
 
         // Now we expect exactly 1 monster to appear
         List<Monster> monsters = monsterController.getMonsters();
@@ -122,7 +122,7 @@ class MonsterControllerTest {
         // so it should attack on updateAll() if time - lastAttackTime >= cooldown
         int inGameTime = GameConfig.MONSTER_ATTACK_COOLDOWN; // ensure enough time has passed
         int timeRemaining = 60;
-        monsterController.updateAll(mockPlayer, inGameTime, timeRemaining);
+        monsterController.updateAll(mockPlayer);
 
         // Check player's life
         assertEquals(4, mockPlayer.getLives(), 

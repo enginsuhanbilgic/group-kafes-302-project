@@ -3,7 +3,7 @@ package tr.edu.ku.comp302.domain.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import tr.edu.ku.comp302.domain.models.Enchantments.*;
+import tr.edu.ku.comp302.domain.models.enchantments.*;
 
 /**
  * A simple inventory that can store Enchantments

@@ -3,9 +3,9 @@ package tr.edu.ku.comp302.domain.controllers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tr.edu.ku.comp302.config.GameConfig;
-import tr.edu.ku.comp302.domain.models.Enchantments.*;
 import tr.edu.ku.comp302.domain.models.Player;
 import tr.edu.ku.comp302.domain.models.Tile;
+import tr.edu.ku.comp302.domain.models.enchantments.*;
 
 import java.awt.*;
 import java.util.List;

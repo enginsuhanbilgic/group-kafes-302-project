@@ -5,10 +5,10 @@ import tr.edu.ku.comp302.domain.controllers.KeyHandler;
 import tr.edu.ku.comp302.domain.controllers.MouseHandler;
 import tr.edu.ku.comp302.domain.controllers.NavigationController;
 import tr.edu.ku.comp302.domain.controllers.PlayModeController;
-import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
-import tr.edu.ku.comp302.domain.models.Enchantments.EnchantmentType;
 import tr.edu.ku.comp302.domain.models.HallType;
 import tr.edu.ku.comp302.domain.models.Player;
+import tr.edu.ku.comp302.domain.models.enchantments.Enchantment;
+import tr.edu.ku.comp302.domain.models.enchantments.EnchantmentType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -125,7 +125,7 @@ public class PlayModeView extends JPanel implements Runnable {
                         showPauseMenu();
                     }
                 } else {
-                    if(playModeController.getCurrentTime() != 0){
+                    if(playModeController.getTimeRemaining() != 0){
                         update();
                     }
                 }
@@ -186,7 +186,7 @@ public class PlayModeView extends JPanel implements Runnable {
         // Timer in the top-left corner
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Arial", Font.BOLD, 16));
-        g2.drawString("Time Remaining: " + playModeController.getCurrentTime(), 10, 20);
+        g2.drawString("Time Remaining: " + playModeController.getTimeRemaining(), 10, 20);
         g2.drawString("Lives: " + playModeController.getPlayerController().getEntity().getLives(), 10, 46);
         int i = 0;
         g2.drawString("Inventory", 1000, 20);

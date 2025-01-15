@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.controllers.MonsterController;
-import tr.edu.ku.comp302.domain.models.Enchantments.EnchantmentType;
-import tr.edu.ku.comp302.domain.models.Enchantments.LuringGemEnchantment;
+import tr.edu.ku.comp302.domain.models.enchantments.EnchantmentType;
+import tr.edu.ku.comp302.domain.models.enchantments.LuringGemEnchantment;
 
 import java.awt.*;
 
@@ -36,7 +36,7 @@ class PlayerTest {
     @BeforeEach
     void setUp() {
         player = new Player(64, 64, 3);
-        monsterController = new MonsterController(null, null);
+        monsterController = new MonsterController(null, null, 30);
     }
 
     @Test

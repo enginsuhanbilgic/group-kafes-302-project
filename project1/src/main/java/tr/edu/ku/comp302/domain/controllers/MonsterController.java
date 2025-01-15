@@ -4,6 +4,10 @@ import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.Player;
 import tr.edu.ku.comp302.domain.models.Tile;
 import tr.edu.ku.comp302.domain.models.Monsters.*;
+import tr.edu.ku.comp302.domain.models.Monsters.strategies.WizardHighTimeStrategy;
+import tr.edu.ku.comp302.domain.models.Monsters.strategies.WizardLowTimeStrategy;
+import tr.edu.ku.comp302.domain.models.Monsters.strategies.WizardMidTimeStrategy;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -21,7 +25,9 @@ public class MonsterController {
     private EnchantmentController enchantmentController;
     private final List<Monster> monsters;
     private final Random random;
+    private int initialTime;
     private int timePassed = 0;
+    private int timeRemaining;
 
     private BufferedImage fighterImage;
     private BufferedImage archerImage;
@@ -38,13 +44,15 @@ public class MonsterController {
     private Point luringGemLocation = null;
     private int gemSpawnTime = -1;
 
-    public MonsterController(TilesController tilesController, BuildObjectController buildObjectController) {
+    public MonsterController(TilesController tilesController, BuildObjectController buildObjectController, int initialTime) {
         this.tilesController = tilesController;
         this.buildObjectController = buildObjectController;
         this.enchantmentController = null;
         this.monsters = new CopyOnWriteArrayList<>();
         this.random = new Random();
         this.lastSpawnTime = 0;
+        this.initialTime = initialTime;
+        this.timeRemaining = initialTime;
 
         fighterImage = ResourceManager.getImage("npc_fighter");
         archerImage  = ResourceManager.getImage("npc_archer");
@@ -59,24 +67,36 @@ public class MonsterController {
     /**
      * Called every game frame. Updates all monsters, spawns new ones if needed, etc.
      */
-    public void updateAll(Player player, int timePassed, int timeRemaining) {
+    public void updateAll(Player player) {
 
-        // 2) Update each monster's behavior
         if(!monsters.isEmpty()){
             for (Monster m : monsters) {
                 if (m instanceof FighterMonster fighter) {
-                    updateFighter(fighter, player, timePassed);
+                    updateFighter(fighter, player);
                 }
                 else if (m instanceof ArcherMonster archer) {
-                    updateArcher(archer, player, timePassed);
+                    updateArcher(archer, player);
                 }
                 else if (m instanceof WizardMonster wizard) {
-                    updateWizard(wizard, player, timePassed, timeRemaining);
+                    updateWizard(wizard, player);
                 }
             }
+
+            for (Monster m : monsters) {
+                if ((m instanceof WizardMonster w) && w.shouldDisappear()) {
+                    revertMonsterTile(m);
+                }
+            }
+
+            monsters.removeIf(m -> {
+                if (m instanceof WizardMonster w) {
+                    return w.shouldDisappear();
+                }
+                return false;
+            });
         }
 
-        // 3) You can remove dead monsters, etc., if you wanted.
+        
     }
 
     /**
@@ -126,7 +146,7 @@ public class MonsterController {
     //              FIGHTER MONSTER UPDATE
     // =========================================================
 
-    private void updateFighter(FighterMonster fighter, Player player, int timePassed) {
+    private void updateFighter(FighterMonster fighter, Player player) {
         // 1) Check adjacency
         if (isAdjacentToPlayer(fighter, player) && luringGemLocation==null) {
             long elapsed = timePassed - fighter.getLastAttackTime();
@@ -271,7 +291,7 @@ public class MonsterController {
     //                ARCHER AND WIZARD UPDATES
     // =========================================================
 
-    private void updateArcher(ArcherMonster archer, Player player, int timePassed) {
+    private void updateArcher(ArcherMonster archer, Player player) {
         // He shoots every MONSTER_ATTACK_COOLDOWN if hero in range, unless hero has cloak
         long lastShotTime = archer.getLastShotTime();
         if (timePassed - lastShotTime >= GameConfig.MONSTER_ATTACK_COOLDOWN) {
@@ -301,13 +321,74 @@ public class MonsterController {
         }
     }
 
-    private void updateWizard(WizardMonster wizard, Player player, int timePassed, int timeRemaining) {
-        // Teleport rune every 5 seconds
-        int lastTeleportTime = wizard.getLastTeleportTime();
-        if(timePassed - lastTeleportTime >= 5) {
-            wizard.setLastTeleportTime(timePassed);
-            buildObjectController.transferRune();
-            System.out.println("Wizard teleported the rune!");
+    private void updateWizard(WizardMonster wizard, Player player) {
+
+        // 1) Determine the current time-left percentage
+        double ratio = (timeRemaining * 100.0) / initialTime;
+
+        // 2) Choose strategy if ratio changed to a different bracket
+        //    or if wizard has no strategy yet.
+        WizardMonster w = wizard;  // just a short alias
+        if (w.getStrategy() == null) {
+            setStrategyByRatio(w, ratio);
+        } else {
+            // Check if ratio crosses thresholds
+            if ((ratio < 30 && !(w.getStrategy() instanceof WizardLowTimeStrategy)) ||
+                (ratio > 70 && !(w.getStrategy() instanceof WizardHighTimeStrategy)) ||
+                (ratio >= 30 && ratio <= 70 && !(w.getStrategy() instanceof WizardMidTimeStrategy))) {
+                setStrategyByRatio(w, ratio);
+            }
+        }
+
+        // 3) Let the strategy do its thing
+        if (w.getStrategy() != null) {
+            w.getStrategy().updateBehavior(
+                w, 
+                player, 
+                this, 
+                buildObjectController, 
+                timePassed, 
+                initialTime, 
+                timeRemaining
+            );
+        }
+    }
+
+    private void setStrategyByRatio(WizardMonster wizard, double ratio) {
+        if (ratio < 30) {
+            wizard.setStrategy(new WizardLowTimeStrategy(), timePassed);
+            System.out.println("Wizard: switching to LowTime strategy.");
+        } else if (ratio > 70) {
+            wizard.setStrategy(new WizardHighTimeStrategy(), timePassed);
+            System.out.println("Wizard: switching to HighTime strategy.");
+        } else {
+            wizard.setStrategy(new WizardMidTimeStrategy(), timePassed);
+            System.out.println("Wizard: switching to MidTime strategy.");
+        }
+    }
+
+    public void teleportPlayerToRandomEmptyLocation(Player player) {
+        int tileSize = GameConfig.TILE_SIZE;
+        int mapWidth = GameConfig.NUM_HALL_COLS;
+        int mapHeight = GameConfig.NUM_HALL_ROWS;
+
+        // We'll try up to 50 times to find a free tile
+        for (int attempt = 0; attempt < 50; attempt++) {
+            int col = random.nextInt(mapWidth);
+            int row = random.nextInt(mapHeight);
+
+            Tile tile = tilesController.getTileAt(col + GameConfig.KAFES_STARTING_X, row + GameConfig.KAFES_STARTING_Y);
+            if (tile != null && !tile.isCollidable && 
+                enchantmentController.isLocationAvailable(col, row)) 
+            {
+                // Teleport player here
+                player.setX((col + GameConfig.KAFES_STARTING_X) * tileSize);
+                player.setY((row + GameConfig.KAFES_STARTING_Y) * tileSize);
+                player.setVelocityX(0);
+                player.setVelocityY(0);
+                System.out.println("Wizard teleported the hero to a random location!");
+                return;
+            }
         }
     }
 
@@ -350,16 +431,18 @@ public class MonsterController {
 
     private Monster createRandomMonster(int x, int y) {
         int r = random.nextInt(3); // 0=Fighter, 1=Archer, 2=Wizard
-        return switch (r) {
+        return new WizardMonster(x, y, 0, timePassed);
+        /*return switch (r) {
             case 0 -> new FighterMonster(x, y, 1);
             case 1 -> new ArcherMonster(x, y, 0);
-            case 2 -> new WizardMonster(x, y, 0);
+            case 2 -> new WizardMonster(x, y, 0, timePassed);
             default -> null;
-        };
+        };*/
     }
 
-    public void tick(int timePassed2, Player player) {
+    public void tick(int timePassed2, int timeRemaining2, Player player) {
         this.timePassed = timePassed2;
+        this.timeRemaining = timeRemaining2;
         if(timePassed - lastSpawnTime >= spawnIntervalSeconds) {
             spawnRandomMonster(timePassed, player);
             lastSpawnTime = timePassed;
@@ -368,6 +451,14 @@ public class MonsterController {
             luringGemLocation=null;
             gemSpawnTime=-1;
         }
+    }
+
+    private void revertMonsterTile(Monster m) {
+        int tileSize = GameConfig.TILE_SIZE;
+        int col = m.getX() / tileSize;
+        int row = m.getY() / tileSize;
+        System.out.println("Col: " + col + " " + "Row: " + row);
+        tilesController.setFloorTileAt(col, row);
     }
 
     // =========================================================

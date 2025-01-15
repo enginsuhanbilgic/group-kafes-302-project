@@ -5,8 +5,8 @@ import tr.edu.ku.comp302.domain.models.BuildObject;
 import tr.edu.ku.comp302.domain.models.HallType;
 import tr.edu.ku.comp302.domain.models.Player;
 import tr.edu.ku.comp302.domain.models.Tile;
-import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
-import tr.edu.ku.comp302.domain.models.Enchantments.EnchantmentType;
+import tr.edu.ku.comp302.domain.models.enchantments.Enchantment;
+import tr.edu.ku.comp302.domain.models.enchantments.EnchantmentType;
 import tr.edu.ku.comp302.ui.PlayModeView;
 
 import java.awt.*;
@@ -38,8 +38,8 @@ public class PlayModeController {
     // Timer via GameTimerController
     private GameTimerController gameTimerController;
     private int initialTime = 60;
-    private int currentTime;
-    private int inGameTime = 0; // Our "game clock" in seconds
+    private int timeRemaining;
+    private int timePassed = 0; // Our "game clock" in seconds
 
     private boolean gameOver = false;
 
@@ -72,7 +72,7 @@ public class PlayModeController {
         // Initialize PlayerController
         this.playerController = new PlayerController(player, this.tilesController, this.keyHandler);
 
-        this.monsterController = new MonsterController(this.tilesController, buildObjectController);
+        this.monsterController = new MonsterController(this.tilesController, buildObjectController, initialTime);
         this.enchantmentController = new EnchantmentController(this.tilesController);
         //Very bad solution
         monsterController.setEnchantmentController(enchantmentController);
@@ -107,7 +107,7 @@ public class PlayModeController {
             playerController.update();
 
             // 2) Update Monsters
-            monsterController.updateAll(playerController.getEntity(), inGameTime, currentTime);
+            monsterController.updateAll(playerController.getEntity());
 
             Point clickPos = mouseHandler.getLastClickAndConsume();
             // 3) Update Enchantments
@@ -274,12 +274,12 @@ public class PlayModeController {
     public void startGameTimer(Consumer<Integer> onTick, Runnable onTimeUp) {
         gameTimerController = new GameTimerController(
                 time -> {
-                    currentTime = time;
+                    timeRemaining = time;
 
-                    inGameTime++;
+                    timePassed++;
 
-                    monsterController.tick(inGameTime, player);
-                    enchantmentController.tick(inGameTime);
+                    monsterController.tick(timePassed, timeRemaining, player);
+                    enchantmentController.tick(timePassed);
                     onTick.accept(time);
                     },
                 onTimeUp
@@ -313,8 +313,8 @@ public class PlayModeController {
         this.navigationController = navigationController;
     }
 
-    public int getCurrentTime() {
-        return currentTime;
+    public int getTimeRemaining() {
+        return timeRemaining;
     }
 
     public PlayerController getPlayerController() {

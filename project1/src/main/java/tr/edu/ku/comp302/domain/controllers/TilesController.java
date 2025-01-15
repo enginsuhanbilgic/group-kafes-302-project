@@ -111,6 +111,14 @@ public class TilesController {
         }
     }
 
+    public void setFloorTileAt(int x, int y) {
+        BufferedImage floorImage = ResourceManager.getImage("floor_plain");
+        Tile floorTile = new Tile(floorImage, false);
+        if (x >= 0 && x < maxCols && y >= 0 && y < maxRows) {
+            tileGrid[y][x] = floorTile; 
+        }
+    }
+
     /**
      * Draws the tile grid onto the given Graphics2D object.
      *
