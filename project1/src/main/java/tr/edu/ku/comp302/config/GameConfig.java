@@ -14,8 +14,8 @@ public class GameConfig {
 
     // Screen configuration
     public static final boolean RESIZABLE = true; // Resizable propert of screen
-    public static final int RES_HORIZONTAL = 1920;//1024;//1980; //
-    public static final int RES_VERTICAL = 1040;//640;//1080; //
+    public static final int RES_HORIZONTAL = 1680;//1024;//1980; //
+    public static final int RES_VERTICAL = 900;//640;//1080; //
     public static final int NUM_HALL_COLS = 16; // Number of columns
     public static final int NUM_HALL_ROWS = 16; // Number of rows
 

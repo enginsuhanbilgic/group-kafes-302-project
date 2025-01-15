@@ -121,7 +121,8 @@ class MonsterControllerTest {
         // Player has 5 lives, monster is horizontally adjacent
         // so it should attack on updateAll() if time - lastAttackTime >= cooldown
         int inGameTime = GameConfig.MONSTER_ATTACK_COOLDOWN; // ensure enough time has passed
-        monsterController.updateAll(mockPlayer, inGameTime);
+        int timeRemaining = 60;
+        monsterController.updateAll(mockPlayer, inGameTime, timeRemaining);
 
         // Check player's life
         assertEquals(4, mockPlayer.getLives(), 

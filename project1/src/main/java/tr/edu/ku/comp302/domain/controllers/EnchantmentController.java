@@ -230,15 +230,14 @@ public class EnchantmentController {
      */
     private Enchantment createRandomEnchantment(int x, int y, int inGameTime) {
         int r = random.nextInt(5); // 0..4
-        return new RevealEnchantment(x, y, inGameTime);
-        /*return switch (r) {
+        return switch (r) {
           case 0 -> new ExtraTimeEnchantment(x, y, inGameTime);
             case 1 -> new ExtraLifeEnchantment(x, y, inGameTime);
             case 2 -> new RevealEnchantment(x, y, inGameTime);
             case 3 -> new CloakOfProtectionEnchantment(x, y, inGameTime);
             case 4 -> new LuringGemEnchantment(x, y, inGameTime);
             default -> null;
-        };*/
+        };
     }
 
     /**

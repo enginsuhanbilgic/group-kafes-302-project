@@ -21,7 +21,7 @@ public class MonsterController {
     private EnchantmentController enchantmentController;
     private final List<Monster> monsters;
     private final Random random;
-    private int inGameTime = 0;
+    private int timePassed = 0;
 
     private BufferedImage fighterImage;
     private BufferedImage archerImage;
@@ -59,19 +59,19 @@ public class MonsterController {
     /**
      * Called every game frame. Updates all monsters, spawns new ones if needed, etc.
      */
-    public void updateAll(Player player, int inGameTime) {
+    public void updateAll(Player player, int timePassed, int timeRemaining) {
 
         // 2) Update each monster's behavior
         if(!monsters.isEmpty()){
             for (Monster m : monsters) {
                 if (m instanceof FighterMonster fighter) {
-                    updateFighter(fighter, player, inGameTime);
+                    updateFighter(fighter, player, timePassed);
                 }
                 else if (m instanceof ArcherMonster archer) {
-                    updateArcher(archer, player, inGameTime);
+                    updateArcher(archer, player, timePassed);
                 }
                 else if (m instanceof WizardMonster wizard) {
-                    updateWizard(wizard, player, inGameTime);
+                    updateWizard(wizard, player, timePassed, timeRemaining);
                 }
             }
         }
@@ -126,16 +126,16 @@ public class MonsterController {
     //              FIGHTER MONSTER UPDATE
     // =========================================================
 
-    private void updateFighter(FighterMonster fighter, Player player, int inGameTime) {
+    private void updateFighter(FighterMonster fighter, Player player, int timePassed) {
         // 1) Check adjacency
         if (isAdjacentToPlayer(fighter, player) && luringGemLocation==null) {
-            long elapsed = inGameTime - fighter.getLastAttackTime();
+            long elapsed = timePassed - fighter.getLastAttackTime();
             if (elapsed >= GameConfig.MONSTER_ATTACK_COOLDOWN) {
                 // Attack
                 player.loseLife();
                 System.out.println("Fighter Monster stabbed the hero! Lives: " + player.getLives());
                 // Reset cooldown
-                fighter.setLastAttackTime(inGameTime);
+                fighter.setLastAttackTime(timePassed);
             }
             return;
         }
@@ -152,16 +152,16 @@ public class MonsterController {
                 doOneStepTowardPlayer(fighter, player);
             } else {
                 // Use your old movement logic (random moves, etc.)
-                handleMovementCycle(fighter, player, inGameTime);
+                handleMovementCycle(fighter, player, timePassed);
             }
         }
 
     }
 
-    private void handleMovementCycle(FighterMonster fighter, Player player, int inGameTime) {
-        int elapsedInCycle = inGameTime - fighter.getLastMoveCycleStart();
+    private void handleMovementCycle(FighterMonster fighter, Player player, int timePassed) {
+        int elapsedInCycle = timePassed - fighter.getLastMoveCycleStart();
         if (elapsedInCycle >= 2) {
-            fighter.setLastMoveCycleStart(inGameTime);
+            fighter.setLastMoveCycleStart(timePassed);
             fighter.setMoving(true);
             elapsedInCycle = 0;
         }
@@ -271,11 +271,11 @@ public class MonsterController {
     //                ARCHER AND WIZARD UPDATES
     // =========================================================
 
-    private void updateArcher(ArcherMonster archer, Player player, int inGameTime) {
+    private void updateArcher(ArcherMonster archer, Player player, int timePassed) {
         // He shoots every MONSTER_ATTACK_COOLDOWN if hero in range, unless hero has cloak
         long lastShotTime = archer.getLastShotTime();
-        if (inGameTime - lastShotTime >= GameConfig.MONSTER_ATTACK_COOLDOWN) {
-            archer.setLastShotTime(inGameTime);
+        if (timePassed - lastShotTime >= GameConfig.MONSTER_ATTACK_COOLDOWN) {
+            archer.setLastShotTime(timePassed);
 
             boolean heroHasCloak = player.isCloakActive();
             
@@ -301,11 +301,11 @@ public class MonsterController {
         }
     }
 
-    private void updateWizard(WizardMonster wizard, Player player, int inGameTime) {
+    private void updateWizard(WizardMonster wizard, Player player, int timePassed, int timeRemaining) {
         // Teleport rune every 5 seconds
         int lastTeleportTime = wizard.getLastTeleportTime();
-        if (inGameTime - lastTeleportTime >= 5) {
-            wizard.setLastTeleportTime(inGameTime);
+        if(timePassed - lastTeleportTime >= 5) {
+            wizard.setLastTeleportTime(timePassed);
             buildObjectController.transferRune();
             System.out.println("Wizard teleported the rune!");
         }
@@ -315,7 +315,7 @@ public class MonsterController {
     //                   MONSTER SPAWNING
     // =========================================================
 
-    private void spawnRandomMonster(int inGameTime, Player player) {
+    private void spawnRandomMonster(int timePassed, Player player) {
         int tileSize = GameConfig.TILE_SIZE;
         int mapWidth = GameConfig.NUM_HALL_COLS;
         int mapHeight = GameConfig.NUM_HALL_ROWS;
@@ -358,13 +358,13 @@ public class MonsterController {
         };
     }
 
-    public void tick(int inGameTime2, Player player) {
-        this.inGameTime = inGameTime2;
-        if (inGameTime - lastSpawnTime >= spawnIntervalSeconds) {
-            spawnRandomMonster(inGameTime, player);
-            lastSpawnTime = inGameTime;
+    public void tick(int timePassed2, Player player) {
+        this.timePassed = timePassed2;
+        if(timePassed - lastSpawnTime >= spawnIntervalSeconds) {
+            spawnRandomMonster(timePassed, player);
+            lastSpawnTime = timePassed;
         }
-        if (luringGemLocation!=null && inGameTime-gemSpawnTime>=GameConfig.GEM_LIFETIME_SECONDS){
+        if (luringGemLocation!=null && timePassed-gemSpawnTime>=GameConfig.GEM_LIFETIME_SECONDS){
             luringGemLocation=null;
             gemSpawnTime=-1;
         }
@@ -379,7 +379,7 @@ public class MonsterController {
      */
     public void setLuringGemLocation(Point gemLoc) {
         this.luringGemLocation = gemLoc;
-        this.gemSpawnTime = inGameTime;
+        this.gemSpawnTime = timePassed;
     }
 
     /**

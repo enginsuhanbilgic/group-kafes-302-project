@@ -107,7 +107,7 @@ public class PlayModeController {
             playerController.update();
 
             // 2) Update Monsters
-            monsterController.updateAll(playerController.getEntity(), inGameTime);
+            monsterController.updateAll(playerController.getEntity(), inGameTime, currentTime);
 
             Point clickPos = mouseHandler.getLastClickAndConsume();
             // 3) Update Enchantments
