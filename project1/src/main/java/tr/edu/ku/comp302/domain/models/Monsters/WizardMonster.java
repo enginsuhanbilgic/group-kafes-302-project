@@ -1,20 +1,64 @@
 package tr.edu.ku.comp302.domain.models.Monsters;
 
+import tr.edu.ku.comp302.domain.models.Monsters.strategies.WizardStrategy;
+
 public class WizardMonster extends Monster {
 
-    public WizardMonster(int x, int y, int speed) {
+    // ========== NEW FIELDS ==========
+    private WizardStrategy strategy; 
+    private int spawnTime;
+    private boolean shouldDisappear = false;
+    private boolean hasTeleportedPlayer = false;
+    private int lastRuneTeleportTime = 0;
+    private int strategyStartTime;
+
+    public WizardMonster(int x, int y, int speed, int spawnTime) {
         super(x, y, speed);
+        this.spawnTime = spawnTime;
+        this.strategyStartTime = spawnTime;
     }
 
-    // Possibly store last teleport time, 
-    // but logic will be in MonsterController
-    private int lastTeleportTime = 0;
-
-    public int getLastTeleportTime() {
-        return lastTeleportTime;
+    // Strategy pattern: wizard delegates its logic to a Strategy
+    public WizardStrategy getStrategy() {
+        return strategy;
     }
 
-    public void setLastTeleportTime(int t) {
-        this.lastTeleportTime = t;
+    public void setStrategy(WizardStrategy strategy, int timePassed) {
+        this.strategy = strategy;
+        this.strategyStartTime = timePassed;
+    }
+
+    // ========== GETTERS/SETTERS ==========
+
+    public int getSpawnTime() {
+        return spawnTime;
+    }
+
+    public boolean shouldDisappear() {
+        return shouldDisappear;
+    }
+
+    public void setShouldDisappear(boolean shouldDisappear) {
+        this.shouldDisappear = shouldDisappear;
+    }
+
+    public boolean hasTeleportedPlayer() {
+        return hasTeleportedPlayer;
+    }
+
+    public void setHasTeleportedPlayer(boolean hasTeleportedPlayer) {
+        this.hasTeleportedPlayer = hasTeleportedPlayer;
+    }
+
+    public int getLastRuneTeleportTime() {
+        return lastRuneTeleportTime;
+    }
+
+    public void setLastRuneTeleportTime(int lastRuneTeleportTime) {
+        this.lastRuneTeleportTime = lastRuneTeleportTime;
+    }
+
+    public int getStrategyStartTime(){
+        return this.strategyStartTime;
     }
 }

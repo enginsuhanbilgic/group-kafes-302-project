@@ -2,8 +2,8 @@ package tr.edu.ku.comp302.domain.models;
 
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.controllers.MonsterController;
-import tr.edu.ku.comp302.domain.models.Enchantments.Enchantment;
-import tr.edu.ku.comp302.domain.models.Enchantments.EnchantmentType;
+import tr.edu.ku.comp302.domain.models.enchantments.Enchantment;
+import tr.edu.ku.comp302.domain.models.enchantments.EnchantmentType;
 
 /**
  * The Player class represents the player's state in the game.
@@ -102,6 +102,13 @@ public class Player extends Entity {
 
     public float getMaxSpeed() {
         return maxSpeed;
+    }
+
+    public void setVelocityX(float velocityX){
+        this.velocityX = velocityX;
+    }
+    public void setVelocityY(float velocityY){
+        this.velocityY = velocityY;
     }
 
     // ============ Getters / Setters ============

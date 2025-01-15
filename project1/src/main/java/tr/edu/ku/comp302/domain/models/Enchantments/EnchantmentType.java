@@ -1,4 +1,4 @@
-package tr.edu.ku.comp302.domain.models.Enchantments;
+package tr.edu.ku.comp302.domain.models.enchantments;
 
 public enum EnchantmentType {
     EXTRA_TIME,

@@ -1,4 +1,4 @@
-package tr.edu.ku.comp302.domain.models.Enchantments;
+package tr.edu.ku.comp302.domain.models.enchantments;
 
 import tr.edu.ku.comp302.domain.models.Player;
 
