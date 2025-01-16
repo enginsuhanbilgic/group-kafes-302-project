@@ -35,7 +35,7 @@ public class BuildModeController {
     // Gson örneği (json'a çevirme / geri çevirme)
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    private static final String SAVES_DIRECTORY = "saves";
+    private static final String DESIGN_SAVES_DIRECTORY = "design_saves";
 
     public BuildModeController() {
         this.currentHallIndex = 0;
@@ -48,7 +48,7 @@ public class BuildModeController {
 
     private void createSavesDirectory() {
         try {
-            Files.createDirectories(Paths.get(SAVES_DIRECTORY));
+            Files.createDirectories(Paths.get(DESIGN_SAVES_DIRECTORY));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -160,7 +160,7 @@ public class BuildModeController {
 
     public void saveDesign(String designName) {
         String json = exportToJson();
-        Path savePath = Paths.get(SAVES_DIRECTORY, designName + ".json");
+        Path savePath = Paths.get(DESIGN_SAVES_DIRECTORY, designName + ".json");
         
         try {
             Files.write(savePath, json.getBytes(StandardCharsets.UTF_8));
@@ -171,7 +171,7 @@ public class BuildModeController {
     }
 
     public void loadDesign(String designName) {
-        Path loadPath = Paths.get(SAVES_DIRECTORY, designName + ".json");
+        Path loadPath = Paths.get(DESIGN_SAVES_DIRECTORY, designName + ".json");
         
         try {
             String json = new String(Files.readAllBytes(loadPath), StandardCharsets.UTF_8);
@@ -184,7 +184,7 @@ public class BuildModeController {
 
     public List<String> getSavedDesigns() {
         try {
-            return Files.list(Paths.get(SAVES_DIRECTORY))
+            return Files.list(Paths.get(DESIGN_SAVES_DIRECTORY))
                     .filter(path -> path.toString().endsWith(".json"))
                     .map(path -> path.getFileName().toString().replace(".json", ""))
                     .sorted()

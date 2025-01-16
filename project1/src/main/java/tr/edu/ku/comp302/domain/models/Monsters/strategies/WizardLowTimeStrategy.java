@@ -22,13 +22,14 @@ public class WizardLowTimeStrategy implements WizardStrategy {
             int initialTime,
             int timeRemaining
     ) {
-        // Perform the teleport exactly once if not done yet
+        int startedMidTime = wizard.getStrategyStartTime(); 
         if (!wizard.hasTeleportedPlayer()) {
-            monsterController.teleportPlayerToRandomEmptyLocation(player);
-            wizard.setHasTeleportedPlayer(true);
+            if(timePassed - startedMidTime >= 1){
+                monsterController.teleportPlayerToRandomEmptyLocation(player);
+                wizard.setHasTeleportedPlayer(true);
+            }
         } else{
-            int spawnTime = wizard.getSpawnTime(); 
-            if (timePassed - spawnTime >= 2) {
+            if (timePassed - startedMidTime >= 2) {
                 wizard.setShouldDisappear(true);
             }
         }

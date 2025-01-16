@@ -10,12 +10,17 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
@@ -27,6 +32,8 @@ import tr.edu.ku.comp302.domain.controllers.NavigationController;
  */
 public class MainMenuView extends JPanel {
     private BufferedImage backgroundImage;
+
+    private static final String SAVES_DIRECTORY = "saves";
     
     public MainMenuView(NavigationController controller) {
         loadBackgroundImage();
@@ -35,14 +42,13 @@ public class MainMenuView extends JPanel {
         setLayout(new MigLayout(
                 "fill, insets 10",
                 "[center]",
-                "[]push[]20[]15[]15[]15[]push" // GÜNCELLENDİ: satır aralığı artırdık
+                "[]push[]20[]15[]15[]15[]15[]push"
         ));
 
-       
-
         // Buttons
-        JButton startButton = createStyledButton("Start Game");
-        JButton buildModeButton = createStyledButton("Build Mode");  // GÜNCELLENDİ
+        JButton startButton = createStyledButton("Start Game"); // Starts a blank game session, can be deleted in future.
+        JButton loadGameButton = createStyledButton("Load Game");
+        JButton buildModeButton = createStyledButton("Build Mode");
         JButton helpButton = createStyledButton("Help");
         JButton exitButton = createStyledButton("Exit");
 
@@ -50,6 +56,50 @@ public class MainMenuView extends JPanel {
         startButton.addActionListener(e -> {
             controller.resetPlayer();
             controller.startNewPlayMode();
+        });
+
+        loadGameButton.addActionListener(e -> {
+            List<String> savedGames = getSavedDesigns();
+
+            if (savedGames.isEmpty()) {
+                JOptionPane.showMessageDialog(this, 
+                    "No saved games found.", 
+                    "Information", 
+                    JOptionPane.INFORMATION_MESSAGE);
+                return;
+            } else {
+                String[] saves = savedGames.toArray(new String[0]);
+                String selectedDesign = (String) JOptionPane.showInputDialog(this,
+                    "Select a game to load:",
+                    "Load Game",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    saves,
+                    saves[0]);
+
+                if (selectedDesign != null) {
+                    try {
+                        //
+                        //
+                        //
+                        //  TO DO: IMPLEMENT LOAD GAMES
+                        //  Directory saves is different from design_saves
+                        //
+                        //
+                        //
+                        JOptionPane.showMessageDialog(this, 
+                            "Game loaded successfully!", 
+                            "Success", 
+                            JOptionPane.INFORMATION_MESSAGE);
+                        //repaint();
+                    } catch (Exception err) {
+                        JOptionPane.showMessageDialog(this, 
+                            "Error loading game: " + err.getMessage(), 
+                            "Error", 
+                            JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
         });
 
         //  Yeni buton eklendi
@@ -60,13 +110,27 @@ public class MainMenuView extends JPanel {
         helpButton.addActionListener(e -> controller.showHelpMenu(evt -> controller.showMainMenu()));
         exitButton.addActionListener(e -> System.exit(0));
 
-        add(startButton,    "pos 300px 43%, wrap"); 
+        add(startButton,    "pos 300px 36%, wrap"); 
+        add(loadGameButton, "pos 300px 43%, wrap");
         add(buildModeButton,"pos 300px 50%, wrap"); 
         add(helpButton,     "pos 300px 57%, wrap");
         add(exitButton,     "pos 300px 64%");      
 
         setOpaque(false);
     }
+
+    private List<String> getSavedDesigns() {
+        try {
+            return Files.list(Paths.get(SAVES_DIRECTORY))
+                    .filter(path -> path.toString().endsWith(".json"))
+                    .map(path -> path.getFileName().toString().replace(".json", ""))
+                    .sorted()
+                    .toList();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    } 
 
     private void loadBackgroundImage() {
         try {

@@ -29,9 +29,9 @@ public class BuildModeView extends JPanel {
     private BuildModeController buildModeController;
     private TilesController tilesController;
 
-    // Bazı tile resimleri
+    /*// Bazı tile resimleri
     private BufferedImage floorImage;
-    private BufferedImage wallTop, wallBottom, wallLeft, wallRight;
+    private BufferedImage wallTop, wallBottom, wallLeft, wallRight;*/
 
     // Seçili obje
     private String selectedObjectType = null;
@@ -58,7 +58,7 @@ public class BuildModeView extends JPanel {
 
         setLayout(new BorderLayout());
 
-        loadTileImages();
+        //loadTileImages();
         loadObjectImages();
 
         canvasPanel = createCanvasPanel();
@@ -71,7 +71,7 @@ public class BuildModeView extends JPanel {
         add(controlPanel, BorderLayout.SOUTH);
     }
 
-    private void loadTileImages() {
+    /*private void loadTileImages() {
         try {
             floorImage = ImageIO.read(getClass().getResourceAsStream("/assets/floor_plain.png"));
             wallTop = ImageIO.read(getClass().getResourceAsStream("/assets/wall_center.png"));
@@ -81,7 +81,7 @@ public class BuildModeView extends JPanel {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     private void loadObjectImages() {
         objectImages = new HashMap<>();

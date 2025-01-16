@@ -25,6 +25,8 @@ public class PlayModeView extends JPanel implements Runnable {
     private final String jsonData;
     private boolean showDamageIndicators = false; // Varsayılan olarak kapalı
 
+    private static final String SAVES_DIRECTORY = "saves";
+
     // Eski constructor (no JSON)
     public PlayModeView(NavigationController navigationController, JFrame parentFrame, HallType hallType, Player player) {
         this(navigationController, parentFrame, null, hallType, player);
@@ -149,6 +151,38 @@ public class PlayModeView extends JPanel implements Runnable {
                         pauseMenuShown = false;
                         this.requestFocusInWindow();
                         playModeController.resumeGameTimer();
+                    },
+                    e->{
+                        int dialogButton = JOptionPane.YES_NO_OPTION;
+                        int result = JOptionPane.showConfirmDialog(this, "Do you really want to save and exit the current game session?", "Warning", dialogButton);
+                        if(result == JOptionPane.YES_OPTION){
+                            boolean isSuccessful = false;
+                            //
+                            //
+                            //
+                            //  TO DO: IMPLEMENT SAVE FUCNTIONALITY HERE
+                            //  Directory saves is different from design_saves
+                            //
+                            //
+                            //
+                            if(isSuccessful){
+                                JOptionPane.showMessageDialog(this, "Successfully saved!");
+                                keyHandler.resetKeys();
+                                pauseMenuShown = false;
+                                navigationController.showMainMenu();
+                            } else{
+                                JOptionPane.showMessageDialog(this, "A problem occured while saving!");
+                                keyHandler.escPressed = !keyHandler.escPressed;
+                                pauseMenuShown = false;
+                                this.requestFocusInWindow();
+                                playModeController.resumeGameTimer();
+                            }
+                        } else{
+                            keyHandler.escPressed = !keyHandler.escPressed;
+                            pauseMenuShown = false;
+                            this.requestFocusInWindow();
+                            playModeController.resumeGameTimer();
+                        }
                     },
                     e -> { // Help
                         pauseMenuShown = true;

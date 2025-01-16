@@ -431,13 +431,12 @@ public class MonsterController {
 
     private Monster createRandomMonster(int x, int y) {
         int r = random.nextInt(3); // 0=Fighter, 1=Archer, 2=Wizard
-        return new WizardMonster(x, y, 0, timePassed);
-        /*return switch (r) {
+        return switch (r) {
             case 0 -> new FighterMonster(x, y, 1);
             case 1 -> new ArcherMonster(x, y, 0);
             case 2 -> new WizardMonster(x, y, 0, timePassed);
             default -> null;
-        };*/
+        };
     }
 
     public void tick(int timePassed2, int timeRemaining2, Player player) {
