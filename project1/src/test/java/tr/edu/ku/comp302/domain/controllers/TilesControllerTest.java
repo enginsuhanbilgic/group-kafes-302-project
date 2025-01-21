@@ -4,6 +4,7 @@ import tr.edu.ku.comp302.domain.controllers.ResourceManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tr.edu.ku.comp302.config.GameConfig;
+import tr.edu.ku.comp302.domain.models.HallType;
 import tr.edu.ku.comp302.domain.models.Tile;
 
 import java.awt.Graphics2D;
@@ -31,7 +32,7 @@ class TilesControllerTest {
      */
     @Test
     void testInitialTileGridCreation() {
-        tilesController.loadTiles();
+        tilesController.loadTiles(HallType.DEFAULT);
         Tile centerTile = tilesController.getTileAt(5, 5);
         assertNotNull(centerTile);
         assertFalse(centerTile.isCollidable);
@@ -43,7 +44,7 @@ class TilesControllerTest {
      */
     @Test
     void testKafesBorderWalls() {
-        tilesController.loadTiles();
+        tilesController.loadTiles(HallType.DEFAULT);
 
         // Test top border (should be collidable)
         Tile topWall = tilesController.getTileAt(GameConfig.KAFES_STARTING_X + 1, GameConfig.KAFES_STARTING_Y);
@@ -81,7 +82,7 @@ class TilesControllerTest {
      */
     @Test
     void testGetTileAtOutOfBounds() {
-        tilesController.loadTiles();
+        tilesController.loadTiles(HallType.DEFAULT);
 
         // Test getting tile outside the grid boundaries
         assertNull(tilesController.getTileAt(-1, -1));
@@ -94,7 +95,7 @@ class TilesControllerTest {
      */
     @Test
     void testSetTransparentTile() {
-        tilesController.loadTiles();
+        tilesController.loadTiles(HallType.DEFAULT);
 
         int testX = 5;
         int testY = 5;
@@ -114,7 +115,7 @@ class TilesControllerTest {
      */
     @Test
     void testDraw() {
-        tilesController.loadTiles();
+        tilesController.loadTiles(HallType.DEFAULT);
 
         // Create a BufferedImage to simulate Graphics2D drawing
         BufferedImage canvas = new BufferedImage(
@@ -136,7 +137,7 @@ class TilesControllerTest {
      */
     @Test
     void testTileGridInitialization() {
-        tilesController.loadTiles();
+        tilesController.loadTiles(HallType.DEFAULT);
         assertNotNull(tilesController.getTileAt(0, 0)); // First tile
         assertNotNull(tilesController.getTileAt(GameConfig.NUM_HALL_COLS - 1, GameConfig.NUM_HALL_ROWS - 1)); // Last tile
     }
@@ -148,7 +149,7 @@ class TilesControllerTest {
      */
     @Test
     void testLoadTilesFloorTiles() {
-        tilesController.loadTiles();
+        tilesController.loadTiles(HallType.DEFAULT);
 
         // Check that all floor tiles are not collidable
         for (int y = 0; y < GameConfig.RES_VERTICAL / GameConfig.TILE_SIZE; y++) {
@@ -168,7 +169,7 @@ class TilesControllerTest {
      */
     @Test
     void testLoadTilesWallTiles() {
-        tilesController.loadTiles();
+        tilesController.loadTiles(HallType.DEFAULT);
 
         // Check that all wall tiles are collidable
         for (int y = GameConfig.KAFES_STARTING_Y; y < GameConfig.KAFES_STARTING_Y + GameConfig.NUM_HALL_ROWS; y++) {

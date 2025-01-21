@@ -2,6 +2,7 @@ package tr.edu.ku.comp302.ui;
 
 import tr.edu.ku.comp302.domain.controllers.BuildModeController;
 import tr.edu.ku.comp302.domain.controllers.NavigationController;
+import tr.edu.ku.comp302.domain.controllers.ResourceManager;
 import tr.edu.ku.comp302.domain.controllers.TilesController;
 import tr.edu.ku.comp302.domain.models.BuildObject;
 import tr.edu.ku.comp302.domain.models.HallType;
@@ -53,7 +54,7 @@ public class BuildModeView extends JPanel {
         this.controller = controller;
         this.buildModeController = new BuildModeController();
         this.tilesController = new TilesController();
-        this.tilesController.loadTiles();
+        this.tilesController.loadTiles(HallType.DEFAULT);
         this.setBackground(new Color(66, 40, 53));
 
         setLayout(new BorderLayout());
@@ -90,11 +91,13 @@ public class BuildModeView extends JPanel {
             BufferedImage chestImg = ImageIO.read(getClass().getResourceAsStream("/assets/chest_closed.png"));
             BufferedImage columnImg = ImageIO.read(getClass().getResourceAsStream("/assets/column_wall.png"));
             BufferedImage skullImg = ImageIO.read(getClass().getResourceAsStream("/assets/skull.png"));
+            BufferedImage boxesStackedImg = ImageIO.read(getClass().getResourceAsStream("/assets/boxes_stacked.png"));
 
             objectImages.put("box", boxImg);
             objectImages.put("chest_closed", chestImg);
             objectImages.put("column_wall", columnImg);
             objectImages.put("skull", skullImg);
+            objectImages.put("boxes_stacked", boxesStackedImg);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -123,16 +126,37 @@ public class BuildModeView extends JPanel {
 
                 // Sadece kafes içine yerleştirme kontrolü
                 if (x - 1 < GameConfig.KAFES_STARTING_X || x >= GameConfig.KAFES_STARTING_X + gridCols - 1
-                        || y -1< GameConfig.KAFES_STARTING_Y || y >= GameConfig.KAFES_STARTING_Y + gridRows -1) {
+                        || y - 2< GameConfig.KAFES_STARTING_Y || y >= GameConfig.KAFES_STARTING_Y + gridRows -2) {
                     JOptionPane.showMessageDialog(panel, "You can only interact with objects inside the grid!", "Invalid Action", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
                 if (isRemoveMode) {
                     removeObjectAt(x, y);
-                } else if (selectedObjectType != null) {
-                    buildModeController.placeObject(x, y, selectedObjectType);
                 }
+
+                if (selectedObjectType != null){
+                    List<BuildObject> objects = buildModeController.getObjectsForHall(buildModeController.getCurrentHall());
+                    boolean alreadyExists = false;
+                    for (BuildObject obj : objects) {
+                        if (obj.getX() == x && obj.getY() == y) {
+                            alreadyExists = true;
+                            break;
+                        }
+                    }
+
+                    if (alreadyExists) {
+                        JOptionPane.showMessageDialog(panel,
+                                "There is already an object at this location!",
+                                "Invalid Placement",
+                                JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        // 3) Otherwise, place the new object
+                        buildModeController.placeObject(x, y, selectedObjectType);
+                        repaint();
+                    }
+                }
+
                 repaint();
             }
         });
@@ -218,13 +242,25 @@ public class BuildModeView extends JPanel {
         HallType currentHall = buildModeController.getCurrentHall();
         for (BuildObject obj : buildModeController.getObjectsForHall(currentHall)) {
             BufferedImage img = objectImages.get(obj.getObjectType());
+            String imageName = obj.getObjectType();
+            int px = obj.getX() * tileSize;
+            int py = obj.getY() * tileSize;
             if (img != null) {
-                g.drawImage(img, obj.getX() * tileSize, obj.getY() * tileSize, tileSize, tileSize, null);
+                if(imageName.trim().equals("column_wall") || imageName.trim().equals("boxes_stacked")){
+                    g2.drawImage(img, px, py - tileSize/2, tileSize, tileSize + tileSize/2, null);
+                }
+                else{
+                    g2.drawImage(img, px, py, tileSize, tileSize, null);
+                }
             } else {
                 g.setColor(Color.RED);
                 g.fillRect(obj.getX() * tileSize, obj.getY() * tileSize, tileSize, tileSize);
             }
         }
+
+        g2.setFont(new Font("Arial", Font.BOLD, 16));
+        g2.setColor(Color.WHITE);
+        g2.drawString(currentHall.toText(), 300, 20);
     }
 
     private void onPreviousHall() {

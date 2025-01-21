@@ -25,6 +25,7 @@ public class ResourceManager {
         loadImage("chest_closed",      "/assets/chest_closed.png");
         loadImage("column_wall",       "/assets/column_wall.png");
         loadImage("skull",             "/assets/skull.png");
+        loadImage("boxes_stacked", "/assets/boxes_stacked.png");
 
         // Example: load enchantments
         loadImage("enchantment_extratime", "/assets/enchantment_extratime.png");
@@ -33,6 +34,8 @@ public class ResourceManager {
         loadImage("enchantment_cloak",     "/assets/enchantment_cloak.png");
         loadImage("enchantment_gem",       "/assets/enchantment_gem.png");
         loadImage("rune",                  "/assets/rune.png");
+
+        loadImage("thrown_enchantment_gem", "/assets/throw_rune.png");
 
         // Example: load monster images
         loadImage("npc_fighter", "/assets/npc_fighter.png");
@@ -48,7 +51,21 @@ public class ResourceManager {
         loadImage("floor_plain",       "/assets/floor_plain.png");
         loadImage("wall_outer_e",      "/assets/wall_outer_e.png");
         loadImage("wall_outer_w",      "/assets/wall_outer_w.png");
+        loadImage("wall_outer_n",      "/assets/wall_outer_n.png");
+        loadImage("wall_outer_ne",     "/assets/wall_outer_ne.png");
+        loadImage("wall_outer_nw",     "/assets/wall_outer_nw.png");
+        loadImage("wall_outer_se",     "/assets/wall_outer_se.png");
+        loadImage("wall_outer_sw",     "/assets/wall_outer_sw.png");
+        loadImage("wall_inner_ne",     "/assets/wall_inner_ne.png");
+        loadImage("wall_inner_nw",     "/assets/wall_inner_nw.png");
+        loadImage("wall_inner_sw",     "/assets/wall_inner_sw.png");
+        loadImage("wall_inner_se",     "/assets/wall_inner_se.png");
+        loadImage("wall_inner_s",      "/assets/wall_outer_n.png");
         loadImage("wall_center",       "/assets/wall_center.png");
+        loadImage("wall_flag_blue",    "/assets/wall_flag_blue.png");
+        loadImage("wall_flag_green",   "/assets/wall_flag_green.png");
+        loadImage("wall_flag_red",     "/assets/wall_flag_red.png");
+        loadImage("wall_flag_yellow",  "/assets/wall_flag_yellow.png");
         loadImage("transparent_tile",  "/assets/transparent_tile.png");
         // ...
     }
@@ -67,6 +84,7 @@ public class ResourceManager {
         try {
             BufferedImage img = ImageIO.read(ResourceManager.class.getResourceAsStream(path));
             imageCache.put(key, img);
+            //System.out.println("Loaded the image successfully: " + path);
         } catch (IOException | NullPointerException e) {
             System.err.println("Failed to load image: " + path + " (key: " + key + ")");
             e.printStackTrace();

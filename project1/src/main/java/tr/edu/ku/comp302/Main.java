@@ -12,10 +12,10 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         ResourceManager.init();
-        MusicController musicController = new MusicController("assets/gamemusic.wav");
+        //MusicController musicController = new MusicController("assets/gamemusic.wav");
 
-        // Play the music at the start of the game
-        musicController.play();
+        //Play the music at the start of the game
+        //musicController.play();
 
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("KAFES Game");
@@ -24,10 +24,11 @@ public class Main {
             frame.setResizable(GameConfig.RESIZABLE);
             frame.setLocationRelativeTo(null); // Center the frame
             frame.setTitle("KAFES Game");
-            
-            
+            System.out.println("invoked");
+
             //Create a new navigation controller with the frame and call the main menu
             NavigationController navigationController = new NavigationController(frame);
+            System.out.println("Successfully created navigation menu");
             navigationController.showMainMenu();
 
             frame.setVisible(true);

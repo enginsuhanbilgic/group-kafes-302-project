@@ -65,7 +65,7 @@ public class NavigationController {
     private Player createNewPlayer() {
         Random random = new Random();
         TilesController tilesController = new TilesController();
-        tilesController.loadTiles();
+        tilesController.loadTiles(HallType.DEFAULT);
 
         // Spawn alanını belirle (duvarların içinde)
         int minX = (GameConfig.KAFES_STARTING_X + 1) * GameConfig.TILE_SIZE;

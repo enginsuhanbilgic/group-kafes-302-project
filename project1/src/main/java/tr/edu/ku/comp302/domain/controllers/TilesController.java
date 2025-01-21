@@ -1,6 +1,7 @@
 package tr.edu.ku.comp302.domain.controllers;
 
 import tr.edu.ku.comp302.config.GameConfig;
+import tr.edu.ku.comp302.domain.models.HallType;
 import tr.edu.ku.comp302.domain.models.Tile;
 
 import java.awt.*;
@@ -42,21 +43,62 @@ public class TilesController {
      * Loads tile images and populates the tile grid.
      *
      */
-    public void loadTiles() {
-
+    public void loadTiles(HallType hallType) {
 
             // Load floor and wall tile images
             BufferedImage floorImage       = ResourceManager.getImage("floor_plain");
-            BufferedImage wallOuterEast    = ResourceManager.getImage("wall_outer_e");
-            BufferedImage wallOuterWest    = ResourceManager.getImage("wall_outer_w");
-            BufferedImage wallCenter       = ResourceManager.getImage("wall_center");
-            BufferedImage transparentImage = ResourceManager.getImage("transparent_tile");
+            BufferedImage wallOuterEast     = ResourceManager.getImage("wall_outer_e");
+            BufferedImage wallOuterWest     = ResourceManager.getImage("wall_outer_w");
+            BufferedImage wallOuterNorth    = ResourceManager.getImage("wall_outer_n");
+            BufferedImage wallOuterNorthWest= ResourceManager.getImage("wall_outer_nw");
+            BufferedImage wallOuterNorthEast= ResourceManager.getImage("wall_outer_ne");
+            BufferedImage wallOuterSouthWest= ResourceManager.getImage("wall_outer_sw");
+            BufferedImage wallOuterSouthEast= ResourceManager.getImage("wall_outer_se");
+            BufferedImage wallInnerNW       = ResourceManager.getImage("wall_inner_nw");
+            BufferedImage wallInnerNE       = ResourceManager.getImage("wall_inner_ne");
+            BufferedImage wallInnerSW       = ResourceManager.getImage("wall_inner_sw");
+            BufferedImage wallInnerSE       = ResourceManager.getImage("wall_inner_se");
+            BufferedImage wallInnerS        = ResourceManager.getImage("wall_outer_n");
+            BufferedImage wallCenter        = ResourceManager.getImage("wall_center");
+            BufferedImage transparentImage  = ResourceManager.getImage("transparent_tile");
 
-            Tile floorTile         = new Tile(floorImage, false);
-            Tile wallOuterEastTile = new Tile(wallOuterEast, true);
-            Tile wallOuterWestTile = new Tile(wallOuterWest, true);
-            Tile wallCenterTile    = new Tile(wallCenter, true);
             this.transparentCollidableTile = new Tile(transparentImage, true);
+
+            BufferedImage flagImage;
+            switch (hallType) {
+                case EARTH:
+                    flagImage = ResourceManager.getImage("wall_flag_green");
+                    break;
+                case WATER:
+                    flagImage = ResourceManager.getImage("wall_flag_blue");
+                    break;
+                case FIRE:
+                    flagImage = ResourceManager.getImage("wall_flag_red");
+                    break;
+                case AIR:
+                    flagImage = ResourceManager.getImage("wall_flag_yellow");
+                    break;
+                default:
+                    flagImage = ResourceManager.getImage("wall_center"); // fallback
+                    break;
+            }
+
+            Tile floorTile            = new Tile(floorImage, false);
+            Tile wallOuterWestTile    = new Tile(wallOuterWest, true);
+            Tile wallOuterEastTile    = new Tile(wallOuterEast, true);
+            Tile wallOuterNorthTile   = new Tile(wallOuterNorth, true);
+            Tile wallOuterNWTile      = new Tile(wallOuterNorthWest, true);
+            Tile wallOuterNETile      = new Tile(wallOuterNorthEast, true);
+            Tile wallOuterSWTile      = new Tile(wallOuterSouthWest, true);
+            Tile wallOuterSETile      = new Tile(wallOuterSouthEast, true);
+            Tile wallInnerNWTile      = new Tile(wallInnerNW, true);
+            Tile wallInnerNETile      = new Tile(wallInnerNE, true);
+            Tile wallInnerSWTile      = new Tile(wallInnerSW, true);
+            Tile wallInnerSETile      = new Tile(wallInnerSE, true);
+            Tile wallInnerSTile       = new Tile(wallInnerS, false); // Not collidable
+            Tile wallCenterTile       = new Tile(wallCenter, true);
+            Tile flagTile             = new Tile(flagImage, true);
+        
 
             // Populate the entire grid with floor tiles
             for (int y = 0; y < maxRows; y++) {
@@ -68,22 +110,62 @@ public class TilesController {
             // Populate the "kafes" (hall) with wall tiles to form a border
             for (int y = startingY; y < startingY + kafesRows; y++) {
                 for (int x = startingX; x < startingX + kafesCols; x++) {
+                    
                     // Top border
                     if (y == startingY) {
+                        tileGrid[y][x] = wallOuterNorthTile;
+                    }
+                    if (y == startingY + 1){
                         tileGrid[y][x] = wallCenterTile;
                     }
+
                     // Bottom border
                     if (y == startingY + kafesRows - 1) {
                         tileGrid[y][x] = wallCenterTile;
                     }
+                    if (y == startingY + kafesRows - 2) {
+                        tileGrid[y][x] = wallInnerSTile;
+                    }
+
                     // Left border
                     if (x == startingX) {
                         tileGrid[y][x] = wallOuterWestTile;
                     }
+                    if (x == startingX && y == startingY){
+                        tileGrid[y][x] = wallOuterNWTile;
+                    }
+                    /*if (x == startingX && y == startingY + 1){
+                        tileGrid[y][x] = wallInnerNWTile;
+                    }
+                    if (x == startingX && y == startingY + kafesRows - 2){
+                        tileGrid[y][x] = wallInnerSWTile;
+                    }*/
+                    if (x == startingX && y == startingY + kafesRows - 1){
+                        tileGrid[y][x] = wallOuterSWTile;
+                    }
+
                     // Right border
                     if (x == startingX + kafesCols - 1) {
                         tileGrid[y][x] = wallOuterEastTile;
                     }
+                    if (x == startingX + kafesCols - 1 && y == startingY){
+                        tileGrid[y][x] = wallOuterNETile;
+                    }
+                    /*if (x == startingX + kafesCols - 1 && y == startingY + 1){
+                        tileGrid[y][x] = wallInnerNETile;
+                    }
+                    if (x == startingX + kafesCols - 2 && y == startingY + kafesRows - 2){
+                        tileGrid[y][x] = wallInnerSETile;
+                    }*/
+                    if (x == startingX + kafesCols - 1 && y == startingY + kafesRows - 1){
+                        tileGrid[y][x] = wallOuterSETile;
+                    }
+
+                    if(x == (GameConfig.NUM_HALL_COLS*3)/4 && y == startingY + kafesRows - 1){
+                        tileGrid[y][x] = flagTile;
+                    }
+                    
+
                 }
             }
 
@@ -129,6 +211,18 @@ public class TilesController {
             for (int x = 0; x < maxCols; x++) {
                 Tile tile = tileGrid[y][x];
                 if (tile != null && tile.image != null) {
+                    // Draw the tile image at the appropriate grid position
+                    g2.drawImage(tile.image, x * tileSize, y * tileSize, tileSize, tileSize, null);
+                }
+            }
+        }
+    }
+
+    public void drawInnerBottom(Graphics2D g2){
+        for (int y = 0; y < maxRows; y++) {
+            for (int x = 0; x < maxCols; x++) {
+                Tile tile = tileGrid[y][x];
+                if (tile != null && tile.image != null && (y == startingY + kafesRows - 1 || y == startingY + kafesRows - 2) && x != startingX + kafesCols - 1 && x != startingX) {
                     // Draw the tile image at the appropriate grid position
                     g2.drawImage(tile.image, x * tileSize, y * tileSize, tileSize, tileSize, null);
                 }

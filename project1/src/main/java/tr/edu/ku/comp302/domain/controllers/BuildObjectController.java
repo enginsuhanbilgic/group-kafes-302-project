@@ -28,6 +28,10 @@ public class BuildObjectController {
 
     private Random random = new Random();
 
+    private Rectangle clickEffectRect = null;
+    private long clickEffectStart = 0L;
+    private static final long CLICK_EFFECT_DURATION = 500;
+
     public BuildObjectController(HallType hallType) {
         this.hallType = hallType;
         // Initialize an empty map
@@ -149,6 +153,10 @@ public class BuildObjectController {
                     break;
                 }
             }
+            else if (clickedOnObject && !obj.getHasRune() && isPlayerCloseEnough(player, obj)){
+                clickEffectRect = new Rectangle(objPX, objPY, tileSize, tileSize);
+                clickEffectStart = System.currentTimeMillis();
+            }
         }
     }
 
@@ -166,14 +174,33 @@ public class BuildObjectController {
         return false;
     }
 
-    public void draw(Graphics2D g2) {
+    public void draw(Graphics2D g2, boolean drawColumn) {
         List<BuildObject> hallObjects = getObjectsForHall(this.hallType);
         for (BuildObject obj : hallObjects) {
-            drawSingleObject(g2, obj);
+            if(obj!=null){
+                drawSingleObject(g2, obj, drawColumn);
+            }
+        }
+
+        if (clickEffectRect != null) {
+            long elapsed = System.currentTimeMillis() - clickEffectStart;
+            if (elapsed < CLICK_EFFECT_DURATION) {
+                // Customize color/shape/alpha as you wish
+                g2.setColor(new Color(255, 0, 0, 80)); // semi-transparent red
+                g2.fillRect(
+                    clickEffectRect.x,
+                    clickEffectRect.y,
+                    clickEffectRect.width,
+                    clickEffectRect.height
+                );
+            } else {
+                // Reset once expired
+                clickEffectRect = null;
+            }
         }
     }
 
-    private void drawSingleObject(Graphics2D g2, BuildObject obj) {
+    private void drawSingleObject(Graphics2D g2, BuildObject obj, boolean drawColumn) {
         String imageName = obj.getObjectType();
         int tileSize = GameConfig.TILE_SIZE;
         int px = obj.getX() * tileSize;
@@ -184,7 +211,12 @@ public class BuildObjectController {
 
         // 2) If found, draw it. Otherwise fallback.
         if (image != null) {
-            g2.drawImage(image, px, py, tileSize, tileSize, null);
+            if((imageName.trim().equals("column_wall") || imageName.trim().equals("boxes_stacked")) && drawColumn){
+                g2.drawImage(image, px, py - tileSize/2, tileSize, tileSize + tileSize/2, null);
+            }
+            else if (!drawColumn){
+                g2.drawImage(image, px, py, tileSize, tileSize, null);
+            }
         } else {
             // fallback
             g2.setColor(Color.GREEN);

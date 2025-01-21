@@ -341,7 +341,7 @@ public class PlayModeView extends JPanel implements Runnable {
             i++;
         }
         g2.setColor(Color.WHITE);
-        g2.drawString(hallType.toString(), 300, 20);
+        g2.drawString(hallType.toText(), 300, 20);
 
         // Draw damage indicators
         drawDamageIndicators(g2);

@@ -55,7 +55,7 @@ public class PlayModeController {
 
         // Initialize TilesController
         this.tilesController = new TilesController();
-        this.tilesController.loadTiles();
+        this.tilesController.loadTiles(hallType);
 
         this.buildObjectController = new BuildObjectController(hallType);
         this.buildObjectController.loadWorldFromJson(jsonData);
@@ -144,21 +144,20 @@ public class PlayModeController {
     }
 
     public void draw(Graphics2D g2) {
-        // 1) Draw tiles
+
         tilesController.draw(g2);
 
-        // 2) Draw build objects
-        buildObjectController.draw(g2);
+        buildObjectController.draw(g2, false);
 
-        // 3) Draw monsters
-        monsterController.drawAll(g2);
-
-        // 4) Draw enchantments
         enchantmentController.draw(g2);
-
-        // 5) Draw player
+        
         playerController.draw(g2);
 
+        tilesController.drawInnerBottom(g2);
+
+        buildObjectController.draw(g2, true);
+
+        monsterController.drawAll(g2);
 
 
         // If player has reveal active, you might highlight a 4x4 area around the rune

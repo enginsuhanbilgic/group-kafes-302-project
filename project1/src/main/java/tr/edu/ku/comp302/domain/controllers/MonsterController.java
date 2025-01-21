@@ -57,7 +57,7 @@ public class MonsterController {
         fighterImage = ResourceManager.getImage("npc_fighter");
         archerImage  = ResourceManager.getImage("npc_archer");
         wizardImage  = ResourceManager.getImage("npc_wizard");
-        luringGemImage = ResourceManager.getImage("enchantment_gem");
+        luringGemImage = ResourceManager.getImage("thrown_enchantment_gem");
     }
 
     public void setEnchantmentController(EnchantmentController enchantmentController){
@@ -525,7 +525,7 @@ public class MonsterController {
         int playerRow = player.getY() / GameConfig.TILE_SIZE;
         
         // Tam yanında olma kontrolü (yatay veya dikey komşu)
-        return (Math.abs(monsterCol - playerCol) + Math.abs(monsterRow - playerRow)) == 1;
+        return (Math.abs(monsterCol - playerCol) + Math.abs(monsterRow - playerRow)) <= 1;
     }
 
     private int manhattanDistance(int x1, int y1, int x2, int y2) {

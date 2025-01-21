@@ -25,17 +25,21 @@ public class BuildModeController {
             HallType.FIRE
     };
 
-    // Hall bazında yerleştirilen obje listesi tutabiliriz.
-    // Key: Hangi Hall, Value: Bu hall'daki yerleştirilen BuildObject listesi
+    // Key: HallType, Value: List<BuildObject> in that hall
     private Map<HallType, List<BuildObject>> hallObjectsMap;
 
-    // Minimum objeler (Earth, Air, Water, Fire sırasına göre)
+    // Minimum required objects in each hall, in order (Earth, Air, Water, Fire).
     private final int[] minRequired = {6, 9, 13, 17};
 
-    // Gson örneği (json'a çevirme / geri çevirme)
+    // JSON helper
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     private static final String DESIGN_SAVES_DIRECTORY = "design_saves";
+
+    // A comparator to sort BuildObjects by (x ascending, then y ascending).
+    private static final Comparator<BuildObject> BUILD_OBJECT_COMPARATOR =
+            Comparator.comparingInt(BuildObject::getX)
+                      .thenComparingInt(BuildObject::getY);
 
     public BuildModeController() {
         this.currentHallIndex = 0;
@@ -55,14 +59,15 @@ public class BuildModeController {
     }
 
     /**
-     * Hangi Hall'deyiz?
+     * Returns the currently active hall.
      */
     public HallType getCurrentHall() {
         return hallSequence[currentHallIndex];
     }
 
     /**
-     * Şu anki Hall'a obje ekleme.
+     * Places a new BuildObject into the current hall, then sorts the list
+     * so objects remain in ascending coordinate order (x, then y).
      */
     public void placeObject(int gridX, int gridY, String objectType) {
         HallType currentHall = getCurrentHall();
@@ -70,10 +75,13 @@ public class BuildModeController {
 
         BuildObject obj = new BuildObject(gridX, gridY, objectType);
         objects.add(obj);
+
+        // Sort by x ascending, then y ascending
+        objects.sort(BUILD_OBJECT_COMPARATOR);
     }
 
     /**
-     * Şu anki Hall'da minimum obje sayısına ulaştık mı?
+     * Checks if the current hall has at least the minimum number of objects.
      */
     public boolean isCurrentHallValid() {
         HallType hall = getCurrentHall();
@@ -83,9 +91,7 @@ public class BuildModeController {
     }
 
     /**
-     * Bir sonraki Hall'a geçer.
-     *
-     * @return false ise zaten son hall'dayız.
+     * Moves to the next hall (returns false if already at the last one).
      */
     public boolean goToNextHall() {
         if (currentHallIndex >= hallSequence.length - 1) {
@@ -96,9 +102,7 @@ public class BuildModeController {
     }
 
     /**
-     * Bir önceki Hall'a geçer.
-     *
-     * @return false ise zaten ilk hall'dayız.
+     * Moves to the previous hall (returns false if already at the first one).
      */
     public boolean goToPreviousHall() {
         if (currentHallIndex <= 0) {
@@ -109,37 +113,41 @@ public class BuildModeController {
     }
 
     /**
-     * Tüm hall objelerini JSON formatına çevirir.
+     * Exports all halls' data to a JSON string.
      */
     public String exportToJson() {
         return gson.toJson(hallObjectsMap);
     }
-    
 
     /**
-     * Reads hall data from JSON and replaces the local hallObjectsMap.
-     *
-     * @requires json may be null or empty
-     * @modifies this.hallObjectsMap
-     * @effects 
-     *   - If json is null or empty, hallObjectsMap will remain as-is or be replaced with an empty map (implementation choice).
-     *   - If json is valid, replaces existing hallObjectsMap with the parsed data.
-     *   - If json is invalid, may result in a partial or empty map.
+     * Imports hall data from a JSON string, replaces the local hallObjectsMap,
+     * and re-sorts each hall's list in ascending (x, y) order.
      */
     public void importFromJson(String json) {
+        if (json == null || json.isEmpty()) {
+            // If desired, you could clear the map or do nothing.
+            return;
+        }
         Type type = new TypeToken<Map<HallType, List<BuildObject>>>(){}.getType();
         Map<HallType, List<BuildObject>> data = gson.fromJson(json, type);
-        if(data != null) {
+        if (data != null) {
+            // Sort each hall's list to maintain the order
+            for (Map.Entry<HallType, List<BuildObject>> entry : data.entrySet()) {
+                entry.getValue().sort(BUILD_OBJECT_COMPARATOR);
+            }
             this.hallObjectsMap = data;
         }
     }
 
+    /**
+     * Retrieves the list of BuildObjects for the given hall (read-only).
+     */
     public List<BuildObject> getObjectsForHall(HallType hallType) {
         return hallObjectsMap.getOrDefault(hallType, Collections.emptyList());
     }
 
     /**
-     * Debug amaçlı console'a yazdırır. (Opsiyonel)
+     * Prints all objects to console for debugging.
      */
     public void printAllObjects() {
         for (HallType hall : hallSequence) {
@@ -151,17 +159,22 @@ public class BuildModeController {
         }
     }
 
-    // Örnek "saveWorld" fonksiyonunu console'a yazacak şekilde koruyabilirsiniz
+    /**
+     * Example method; not fully implemented.
+     */
     public void saveWorld(String worldName) {
         System.out.println("Saving world: " + worldName);
         printAllObjects();
         System.out.println("Done saving " + worldName);
     }
 
+    /**
+     * Saves the current design to a JSON file in 'design_saves/' directory.
+     */
     public void saveDesign(String designName) {
         String json = exportToJson();
         Path savePath = Paths.get(DESIGN_SAVES_DIRECTORY, designName + ".json");
-        
+
         try {
             Files.write(savePath, json.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
@@ -170,9 +183,12 @@ public class BuildModeController {
         }
     }
 
+    /**
+     * Loads a design from 'design_saves/' directory and updates hallObjectsMap.
+     */
     public void loadDesign(String designName) {
         Path loadPath = Paths.get(DESIGN_SAVES_DIRECTORY, designName + ".json");
-        
+
         try {
             String json = new String(Files.readAllBytes(loadPath), StandardCharsets.UTF_8);
             importFromJson(json);
@@ -182,6 +198,9 @@ public class BuildModeController {
         }
     }
 
+    /**
+     * Returns the list of saved designs in the 'design_saves' folder (without .json extension).
+     */
     public List<String> getSavedDesigns() {
         try {
             return Files.list(Paths.get(DESIGN_SAVES_DIRECTORY))
