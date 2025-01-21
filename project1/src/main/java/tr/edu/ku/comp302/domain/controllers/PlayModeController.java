@@ -94,7 +94,7 @@ public class PlayModeController {
 
         // 1) Tile system
         this.tilesController = new TilesController();
-        this.tilesController.loadTiles();
+        this.tilesController.loadTiles(HallType.EARTH);
 
         // 2) BuildObjectController (we do *not* load from JSON, just init the empty map)
         this.buildObjectController = new BuildObjectController(this.hallType);
