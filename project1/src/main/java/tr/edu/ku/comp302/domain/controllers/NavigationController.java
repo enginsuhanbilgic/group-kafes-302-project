@@ -1,6 +1,7 @@
 package tr.edu.ku.comp302.domain.controllers;
 
 import tr.edu.ku.comp302.config.GameConfig;
+import tr.edu.ku.comp302.domain.models.GameState;
 import tr.edu.ku.comp302.domain.models.HallType;
 import tr.edu.ku.comp302.domain.models.Player;
 import tr.edu.ku.comp302.domain.models.Tile;
@@ -45,7 +46,7 @@ public class NavigationController {
         this.frame.getContentPane().add(cardPanel, BorderLayout.CENTER);
     }
 
-        /**
+    /**
      * REQUIRES:
      *  - The TilesController must have loaded tile information before this method is called.
      *  - The area defined by the cage boundaries must have at least one non-collidable tile.
@@ -208,4 +209,27 @@ public class NavigationController {
     public Component[] getAllPanelsInCardLayout() {
         return cardPanel.getComponents();
     }
+
+    public void startLoadedGame(GameState gameState) {
+        // If a playModeView is already running, remove it
+        if (this.playModeView != null) {
+            this.playModeView.stopGameThread();
+            cardPanel.remove(this.playModeView);
+            this.playModeView = null;
+        }
+        if (buildModeView != null) {
+            cardPanel.remove(buildModeView);
+            buildModeView = null;
+        }
+
+        // Create a new PlayModeView from the loaded state
+        PlayModeView pmv = new PlayModeView(this, frame, gameState);
+        this.playModeView = pmv;
+
+        // Add it to the CardLayout
+        cardPanel.add(pmv, PLAY_MODE);    // not "PlayModeLoaded"
+        showPlayMode(pmv);               // same name used here
+
+    }
+
 }

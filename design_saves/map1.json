@@ -1,0 +1,591 @@
+{
+  "AIR": [
+    {
+      "x": 13,
+      "y": 4,
+      "objectType": "column_wall",
+      "hasRune": false,
+      "offset": 26
+    },
+    {
+      "x": 9,
+      "y": 4,
+      "objectType": "column_wall",
+      "hasRune": false,
+      "offset": 141
+    },
+    {
+      "x": 6,
+      "y": 5,
+      "objectType": "column_wall",
+      "hasRune": false,
+      "offset": 11
+    },
+    {
+      "x": 5,
+      "y": 8,
+      "objectType": "column_wall",
+      "hasRune": false,
+      "offset": 15
+    },
+    {
+      "x": 5,
+      "y": 12,
+      "objectType": "column_wall",
+      "hasRune": false,
+      "offset": 82
+    },
+    {
+      "x": 8,
+      "y": 13,
+      "objectType": "column_wall",
+      "hasRune": false,
+      "offset": 33
+    },
+    {
+      "x": 11,
+      "y": 9,
+      "objectType": "column_wall",
+      "hasRune": false,
+      "offset": 88
+    },
+    {
+      "x": 8,
+      "y": 7,
+      "objectType": "column_wall",
+      "hasRune": false,
+      "offset": 118
+    },
+    {
+      "x": 8,
+      "y": 9,
+      "objectType": "column_wall",
+      "hasRune": false,
+      "offset": 77
+    },
+    {
+      "x": 12,
+      "y": 13,
+      "objectType": "column_wall",
+      "hasRune": false,
+      "offset": 103
+    },
+    {
+      "x": 14,
+      "y": 6,
+      "objectType": "column_wall",
+      "hasRune": false,
+      "offset": 43
+    },
+    {
+      "x": 10,
+      "y": 7,
+      "objectType": "column_wall",
+      "hasRune": false,
+      "offset": 6
+    },
+    {
+      "x": 15,
+      "y": 11,
+      "objectType": "column_wall",
+      "hasRune": false,
+      "offset": 110
+    },
+    {
+      "x": 14,
+      "y": 9,
+      "objectType": "column_wall",
+      "hasRune": false,
+      "offset": 32
+    },
+    {
+      "x": 12,
+      "y": 11,
+      "objectType": "column_wall",
+      "hasRune": false,
+      "offset": 91
+    },
+    {
+      "x": 8,
+      "y": 11,
+      "objectType": "column_wall",
+      "hasRune": false,
+      "offset": 98
+    },
+    {
+      "x": 4,
+      "y": 10,
+      "objectType": "column_wall",
+      "hasRune": false,
+      "offset": 39
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "objectType": "column_wall",
+      "hasRune": false,
+      "offset": 25
+    }
+  ],
+  "WATER": [
+    {
+      "x": 4,
+      "y": 4,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 133
+    },
+    {
+      "x": 6,
+      "y": 4,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 85
+    },
+    {
+      "x": 8,
+      "y": 4,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 43
+    },
+    {
+      "x": 10,
+      "y": 4,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 12
+    },
+    {
+      "x": 11,
+      "y": 4,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 104
+    },
+    {
+      "x": 13,
+      "y": 4,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 98
+    },
+    {
+      "x": 13,
+      "y": 5,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 92
+    },
+    {
+      "x": 13,
+      "y": 7,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 28
+    },
+    {
+      "x": 13,
+      "y": 9,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 142
+    },
+    {
+      "x": 9,
+      "y": 9,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 97
+    },
+    {
+      "x": 9,
+      "y": 9,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 100
+    },
+    {
+      "x": 7,
+      "y": 9,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 89
+    },
+    {
+      "x": 6,
+      "y": 9,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 0
+    },
+    {
+      "x": 3,
+      "y": 9,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 32
+    },
+    {
+      "x": 4,
+      "y": 12,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 79
+    },
+    {
+      "x": 6,
+      "y": 13,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 68
+    },
+    {
+      "x": 9,
+      "y": 13,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 135
+    },
+    {
+      "x": 10,
+      "y": 13,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 25
+    },
+    {
+      "x": 12,
+      "y": 13,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 121
+    },
+    {
+      "x": 13,
+      "y": 13,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 74
+    },
+    {
+      "x": 13,
+      "y": 11,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 137
+    }
+  ],
+  "EARTH": [
+    {
+      "x": 11,
+      "y": 8,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 0
+    },
+    {
+      "x": 8,
+      "y": 4,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 56
+    },
+    {
+      "x": 6,
+      "y": 8,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 49
+    },
+    {
+      "x": 7,
+      "y": 13,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 85
+    },
+    {
+      "x": 9,
+      "y": 10,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 88
+    },
+    {
+      "x": 9,
+      "y": 10,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 78
+    },
+    {
+      "x": 9,
+      "y": 10,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 3
+    },
+    {
+      "x": 9,
+      "y": 10,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 96
+    },
+    {
+      "x": 9,
+      "y": 10,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 9
+    },
+    {
+      "x": 11,
+      "y": 13,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 89
+    },
+    {
+      "x": 11,
+      "y": 13,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 104
+    },
+    {
+      "x": 13,
+      "y": 11,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 96
+    },
+    {
+      "x": 13,
+      "y": 5,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 71
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 69
+    },
+    {
+      "x": 4,
+      "y": 9,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 14
+    },
+    {
+      "x": 4,
+      "y": 13,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 108
+    }
+  ],
+  "FIRE": [
+    {
+      "x": 4,
+      "y": 4,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 67
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 82
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 53
+    },
+    {
+      "x": 4,
+      "y": 8,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 57
+    },
+    {
+      "x": 4,
+      "y": 10,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 36
+    },
+    {
+      "x": 5,
+      "y": 11,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 21
+    },
+    {
+      "x": 5,
+      "y": 13,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 30
+    },
+    {
+      "x": 5,
+      "y": 14,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 39
+    },
+    {
+      "x": 8,
+      "y": 15,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 39
+    },
+    {
+      "x": 10,
+      "y": 14,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 117
+    },
+    {
+      "x": 11,
+      "y": 10,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 97
+    },
+    {
+      "x": 8,
+      "y": 10,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 21
+    },
+    {
+      "x": 6,
+      "y": 9,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 116
+    },
+    {
+      "x": 6,
+      "y": 7,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 98
+    },
+    {
+      "x": 6,
+      "y": 6,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 54
+    },
+    {
+      "x": 6,
+      "y": 4,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 24
+    },
+    {
+      "x": 8,
+      "y": 4,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 111
+    },
+    {
+      "x": 10,
+      "y": 4,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 140
+    },
+    {
+      "x": 11,
+      "y": 3,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 119
+    },
+    {
+      "x": 14,
+      "y": 2,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 129
+    },
+    {
+      "x": 15,
+      "y": 2,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 104
+    },
+    {
+      "x": 15,
+      "y": 7,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 102
+    },
+    {
+      "x": 14,
+      "y": 5,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 66
+    },
+    {
+      "x": 12,
+      "y": 7,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 18
+    },
+    {
+      "x": 10,
+      "y": 7,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 127
+    },
+    {
+      "x": 13,
+      "y": 9,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 125
+    },
+    {
+      "x": 13,
+      "y": 12,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 4
+    },
+    {
+      "x": 14,
+      "y": 15,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 31
+    }
+  ]
+}

@@ -2,7 +2,9 @@ package tr.edu.ku.comp302.domain.models.Monsters;
 
 import tr.edu.ku.comp302.domain.models.Monsters.strategies.WizardStrategy;
 
-public class WizardMonster extends Monster {
+import java.io.Serializable;
+
+public class WizardMonster extends Monster implements Serializable {
 
     // ========== NEW FIELDS ==========
     private WizardStrategy strategy; 
