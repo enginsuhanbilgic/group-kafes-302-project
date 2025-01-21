@@ -52,7 +52,7 @@ public class PlayModeView extends JPanel implements Runnable {
         playModeController.setPlayModeView(this);
 
         // Timer
-        playModeController.startGameTimer(
+        playModeController.startTimerForNewGame(
                 time -> SwingUtilities.invokeLater(() -> {
                     parentFrame.revalidate();
                     parentFrame.repaint();
@@ -116,7 +116,7 @@ public class PlayModeView extends JPanel implements Runnable {
         this.playModeController.restoreFromGameState(loadedState);
 
         // Start the timer so the game picks up from timeRemaining
-        this.playModeController.startGameTimer(
+        this.playModeController.startTimerForLoadedGame(
                 time -> SwingUtilities.invokeLater(() -> {
                     parentFrame.revalidate();
                     parentFrame.repaint();
