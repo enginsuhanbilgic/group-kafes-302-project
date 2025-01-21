@@ -1,16 +1,21 @@
 package tr.edu.ku.comp302;
 
-import tr.edu.ku.comp302.config.GameConfig;
-import tr.edu.ku.comp302.domain.controllers.NavigationController;
-import tr.edu.ku.comp302.domain.controllers.ResourceManager;
-
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+
+import tr.edu.ku.comp302.config.GameConfig;
+import tr.edu.ku.comp302.domain.controllers.MusicController;
+import tr.edu.ku.comp302.domain.controllers.NavigationController;
+import tr.edu.ku.comp302.domain.controllers.ResourceManager;
 
 public class Main {
     public static void main(String[] args) throws Exception {
 
         ResourceManager.init();
+        MusicController musicController = new MusicController("assets/gamemusic.wav");
+
+        // Play the music at the start of the game
+        musicController.play();
 
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("KAFES Game");
