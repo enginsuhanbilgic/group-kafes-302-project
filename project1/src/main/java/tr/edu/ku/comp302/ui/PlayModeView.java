@@ -1,10 +1,8 @@
 package tr.edu.ku.comp302.ui;
 
 import tr.edu.ku.comp302.config.GameConfig;
-import tr.edu.ku.comp302.domain.controllers.KeyHandler;
-import tr.edu.ku.comp302.domain.controllers.MouseHandler;
-import tr.edu.ku.comp302.domain.controllers.NavigationController;
-import tr.edu.ku.comp302.domain.controllers.PlayModeController;
+import tr.edu.ku.comp302.domain.controllers.*;
+import tr.edu.ku.comp302.domain.models.GameState;
 import tr.edu.ku.comp302.domain.models.HallType;
 import tr.edu.ku.comp302.domain.models.Player;
 import tr.edu.ku.comp302.domain.models.enchantments.Enchantment;
@@ -27,16 +25,13 @@ public class PlayModeView extends JPanel implements Runnable {
 
     private static final String SAVES_DIRECTORY = "saves";
 
+
+
     // Eski constructor (no JSON)
     public PlayModeView(NavigationController navigationController, JFrame parentFrame, HallType hallType, Player player) {
         this(navigationController, parentFrame, null, hallType, player);
         // "null" diyerek alt constructor'a yönlendiriyoruz
     }
-    /* 
-    // Daha eski Constructor
-    public PlayModeView(NavigationController navigationController, JFrame frame) {
-        this(navigationController, frame, null, null);
-    }*/
 
     /**
      * Yeni constructor: BuildMode’dan gelen JSON data’sını alır.
@@ -91,6 +86,56 @@ public class PlayModeView extends JPanel implements Runnable {
             }
         });
     }
+
+    // A NEW constructor that restores directly from a loaded GameState.
+    public PlayModeView(NavigationController navigationController, JFrame parentFrame, GameState loadedState) {
+        this.setDoubleBuffered(true);
+        this.setBackground(new Color(66, 40, 53));
+
+        this.navigationController = navigationController;
+        this.hallType = loadedState.getCurrentHall();
+        this.jsonData = null; // Because we are not loading from JSON now
+
+        // Create Key/Mouse handlers
+        keyHandler = new KeyHandler();
+        MouseHandler mouseHandler = new MouseHandler();
+        this.setFocusable(true);
+
+        // We build a normal PlayModeController, but we give it “dummy” or default arguments
+        // Then we call restoreFromGameState(...) to apply the loaded snapshot.
+
+        // We need a dummy Player so the constructor won't crash.
+        // e.g. new Player(0,0,GameConfig.PLAYER_SPEED)
+        Player dummyPlayer = new Player(0,0,GameConfig.PLAYER_SPEED);
+
+        this.playModeController = new PlayModeController(keyHandler, mouseHandler, /*json*/ null, this.hallType, dummyPlayer);
+        this.playModeController.setNavigationController(this.navigationController);
+        this.playModeController.setPlayModeView(this);
+
+        // Now actually restore data from loadedState:
+        this.playModeController.restoreFromGameState(loadedState);
+
+        // Start the timer so the game picks up from timeRemaining
+        this.playModeController.startGameTimer(
+                time -> SwingUtilities.invokeLater(() -> {
+                    parentFrame.revalidate();
+                    parentFrame.repaint();
+                }),
+                () -> SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(this, "Time is up!");
+                    keyHandler.resetKeys();
+                    navigationController.endGameAndShowMainMenu("Game Over! Time is up.");
+                })
+        );
+
+        // Register input listeners
+        this.addKeyListener(keyHandler);
+        this.addMouseListener(mouseHandler);
+
+        // Kick off the game loop
+        startGameThread();
+    }
+
 
     public void startGameThread() {
         if (gameThread == null || !gameThread.isAlive()) {
@@ -157,6 +202,34 @@ public class PlayModeView extends JPanel implements Runnable {
                         int result = JOptionPane.showConfirmDialog(this, "Do you really want to save and exit the current game session?", "Warning", dialogButton);
                         if(result == JOptionPane.YES_OPTION){
                             boolean isSuccessful = false;
+                            try {
+                                // 1) Create a snapshot of the current game
+                                GameState gs = playModeController.createGameState();
+
+                                // 2) Prompt for a save name, or you could auto-generate one
+                                String saveName = JOptionPane.showInputDialog(
+                                        this,
+                                        "Enter a name for your save file (without extension):",
+                                        "Save Current Game",
+                                        JOptionPane.PLAIN_MESSAGE
+                                );
+                                if (saveName == null || saveName.isBlank()) {
+                                    JOptionPane.showMessageDialog(this,
+                                            "Save cancelled.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                                    // Return to game
+                                    keyHandler.escPressed = !keyHandler.escPressed;
+                                    pauseMenuShown = false;
+                                    this.requestFocusInWindow();
+                                    playModeController.resumeGameTimer();
+                                    return;
+                                }
+
+                                // 3) Use SaveLoadController
+                                isSuccessful = SaveLoadController.saveGame(gs, saveName.trim());
+
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
                             //
                             //
                             //
@@ -165,6 +238,7 @@ public class PlayModeView extends JPanel implements Runnable {
                             //
                             //
                             //
+
                             if(isSuccessful){
                                 JOptionPane.showMessageDialog(this, "Successfully saved!");
                                 keyHandler.resetKeys();

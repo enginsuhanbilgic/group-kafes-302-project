@@ -5,6 +5,8 @@ import tr.edu.ku.comp302.domain.controllers.MonsterController;
 import tr.edu.ku.comp302.domain.controllers.BuildObjectController;
 import tr.edu.ku.comp302.domain.models.Player;
 
+import java.io.Serializable;
+
 /**
  * If more than 70% time remains:
  *  - Move the rune location every 3 seconds
@@ -12,6 +14,7 @@ import tr.edu.ku.comp302.domain.models.Player;
  *    the MonsterController will change this strategy to Mid/Low.
  */
 public class WizardHighTimeStrategy implements WizardStrategy {
+    private static final long serialVersionUID = 1L;
 
     @Override
     public void updateBehavior(

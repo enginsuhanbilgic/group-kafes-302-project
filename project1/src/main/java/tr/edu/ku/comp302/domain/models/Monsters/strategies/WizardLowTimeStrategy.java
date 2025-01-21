@@ -11,6 +11,7 @@ import tr.edu.ku.comp302.domain.models.Player;
  *  - Then the wizard disappears immediately.
  */
 public class WizardLowTimeStrategy implements WizardStrategy {
+    private static final long serialVersionUID = 1L;
 
     @Override
     public void updateBehavior(

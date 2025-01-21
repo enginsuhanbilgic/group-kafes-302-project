@@ -1,10 +1,7 @@
 package tr.edu.ku.comp302.domain.controllers;
 
 import tr.edu.ku.comp302.config.GameConfig;
-import tr.edu.ku.comp302.domain.models.BuildObject;
-import tr.edu.ku.comp302.domain.models.HallType;
-import tr.edu.ku.comp302.domain.models.Player;
-import tr.edu.ku.comp302.domain.models.Tile;
+import tr.edu.ku.comp302.domain.models.*;
 import tr.edu.ku.comp302.domain.models.enchantments.Enchantment;
 import tr.edu.ku.comp302.domain.models.enchantments.EnchantmentType;
 import tr.edu.ku.comp302.ui.PlayModeView;
@@ -29,7 +26,7 @@ public class PlayModeController {
     private EnchantmentController enchantmentController;
     private BuildObjectController buildObjectController;
     private final KeyHandler keyHandler;
-    private final HallType hallType;
+    private HallType hallType;
     private final String jsonData;
     private final MouseHandler mouseHandler;
 
@@ -331,5 +328,68 @@ public class PlayModeController {
 
     public void setPlayModeView(PlayModeView view) {
         this.playModeView = view;
+    }
+
+    /**
+     * Captures the entire current game state into a serializable object.
+     */
+    public GameState createGameState() {
+        GameState gs = new GameState();
+
+        // Which hall are we in?
+        gs.setCurrentHall(this.hallType);
+
+        // Player
+        gs.setPlayer(this.playerController.getEntity());
+
+        // Monsters
+        gs.setMonsters(this.monsterController.getMonsters());
+
+        // Enchantments
+        gs.setEnchantments(this.enchantmentController.getEnchantments());
+
+        // The BuildObject map
+        gs.setWorldObjectsMap(this.buildObjectController.getWorldObjectsMap());
+
+        // Time
+        gs.setTimeRemaining(this.timeRemaining);
+        gs.setTimePassed(this.timePassed);
+        gs.setInitialTime(this.initialTime);
+
+        return gs;
+    }
+
+    /**
+     * Restores the controllers from a previously loaded GameState.
+     */
+    public void restoreFromGameState(GameState gs) {
+        this.hallType = gs.getCurrentHall();
+        this.timeRemaining = gs.getTimeRemaining();
+        this.timePassed = gs.getTimePassed();
+        this.initialTime = gs.getInitialTime();
+
+        // Rebuild the Player and hook up the PlayerController
+        this.playerController.getEntity().setX(gs.getPlayer().getX());
+        this.playerController.getEntity().setY(gs.getPlayer().getY());
+        this.playerController.getEntity().setLives(gs.getPlayer().getLives());
+        // ...and copy any other important fields from gs.getPlayer()
+        // (Alternatively, you could recreate a new Player object entirely.)
+
+        // Rebuild Monsters
+        this.monsterController.clearMonsters();
+        this.monsterController.getMonsters().addAll(gs.getMonsters());
+
+        // Rebuild Enchantments
+        this.enchantmentController.getEnchantments().clear();
+        this.enchantmentController.getEnchantments().addAll(gs.getEnchantments());
+
+        // Rebuild BuildObjects
+        this.buildObjectController.getWorldObjectsMap().clear();
+        this.buildObjectController.getWorldObjectsMap().putAll(gs.getWorldObjectsMap());
+
+        // If the player or other references rely on random initialization, you may need
+        // to re-call your 'initializeRandom()' logic for any BuildObjects or monsters, etc.
+
+        // Done. The next game loop tick should pick everything up as normal.
     }
 }

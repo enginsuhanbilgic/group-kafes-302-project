@@ -25,6 +25,8 @@ import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 import tr.edu.ku.comp302.domain.controllers.NavigationController;
+import tr.edu.ku.comp302.domain.controllers.SaveLoadController;
+import tr.edu.ku.comp302.domain.models.GameState;
 
 /*
  * MainMenuView extends JPanel since all of the views are a part of Card Layout.
@@ -79,6 +81,19 @@ public class MainMenuView extends JPanel {
 
                 if (selectedDesign != null) {
                     try {
+                        // 1) Load the GameState
+                        GameState loadedState = SaveLoadController.loadGame(selectedDesign);
+
+                        if (loadedState == null) {
+                            JOptionPane.showMessageDialog(this,
+                                    "Failed to load the game file. It may be corrupted or missing.",
+                                    "Error",
+                                    JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+
+                        // 2) Let NavigationController create a new PlayMode with that state
+                        controller.startLoadedGame(loadedState);
                         //
                         //
                         //
@@ -93,11 +108,13 @@ public class MainMenuView extends JPanel {
                             JOptionPane.INFORMATION_MESSAGE);
                         //repaint();
                     } catch (Exception err) {
-                        JOptionPane.showMessageDialog(this, 
-                            "Error loading game: " + err.getMessage(), 
-                            "Error", 
-                            JOptionPane.ERROR_MESSAGE);
+                        err.printStackTrace(); // print full stack trace to console
+                        JOptionPane.showMessageDialog(this,
+                                "Error loading game: " + err.toString(),
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
                     }
+
                 }
             }
         });
@@ -122,8 +139,8 @@ public class MainMenuView extends JPanel {
     private List<String> getSavedDesigns() {
         try {
             return Files.list(Paths.get(SAVES_DIRECTORY))
-                    .filter(path -> path.toString().endsWith(".json"))
-                    .map(path -> path.getFileName().toString().replace(".json", ""))
+                    .filter(path -> path.toString().endsWith(".ser"))
+                    .map(path -> path.getFileName().toString().replace(".ser", ""))
                     .sorted()
                     .toList();
         } catch (IOException e) {

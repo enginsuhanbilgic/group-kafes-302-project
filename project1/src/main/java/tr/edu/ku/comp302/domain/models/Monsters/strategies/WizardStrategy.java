@@ -5,11 +5,13 @@ import tr.edu.ku.comp302.domain.controllers.MonsterController;
 import tr.edu.ku.comp302.domain.controllers.BuildObjectController;
 import tr.edu.ku.comp302.domain.models.Player;
 
+import java.io.Serializable;
+
 /**
  * WizardStrategy interface.
  * Each concrete strategy controls how the wizard should behave based on time conditions.
  */
-public interface WizardStrategy {
+public interface WizardStrategy extends Serializable {
     /**
      * Called every game update for this wizard. 
      *
