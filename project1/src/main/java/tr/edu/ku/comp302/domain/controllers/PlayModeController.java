@@ -513,7 +513,6 @@ public class PlayModeController {
         }
     }
     
-    
 
     public String exportWorldObjectsMapToJson(Map<HallType, List<BuildObject>> hallMap) {
         // Convert HallType -> List<BuildObject> 

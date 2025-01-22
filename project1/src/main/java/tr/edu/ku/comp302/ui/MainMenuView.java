@@ -148,7 +148,7 @@ public class MainMenuView extends JPanel {
             if (imageStream != null) {
                 backgroundImage = ImageIO.read(imageStream);
             } else {
-                System.err.println("Image not found: assets/mainMenuBackground.jpg");
+                System.err.println("Image not found: assets/mainMenu.jpg");
             }
         } catch (IOException e) {
             e.printStackTrace();

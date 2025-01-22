@@ -2,6 +2,7 @@ package tr.edu.ku.comp302.ui;
 
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.controllers.*;
+import tr.edu.ku.comp302.domain.models.BuildObject;
 import tr.edu.ku.comp302.domain.models.GameState;
 import tr.edu.ku.comp302.domain.models.HallType;
 import tr.edu.ku.comp302.domain.models.Player;
@@ -9,7 +10,14 @@ import tr.edu.ku.comp302.domain.models.enchantments.Enchantment;
 import tr.edu.ku.comp302.domain.models.enchantments.EnchantmentType;
 
 import javax.swing.*;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.util.List;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PlayModeView extends JPanel implements Runnable {
 
@@ -94,7 +102,7 @@ public class PlayModeView extends JPanel implements Runnable {
 
         this.navigationController = navigationController;
         this.hallType = loadedState.getCurrentHall();
-        this.jsonData = null; // Because we are not loading from JSON now
+        this.jsonData = exportWorldObjectsMapToJson(loadedState.getWorldObjectsMap()); // Because we are not loading from JSON now
 
         // Create Key/Mouse handlers
         keyHandler = new KeyHandler();
@@ -133,6 +141,23 @@ public class PlayModeView extends JPanel implements Runnable {
 
         // Kick off the game loop
         startGameThread();
+    }
+
+    public String exportWorldObjectsMapToJson(Map<HallType, List<BuildObject>> hallMap) {
+        // Convert HallType -> List<BuildObject> 
+        // into a Map<String, List<BuildObject>> so that 
+        // keys become "EARTH", "AIR", etc. in the JSON.
+        Map<String, List<BuildObject>> rawMap = new HashMap<>();
+
+        for (Map.Entry<HallType, List<BuildObject>> entry : hallMap.entrySet()) {
+            HallType hall = entry.getKey();
+            List<BuildObject> objects = entry.getValue();
+            rawMap.put(hall.name(), objects); // name() => "EARTH", "AIR", "WATER", "FIRE"
+        }
+
+        // Use Gson with pretty-print:
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(rawMap);
     }
 
 

@@ -223,11 +223,11 @@ public class BuildObjectController {
             g2.fillRect(px, py, tileSize, tileSize);
         }
 
-        /*// 3) Optional overlay if hasRune
+        // 3) Optional overlay if hasRune
         if (obj.getHasRune()) {
             g2.setColor(new Color(255, 215, 0, 128));
             g2.fillRect(px, py, tileSize, tileSize);
-        }*/
+        }
     }
 
     /**

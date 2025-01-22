@@ -1,7 +1,5 @@
 package tr.edu.ku.comp302.ui;
 
-import tr.edu.ku.comp302.domain.controllers.NavigationController;
-
 import net.miginfocom.swing.MigLayout;
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -39,7 +37,7 @@ public class HelpMenuView extends JPanel {
     private void loadBackgroundImage() {
         try {
             // Load the background image from resources
-            InputStream imageStream = getClass().getClassLoader().getResourceAsStream("assets/mainMenuBackground.jpg");
+            InputStream imageStream = getClass().getClassLoader().getResourceAsStream("assets/mainMenu.png");
             if (imageStream != null) {
                 backgroundImage = ImageIO.read(imageStream);
             } else {
