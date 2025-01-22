@@ -1,4 +1,4 @@
-package tr.edu.ku.comp302.domain.models.Monsters;
+package tr.edu.ku.comp302.domain.models.monsters;
 
 import tr.edu.ku.comp302.domain.models.Entity;
 

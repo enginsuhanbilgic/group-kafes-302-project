@@ -1,8 +1,8 @@
-package tr.edu.ku.comp302.domain.models.Monsters;
-
-import tr.edu.ku.comp302.domain.models.Monsters.strategies.WizardStrategy;
+package tr.edu.ku.comp302.domain.models.monsters;
 
 import java.io.Serializable;
+
+import tr.edu.ku.comp302.domain.models.monsters.strategies.WizardStrategy;
 
 public class WizardMonster extends Monster implements Serializable {
 

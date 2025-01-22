@@ -1,7 +1,7 @@
 package tr.edu.ku.comp302.domain.models;
 
 import tr.edu.ku.comp302.domain.models.enchantments.Enchantment;
-import tr.edu.ku.comp302.domain.models.Monsters.Monster;
+import tr.edu.ku.comp302.domain.models.monsters.Monster;
 
 import java.awt.Point;
 import java.io.Serializable;

@@ -4,10 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import tr.edu.ku.comp302.config.GameConfig;
-import tr.edu.ku.comp302.domain.models.Monsters.FighterMonster;
-import tr.edu.ku.comp302.domain.models.Monsters.Monster;
 import tr.edu.ku.comp302.domain.models.Player;
 import tr.edu.ku.comp302.domain.models.Tile;
+import tr.edu.ku.comp302.domain.models.monsters.FighterMonster;
+import tr.edu.ku.comp302.domain.models.monsters.Monster;
 
 import java.util.List;
 

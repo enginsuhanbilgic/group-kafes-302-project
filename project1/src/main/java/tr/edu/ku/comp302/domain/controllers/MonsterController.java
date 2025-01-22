@@ -3,10 +3,10 @@ package tr.edu.ku.comp302.domain.controllers;
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.Player;
 import tr.edu.ku.comp302.domain.models.Tile;
-import tr.edu.ku.comp302.domain.models.Monsters.*;
-import tr.edu.ku.comp302.domain.models.Monsters.strategies.WizardHighTimeStrategy;
-import tr.edu.ku.comp302.domain.models.Monsters.strategies.WizardLowTimeStrategy;
-import tr.edu.ku.comp302.domain.models.Monsters.strategies.WizardMidTimeStrategy;
+import tr.edu.ku.comp302.domain.models.monsters.*;
+import tr.edu.ku.comp302.domain.models.monsters.strategies.WizardHighTimeStrategy;
+import tr.edu.ku.comp302.domain.models.monsters.strategies.WizardLowTimeStrategy;
+import tr.edu.ku.comp302.domain.models.monsters.strategies.WizardMidTimeStrategy;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

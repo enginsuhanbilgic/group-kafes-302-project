@@ -1,9 +1,9 @@
-package tr.edu.ku.comp302.domain.models.Monsters.strategies;
+package tr.edu.ku.comp302.domain.models.monsters.strategies;
 
-import tr.edu.ku.comp302.domain.models.Monsters.WizardMonster;
 import tr.edu.ku.comp302.domain.controllers.MonsterController;
 import tr.edu.ku.comp302.domain.controllers.BuildObjectController;
 import tr.edu.ku.comp302.domain.models.Player;
+import tr.edu.ku.comp302.domain.models.monsters.WizardMonster;
 
 import java.io.Serializable;
 
