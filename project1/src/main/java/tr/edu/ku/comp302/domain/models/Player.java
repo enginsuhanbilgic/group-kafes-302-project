@@ -5,12 +5,10 @@ import tr.edu.ku.comp302.domain.controllers.MonsterController;
 import tr.edu.ku.comp302.domain.models.enchantments.Enchantment;
 import tr.edu.ku.comp302.domain.models.enchantments.EnchantmentType;
 
-import java.io.Serializable;
-
 /**
  * The Player class represents the player's state in the game.
  */
-public class Player extends Entity implements Serializable {
+public class Player extends Entity {
 
     private boolean walking = false;
     private int lives;

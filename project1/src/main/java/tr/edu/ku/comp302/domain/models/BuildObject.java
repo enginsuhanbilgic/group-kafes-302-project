@@ -1,10 +1,9 @@
 package tr.edu.ku.comp302.domain.models;
 
-import java.io.Serializable;
 import java.util.Random;
 import tr.edu.ku.comp302.config.GameConfig;
 
-public class BuildObject implements Serializable {
+public class BuildObject {
     private int x;              // Grid coordinate (top-left)
     private int y;              // Grid coordinate (top-left)
     private String objectType;  // "box", "chest", "skull", etc.

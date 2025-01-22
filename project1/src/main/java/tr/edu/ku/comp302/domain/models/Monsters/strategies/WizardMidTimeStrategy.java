@@ -13,7 +13,6 @@ import tr.edu.ku.comp302.domain.models.Player;
  *    MonsterController will switch the wizard's strategy.
  */
 public class WizardMidTimeStrategy implements WizardStrategy {
-    private static final long serialVersionUID = 1L;
 
     @Override
     public void updateBehavior(

@@ -11,7 +11,6 @@ public class GameTimerController {
     public GameTimerController(Consumer<Integer> onTick, Runnable onTimeUp) {
         this.onTick = onTick;
         this.onTimeUp = onTimeUp;
-        
     }
 
     public void start(int initialTime) {

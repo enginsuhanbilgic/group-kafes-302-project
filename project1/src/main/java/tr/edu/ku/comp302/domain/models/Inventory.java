@@ -1,6 +1,5 @@
 package tr.edu.ku.comp302.domain.models;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +9,7 @@ import tr.edu.ku.comp302.domain.models.enchantments.*;
  * A simple inventory that can store Enchantments
  * (only those not consumed instantly, typically).
  */
-public class Inventory implements Serializable {
+public class Inventory {
 
     private final List<Enchantment> items;
 

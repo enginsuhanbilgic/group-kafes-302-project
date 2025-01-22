@@ -1,8 +1,6 @@
 package tr.edu.ku.comp302.domain.models.Monsters;
 
-import java.io.Serializable;
-
-public class FighterMonster extends Monster implements Serializable {
+public class FighterMonster extends Monster {
 
     // Fields for the "walk-stop" cycle
     private int lastMoveCycleStart;

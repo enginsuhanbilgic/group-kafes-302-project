@@ -3,9 +3,7 @@ package tr.edu.ku.comp302.domain.models.enchantments;
 import tr.edu.ku.comp302.config.GameConfig;
 import tr.edu.ku.comp302.domain.models.Player;
 
-import java.io.Serializable;
-
-public abstract class Enchantment implements Serializable {
+public abstract class Enchantment {
 
     protected final EnchantmentType type;
     protected final int x;  // pixel X (or tile col*tileSize, whichever you prefer)

@@ -308,6 +308,6 @@ public class EnchantmentController {
     }
 
     public List<Enchantment> getEnchantments() {
-        return this.enchantments;
+        return List.copyOf(enchantments);
     }
 }

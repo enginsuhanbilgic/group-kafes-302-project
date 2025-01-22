@@ -164,7 +164,6 @@ public class BuildModeView extends JPanel {
     }
 
     private JPanel createInventoryPanel() {
-
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setPreferredSize(new Dimension(200, 0));

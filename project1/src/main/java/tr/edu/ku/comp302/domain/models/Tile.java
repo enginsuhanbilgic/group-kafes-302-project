@@ -1,13 +1,12 @@
 package tr.edu.ku.comp302.domain.models;
 
 import java.awt.image.BufferedImage;
-import java.io.Serializable;
 
 /**
  * Represents a single tile in the game environment.
  * A tile consists of an image and a collidable property (for now).
  */
-public class Tile implements Serializable {
+public class Tile {
 
     //The image representing the visual appearance of the tile.
     public BufferedImage image;
