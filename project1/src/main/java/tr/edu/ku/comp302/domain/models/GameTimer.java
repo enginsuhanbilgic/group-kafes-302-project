@@ -3,10 +3,9 @@ package tr.edu.ku.comp302.domain.models;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.Serializable;
 import java.util.function.Consumer;
 
-public class GameTimer implements Serializable {
+public class GameTimer {
 
     public volatile int timeRemaining; // Remaining time
     private Timer timer;       // Swing Timer
@@ -26,7 +25,7 @@ public class GameTimer implements Serializable {
 
         // Initialize the remaining time
         timeRemaining = initialTime;
-
+        
         // Immediately notify UI of the starting time
         onTick.accept(timeRemaining);
 
@@ -34,7 +33,7 @@ public class GameTimer implements Serializable {
             @Override
             public void actionPerformed(ActionEvent e) {
                 timeRemaining--;
-
+                
                 // If time is up, stop and call onTimeUp
                 if (timeRemaining <= 0) {
                     stop();
@@ -45,7 +44,7 @@ public class GameTimer implements Serializable {
                 }
             }
         });
-
+        
         // If you want the countdown to start without delay, setInitialDelay to 0
         timer.setInitialDelay(0);
         timer.start();

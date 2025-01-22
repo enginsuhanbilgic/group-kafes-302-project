@@ -1,8 +1,6 @@
 package tr.edu.ku.comp302.domain.models;
 
-import java.io.Serializable;
-
-public abstract class Entity implements Serializable {
+public abstract class Entity {
 
     /** Entity's X and Y positions on the screen. */
     protected int x, y;

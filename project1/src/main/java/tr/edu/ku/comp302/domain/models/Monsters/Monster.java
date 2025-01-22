@@ -2,9 +2,7 @@ package tr.edu.ku.comp302.domain.models.monsters;
 
 import tr.edu.ku.comp302.domain.models.Entity;
 
-import java.io.Serializable;
-
-public abstract class Monster extends Entity implements Serializable {
+public abstract class Monster extends Entity {
 
     public Monster(int x, int y, int speed) {
         super(x, y, speed);

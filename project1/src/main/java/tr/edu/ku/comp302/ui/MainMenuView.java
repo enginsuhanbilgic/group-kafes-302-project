@@ -100,13 +100,11 @@ public class MainMenuView extends JPanel {
                         controller.startLoadedGame(loadedState);
                         
                     } catch (Exception err) {
-                        err.printStackTrace(); // print full stack trace to console
-                        JOptionPane.showMessageDialog(this,
-                                "Error loading game: " + err.toString(),
-                                "Error",
-                                JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, 
+                            "Error loading game: " + err.getMessage(), 
+                            "Error", 
+                            JOptionPane.ERROR_MESSAGE);
                     }
-
                 }
             }
         });
@@ -131,8 +129,8 @@ public class MainMenuView extends JPanel {
     private List<String> getSavedDesigns() {
         try {
             return Files.list(Paths.get(SAVES_DIRECTORY))
-                    .filter(path -> path.toString().endsWith(".ser"))
-                    .map(path -> path.getFileName().toString().replace(".ser", ""))
+                    .filter(path -> path.toString().endsWith(".json"))
+                    .map(path -> path.getFileName().toString().replace(".json", ""))
                     .sorted()
                     .toList();
         } catch (IOException e) {

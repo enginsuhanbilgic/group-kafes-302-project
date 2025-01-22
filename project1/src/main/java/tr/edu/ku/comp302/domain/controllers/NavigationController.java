@@ -46,7 +46,7 @@ public class NavigationController {
         this.frame.getContentPane().add(cardPanel, BorderLayout.CENTER);
     }
 
-    /**
+        /**
      * REQUIRES:
      *  - The TilesController must have loaded tile information before this method is called.
      *  - The area defined by the cage boundaries must have at least one non-collidable tile.

@@ -1,8 +1,6 @@
 package tr.edu.ku.comp302.domain.models;
 
-import java.io.Serializable;
-
-public enum HallType implements Serializable {
+public enum HallType {
     EARTH,
     AIR,
     WATER,
