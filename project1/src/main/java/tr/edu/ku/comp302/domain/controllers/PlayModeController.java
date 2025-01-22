@@ -10,10 +10,14 @@ import java.awt.*;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.Consumer;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * PlayModeController manages the game logic and interactions between components.
@@ -29,7 +33,7 @@ public class PlayModeController {
     private BuildObjectController buildObjectController;
     private final KeyHandler keyHandler;
     private HallType hallType;
-    private final String jsonData;
+    private String jsonData;
     private final MouseHandler mouseHandler;
 
     private final Random random;
@@ -187,11 +191,11 @@ public class PlayModeController {
         
         playerController.draw(g2);
 
+        monsterController.drawAll(g2);
+
         tilesController.drawInnerBottom(g2);
 
         buildObjectController.draw(g2, true);
-
-        monsterController.drawAll(g2);
 
         // If player has reveal active, you might highlight a 4x4 area around the rune
         if (playerController.getEntity().isRevealActive() && buildObjectController.getRuneHolder() != null) {
@@ -402,29 +406,44 @@ public class PlayModeController {
      */
     public GameState createGameState() {
         GameState gs = new GameState();
-
-        // Which hall are we in?
+    
         gs.setCurrentHall(this.hallType);
-
-        // Player
-        gs.setPlayer(this.playerController.getEntity());
-
-        // Monsters
-        gs.setMonsters(this.monsterController.getMonsters());
-
-        // Enchantments
-        gs.setEnchantments(this.enchantmentController.getEnchantments());
-
-        // The BuildObject map
-        gs.setWorldObjectsMap(this.buildObjectController.getWorldObjectsMap());
-
-        // Time
+        gs.setPlayer(this.getPlayerController().getEntity());
+        gs.setMonsters(monsterController.getMonsters());
+        gs.setEnchantments(enchantmentController.getEnchantments());
+        gs.setWorldObjectsMap(buildObjectController.getWorldObjectsMap());
+    
         gs.setTimeRemaining(this.timeRemaining);
         gs.setTimePassed(this.timePassed);
         gs.setInitialTime(this.initialTime);
-
+    
+        gs.setHasLuringGem(monsterController.hasLuringGem());
+        gs.setLuringGemLocation(monsterController.getLuringGemLocation());
+        gs.setGemSpawnTime(monsterController.getGemSpawnTime());
+    
+        // Here we get the entire tileDataGrid from TilesController
+        TileData[][] td = tilesController.getTileDataGrid();
+        gs.setTileDataGrid(cloneTileDataArray(td)); 
+        // We do a clone to ensure no accidental references 
+        // If your code doesn’t need it, you can store it directly.
+    
         return gs;
     }
+    
+    /** Helper to clone a 2D array so we don't hold references. */
+    private TileData[][] cloneTileDataArray(TileData[][] original) {
+        int rows = original.length;
+        int cols = original[0].length;
+        TileData[][] copy = new TileData[rows][cols];
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                copy[r][c] = original[r][c];
+            }
+        }
+        return copy;
+    }
+    
+    
 
     /**
      * Restores the controllers from a previously loaded GameState.
@@ -434,52 +453,83 @@ public class PlayModeController {
         this.timeRemaining = gs.getTimeRemaining();
         this.timePassed = gs.getTimePassed();
         this.initialTime = gs.getInitialTime();
-
-        // Rebuild the Player
+    
+        // Player
         Player loadedPlayer = gs.getPlayer();
-        Player currentPlayer = this.playerController.getEntity();
-
-        // Rebuild the Player and hook up the PlayerController
-        this.playerController.getEntity().setX(gs.getPlayer().getX());
-        this.playerController.getEntity().setY(gs.getPlayer().getY());
-        this.playerController.getEntity().setLives(gs.getPlayer().getLives());
-        // ...and copy any other important fields from gs.getPlayer()
-        // (Alternatively, you could recreate a new Player object entirely.)
-
-        // -- Transfer or replace the entire inventory
-        // Option A: Just clear the current inventory, add all from loaded
-        currentPlayer.getInventory().getAllItems().clear();
-        currentPlayer.getInventory().getAllItems().addAll(
-                loadedPlayer.getInventory().getAllItems()
+        Player current = playerController.getEntity();
+        current.setX(loadedPlayer.getX());
+        current.setY(loadedPlayer.getY());
+        current.setLives(loadedPlayer.getLives());
+        current.setVelocityX(loadedPlayer.getVelocityX());
+        current.setVelocityY(loadedPlayer.getVelocityY());
+        // cloak / reveal times
+        current.setCloakActive(loadedPlayer.isCloakActive());
+        current.setCloakEndTime(loadedPlayer.getCloakEndTime());
+        current.setRevealActive(loadedPlayer.isRevealActive());
+        current.setRevealEndTime(loadedPlayer.getRevealEndTime());
+        // Inventory
+        current.getInventory().getAllItems().clear();
+        current.getInventory().getAllItems().addAll(
+            loadedPlayer.getInventory().getAllItems()
         );
-
-        // Rebuild Monsters
-        this.monsterController.clearMonsters();
-        this.monsterController.getMonsters().addAll(gs.getMonsters());
-
-        // Rebuild Enchantments
-        this.enchantmentController.getEnchantments().clear();
-        this.enchantmentController.getEnchantments().addAll(gs.getEnchantments());
-
-        // Rebuild BuildObjects
-        this.buildObjectController.getWorldObjectsMap().clear();
-        this.buildObjectController.getWorldObjectsMap().putAll(gs.getWorldObjectsMap());
-
-        // Finally, set collision tiles for the current hall's objects
-        List<BuildObject> objectsInCurrentHall =
-                buildObjectController.getObjectsForHall(this.hallType);
+        System.out.println(loadedPlayer.getInventory().getAllItems());
+    
+        // Monsters
+        monsterController.clearMonsters();
+        monsterController.getMonsters().addAll(gs.getMonsters());
+    
+        // Enchantments
+        enchantmentController.getEnchantments().clear();
+        enchantmentController.getEnchantments().addAll(gs.getEnchantments());
+    
+        // BuildObjects
+        buildObjectController.getWorldObjectsMap().clear();
+        buildObjectController.getWorldObjectsMap().putAll(gs.getWorldObjectsMap());
+    
+        // Luring gem
+        monsterController.setGemSpawnTime(gs.getGemSpawnTime());
+        if (gs.isHasLuringGem()) {
+            monsterController.setLuringGemLocation(gs.getLuringGemLocation());
+        } else {
+            monsterController.clearLuringGemLocation();
+        }
+    
+        // TILES: Rebuild tileData => tileGrid
+        TileData[][] loadedData = gs.getTileDataGrid();
+        if (loadedData != null) {
+            tilesController.setTileDataGrid(loadedData);
+        } else {
+            // fallback: reload defaults
+            tilesController.loadTiles(this.hallType);
+        }
+    
+        // Optionally re-generate JSON if you want
+        this.jsonData = exportWorldObjectsMapToJson(gs.getWorldObjectsMap());
+    
+        // Mark collidable for current hall objects
+        List<BuildObject> objectsInCurrentHall = buildObjectController.getObjectsForHall(this.hallType);
         for (BuildObject obj : objectsInCurrentHall) {
             tilesController.setTransparentTileAt(obj.getX(), obj.getY());
+        }
+    }
+    
+    
 
+    public String exportWorldObjectsMapToJson(Map<HallType, List<BuildObject>> hallMap) {
+        // Convert HallType -> List<BuildObject> 
+        // into a Map<String, List<BuildObject>> so that 
+        // keys become "EARTH", "AIR", etc. in the JSON.
+        Map<String, List<BuildObject>> rawMap = new HashMap<>();
+
+        for (Map.Entry<HallType, List<BuildObject>> entry : hallMap.entrySet()) {
+            HallType hall = entry.getKey();
+            List<BuildObject> objects = entry.getValue();
+            rawMap.put(hall.name(), objects); // name() => "EARTH", "AIR", "WATER", "FIRE"
         }
 
-            // If the player or other references rely on random initialization, you may need
-            // to re-call your 'initializeRandom()' logic for any BuildObjects or monsters, etc.
-
-            // Done. The next game loop tick should pick everything up as norma
-
+        // Use Gson with pretty-print:
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(rawMap);
     }
-
-
 
 }

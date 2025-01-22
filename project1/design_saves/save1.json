@@ -1,0 +1,696 @@
+{
+  "FIRE": [
+    {
+      "x": 6,
+      "y": 9,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 42
+    },
+    {
+      "x": 7,
+      "y": 8,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 114
+    },
+    {
+      "x": 7,
+      "y": 9,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 27
+    },
+    {
+      "x": 7,
+      "y": 10,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 20
+    },
+    {
+      "x": 8,
+      "y": 7,
+      "objectType": "boxes_stacked",
+      "hasRune": false,
+      "offset": 121
+    },
+    {
+      "x": 8,
+      "y": 10,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 66
+    },
+    {
+      "x": 8,
+      "y": 11,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 14
+    },
+    {
+      "x": 8,
+      "y": 12,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 57
+    },
+    {
+      "x": 9,
+      "y": 10,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 84
+    },
+    {
+      "x": 9,
+      "y": 11,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 91
+    },
+    {
+      "x": 9,
+      "y": 12,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 45
+    },
+    {
+      "x": 10,
+      "y": 7,
+      "objectType": "boxes_stacked",
+      "hasRune": false,
+      "offset": 140
+    },
+    {
+      "x": 10,
+      "y": 10,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 100
+    },
+    {
+      "x": 10,
+      "y": 11,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 130
+    },
+    {
+      "x": 10,
+      "y": 12,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 113
+    },
+    {
+      "x": 11,
+      "y": 8,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 78
+    },
+    {
+      "x": 11,
+      "y": 9,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 5
+    },
+    {
+      "x": 11,
+      "y": 10,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 73
+    },
+    {
+      "x": 12,
+      "y": 9,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 80
+    }
+  ],
+  "AIR": [
+    {
+      "x": 4,
+      "y": 6,
+      "objectType": "boxes_stacked",
+      "hasRune": false,
+      "offset": 45
+    },
+    {
+      "x": 4,
+      "y": 10,
+      "objectType": "boxes_stacked",
+      "hasRune": false,
+      "offset": 96
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "objectType": "boxes_stacked",
+      "hasRune": false,
+      "offset": 20
+    },
+    {
+      "x": 5,
+      "y": 6,
+      "objectType": "boxes_stacked",
+      "hasRune": false,
+      "offset": 28
+    },
+    {
+      "x": 5,
+      "y": 10,
+      "objectType": "boxes_stacked",
+      "hasRune": false,
+      "offset": 141
+    },
+    {
+      "x": 5,
+      "y": 11,
+      "objectType": "boxes_stacked",
+      "hasRune": false,
+      "offset": 129
+    },
+    {
+      "x": 10,
+      "y": 11,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 141
+    },
+    {
+      "x": 10,
+      "y": 12,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 64
+    },
+    {
+      "x": 11,
+      "y": 10,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 66
+    },
+    {
+      "x": 11,
+      "y": 11,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 70
+    },
+    {
+      "x": 11,
+      "y": 12,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 40
+    },
+    {
+      "x": 12,
+      "y": 9,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 58
+    },
+    {
+      "x": 12,
+      "y": 10,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 5
+    },
+    {
+      "x": 12,
+      "y": 11,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 142
+    },
+    {
+      "x": 13,
+      "y": 9,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 7
+    },
+    {
+      "x": 13,
+      "y": 10,
+      "objectType": "box",
+      "hasRune": false,
+      "offset": 82
+    },
+    {
+      "x": 14,
+      "y": 3,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 141
+    },
+    {
+      "x": 14,
+      "y": 4,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 77
+    },
+    {
+      "x": 14,
+      "y": 13,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 17
+    },
+    {
+      "x": 14,
+      "y": 14,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 66
+    },
+    {
+      "x": 15,
+      "y": 3,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 24
+    },
+    {
+      "x": 15,
+      "y": 4,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 15
+    },
+    {
+      "x": 15,
+      "y": 13,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 66
+    },
+    {
+      "x": 15,
+      "y": 14,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 53
+    }
+  ],
+  "EARTH": [
+    {
+      "x": 5,
+      "y": 5,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 67
+    },
+    {
+      "x": 6,
+      "y": 5,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 92
+    },
+    {
+      "x": 7,
+      "y": 5,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 89
+    },
+    {
+      "x": 7,
+      "y": 11,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 39
+    },
+    {
+      "x": 7,
+      "y": 12,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 19
+    },
+    {
+      "x": 7,
+      "y": 13,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 22
+    },
+    {
+      "x": 8,
+      "y": 5,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 8
+    },
+    {
+      "x": 8,
+      "y": 6,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 113
+    },
+    {
+      "x": 8,
+      "y": 7,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 140
+    },
+    {
+      "x": 8,
+      "y": 13,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 90
+    },
+    {
+      "x": 9,
+      "y": 5,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 118
+    },
+    {
+      "x": 9,
+      "y": 6,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 25
+    },
+    {
+      "x": 9,
+      "y": 7,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 94
+    },
+    {
+      "x": 9,
+      "y": 8,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 2
+    },
+    {
+      "x": 9,
+      "y": 13,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 87
+    },
+    {
+      "x": 10,
+      "y": 8,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 58
+    },
+    {
+      "x": 10,
+      "y": 13,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 44
+    },
+    {
+      "x": 11,
+      "y": 7,
+      "objectType": "boxes_stacked",
+      "hasRune": false,
+      "offset": 93
+    },
+    {
+      "x": 11,
+      "y": 8,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 72
+    },
+    {
+      "x": 11,
+      "y": 9,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 37
+    },
+    {
+      "x": 11,
+      "y": 10,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 116
+    },
+    {
+      "x": 11,
+      "y": 11,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 54
+    },
+    {
+      "x": 11,
+      "y": 12,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 45
+    },
+    {
+      "x": 11,
+      "y": 13,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 32
+    },
+    {
+      "x": 12,
+      "y": 8,
+      "objectType": "boxes_stacked",
+      "hasRune": false,
+      "offset": 75
+    },
+    {
+      "x": 14,
+      "y": 10,
+      "objectType": "boxes_stacked",
+      "hasRune": false,
+      "offset": 129
+    }
+  ],
+  "WATER": [
+    {
+      "x": 2,
+      "y": 12,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 69
+    },
+    {
+      "x": 3,
+      "y": 12,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 32
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 53
+    },
+    {
+      "x": 4,
+      "y": 12,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 116
+    },
+    {
+      "x": 4,
+      "y": 13,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 6
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 94
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 108
+    },
+    {
+      "x": 5,
+      "y": 6,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 135
+    },
+    {
+      "x": 5,
+      "y": 10,
+      "objectType": "boxes_stacked",
+      "hasRune": false,
+      "offset": 124
+    },
+    {
+      "x": 5,
+      "y": 11,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 75
+    },
+    {
+      "x": 5,
+      "y": 12,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 69
+    },
+    {
+      "x": 5,
+      "y": 13,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 72
+    },
+    {
+      "x": 5,
+      "y": 14,
+      "objectType": "boxes_stacked",
+      "hasRune": false,
+      "offset": 12
+    },
+    {
+      "x": 6,
+      "y": 5,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 10
+    },
+    {
+      "x": 6,
+      "y": 10,
+      "objectType": "boxes_stacked",
+      "hasRune": false,
+      "offset": 17
+    },
+    {
+      "x": 6,
+      "y": 11,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 76
+    },
+    {
+      "x": 6,
+      "y": 12,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 68
+    },
+    {
+      "x": 6,
+      "y": 14,
+      "objectType": "boxes_stacked",
+      "hasRune": false,
+      "offset": 97
+    },
+    {
+      "x": 11,
+      "y": 5,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 94
+    },
+    {
+      "x": 11,
+      "y": 12,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 126
+    },
+    {
+      "x": 12,
+      "y": 4,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 119
+    },
+    {
+      "x": 12,
+      "y": 5,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 19
+    },
+    {
+      "x": 12,
+      "y": 6,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 84
+    },
+    {
+      "x": 12,
+      "y": 11,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 84
+    },
+    {
+      "x": 12,
+      "y": 12,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 1
+    },
+    {
+      "x": 12,
+      "y": 13,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 119
+    },
+    {
+      "x": 13,
+      "y": 4,
+      "objectType": "chest_closed",
+      "hasRune": false,
+      "offset": 134
+    },
+    {
+      "x": 13,
+      "y": 5,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 4
+    },
+    {
+      "x": 13,
+      "y": 12,
+      "objectType": "skull",
+      "hasRune": false,
+      "offset": 71
+    }
+  ]
+}

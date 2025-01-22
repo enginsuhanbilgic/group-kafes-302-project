@@ -3,6 +3,7 @@ package tr.edu.ku.comp302.domain.models;
 import tr.edu.ku.comp302.domain.models.enchantments.Enchantment;
 import tr.edu.ku.comp302.domain.models.Monsters.Monster;
 
+import java.awt.Point;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -13,29 +14,37 @@ import java.util.Map;
 public class GameState implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    // Which hall we are currently in
     private HallType currentHall;
 
-    // Player data
+    // Player data (including position, lives, velocity, cloak times, inventory)
     private Player player;
 
-    // Monsters currently in the hall
+    // List of active monsters in the current hall
     private List<Monster> monsters;
 
-    // All active enchantments in the hall
+    // All active enchantments in the current hall
     private List<Enchantment> enchantments;
 
     // The BuildObjects in all halls
     private Map<HallType, List<BuildObject>> worldObjectsMap;
 
-    // Time counters
+    // Timers
     private int timeRemaining;
     private int timePassed;
     private int initialTime;
 
+    // -- NEW FIELDS FOR LURING GEM --
+    private boolean hasLuringGem;       // monsterController.hasLuringGem()
+    private Point luringGemLocation;    // monsterController.getLuringGemLocation()
+    private int gemSpawnTime;           // monsterController.getGemSpawnTime()
+
+    private TileData[][] tileDataGrid; // same size as your TilesController
+
     public GameState() {
     }
 
-    // Getters and Setters
+    // Getters / Setters
     public HallType getCurrentHall() {
         return currentHall;
     }
@@ -90,5 +99,32 @@ public class GameState implements Serializable {
     }
     public void setInitialTime(int initialTime) {
         this.initialTime = initialTime;
+    }
+
+    public boolean isHasLuringGem() {
+        return hasLuringGem;
+    }
+    public void setHasLuringGem(boolean hasLuringGem) {
+        this.hasLuringGem = hasLuringGem;
+    }
+
+    public Point getLuringGemLocation() {
+        return luringGemLocation;
+    }
+    public void setLuringGemLocation(Point luringGemLocation) {
+        this.luringGemLocation = luringGemLocation;
+    }
+
+    public int getGemSpawnTime() {
+        return gemSpawnTime;
+    }
+    public void setGemSpawnTime(int gemSpawnTime) {
+        this.gemSpawnTime = gemSpawnTime;
+    }
+    public TileData[][] getTileDataGrid() {
+        return tileDataGrid;
+    }
+    public void setTileDataGrid(TileData[][] tileDataGrid) {
+        this.tileDataGrid = tileDataGrid;
     }
 }

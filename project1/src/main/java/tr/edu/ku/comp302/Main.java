@@ -12,10 +12,10 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         ResourceManager.init();
-        //MusicController musicController = new MusicController("assets/gamemusic.wav");
+        MusicController musicController = new MusicController("assets/gamemusic.wav");
 
         //Play the music at the start of the game
-        //musicController.play();
+        musicController.play();
 
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("KAFES Game");

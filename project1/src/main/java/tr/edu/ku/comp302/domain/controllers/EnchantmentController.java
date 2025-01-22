@@ -7,7 +7,6 @@ import tr.edu.ku.comp302.domain.models.enchantments.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;

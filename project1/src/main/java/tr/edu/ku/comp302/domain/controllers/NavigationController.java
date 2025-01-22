@@ -223,7 +223,7 @@ public class NavigationController {
         }
 
         // Create a new PlayModeView from the loaded state
-        PlayModeView pmv = new PlayModeView(this, frame, gameState);
+        PlayModeView pmv = new PlayModeView(this, frame, gameState, player);
         this.playModeView = pmv;
 
         // Add it to the CardLayout
@@ -231,5 +231,4 @@ public class NavigationController {
         showPlayMode(pmv);               // same name used here
 
     }
-
 }

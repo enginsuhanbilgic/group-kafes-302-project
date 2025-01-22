@@ -93,20 +93,12 @@ public class MainMenuView extends JPanel {
                         }
 
                         // 2) Let NavigationController create a new PlayMode with that state
-                        controller.startLoadedGame(loadedState);
-                        //
-                        //
-                        //
-                        //  TO DO: IMPLEMENT LOAD GAMES
-                        //  Directory saves is different from design_saves
-                        //
-                        //
-                        //
                         JOptionPane.showMessageDialog(this, 
                             "Game loaded successfully!", 
                             "Success", 
                             JOptionPane.INFORMATION_MESSAGE);
-                        //repaint();
+                        controller.startLoadedGame(loadedState);
+                        
                     } catch (Exception err) {
                         err.printStackTrace(); // print full stack trace to console
                         JOptionPane.showMessageDialog(this,

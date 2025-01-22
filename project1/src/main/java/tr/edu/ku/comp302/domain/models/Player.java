@@ -12,9 +12,11 @@ import java.io.Serializable;
  */
 public class Player extends Entity implements Serializable {
 
+    private static final long serialVersionUID = 1L; // recommended
+
     private boolean walking = false;
     private int lives;
-    private final Inventory inventory;
+    private Inventory inventory;
 
     // -- Additional fields for acceleration-based movement --
     private float velocityX = 0f;
@@ -142,6 +144,10 @@ public class Player extends Entity implements Serializable {
 
     public Inventory getInventory() {
         return inventory;
+    }
+
+    public void setInventory(Inventory inventory){
+        this.inventory = inventory;
     }
 
     // --- Extra Time usage: stored for the PlayModeController to consume
@@ -279,4 +285,18 @@ public class Player extends Entity implements Serializable {
     public void setLives(int i) {
         lives = i;
     }
+
+    public void setCloakActive(boolean b) {
+        this.cloakActive = b;
+    }
+    public void setCloakEndTime(long t) {
+        this.cloakEndTime = t;
+    }
+    public void setRevealActive(boolean b) {
+        this.revealActive = b;
+    }
+    public void setRevealEndTime(long t) {
+        this.revealEndTime = t;
+    }
+    
 }

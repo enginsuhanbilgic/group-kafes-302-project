@@ -88,7 +88,7 @@ public class PlayModeView extends JPanel implements Runnable {
     }
 
     // A NEW constructor that restores directly from a loaded GameState.
-    public PlayModeView(NavigationController navigationController, JFrame parentFrame, GameState loadedState) {
+    public PlayModeView(NavigationController navigationController, JFrame parentFrame, GameState loadedState, Player player) {
         this.setDoubleBuffered(true);
         this.setBackground(new Color(66, 40, 53));
 
@@ -106,9 +106,8 @@ public class PlayModeView extends JPanel implements Runnable {
 
         // We need a dummy Player so the constructor won't crash.
         // e.g. new Player(0,0,GameConfig.PLAYER_SPEED)
-        Player dummyPlayer = new Player(0,0,GameConfig.PLAYER_SPEED);
 
-        this.playModeController = new PlayModeController(keyHandler, mouseHandler, /*json*/ null, this.hallType, dummyPlayer);
+        this.playModeController = new PlayModeController(keyHandler, mouseHandler, /*json*/ null, this.hallType, player);
         this.playModeController.setNavigationController(this.navigationController);
         this.playModeController.setPlayModeView(this);
 

@@ -464,13 +464,6 @@ public class MonsterController {
     //               HELPER METHODS + GEM LOGIC
     // =========================================================
 
-    /**
-     * Set the location of the thrown Luring Gem.
-     */
-    public void setLuringGemLocation(Point gemLoc) {
-        this.luringGemLocation = gemLoc;
-        this.gemSpawnTime = timePassed;
-    }
 
     /**
      * Clear the gem location (when reached or expired).
@@ -479,18 +472,26 @@ public class MonsterController {
         this.luringGemLocation = null;
     }
 
-    /**
-     * Whether we currently have a gem thrown.
-     */
     public boolean hasLuringGem() {
         return (luringGemLocation != null);
     }
 
-    /**
-     * Return the gem location (or null).
-     */
     public Point getLuringGemLocation() {
         return luringGemLocation;
+    }
+
+    public int getGemSpawnTime() {
+        return gemSpawnTime;
+    }
+
+    public void setGemSpawnTime(int gemSpawnTime) {
+        this.gemSpawnTime = gemSpawnTime;
+    }
+    
+    // When we throw a gem:
+    public void setLuringGemLocation(Point gemLoc) {
+        this.luringGemLocation = gemLoc;
+        this.gemSpawnTime = timePassed; // store the current time in this field
     }
 
     private boolean checkCollision(int x, int y) {
