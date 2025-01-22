@@ -1,9 +1,9 @@
 package tr.edu.ku.comp302.domain.models.monsters.strategies;
 
+import tr.edu.ku.comp302.domain.models.monsters.WizardMonster;
 import tr.edu.ku.comp302.domain.controllers.MonsterController;
 import tr.edu.ku.comp302.domain.controllers.BuildObjectController;
 import tr.edu.ku.comp302.domain.models.Player;
-import tr.edu.ku.comp302.domain.models.monsters.WizardMonster;
 
 /**
  * If between 30%-70% time remains:
@@ -13,6 +13,7 @@ import tr.edu.ku.comp302.domain.models.monsters.WizardMonster;
  *    MonsterController will switch the wizard's strategy.
  */
 public class WizardMidTimeStrategy implements WizardStrategy {
+    private static final long serialVersionUID = 1L;
 
     @Override
     public void updateBehavior(

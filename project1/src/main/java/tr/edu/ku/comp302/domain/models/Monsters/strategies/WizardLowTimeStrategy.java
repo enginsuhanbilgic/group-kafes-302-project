@@ -1,9 +1,9 @@
 package tr.edu.ku.comp302.domain.models.monsters.strategies;
 
+import tr.edu.ku.comp302.domain.models.monsters.WizardMonster;
 import tr.edu.ku.comp302.domain.controllers.MonsterController;
 import tr.edu.ku.comp302.domain.controllers.BuildObjectController;
 import tr.edu.ku.comp302.domain.models.Player;
-import tr.edu.ku.comp302.domain.models.monsters.WizardMonster;
 
 /**
  * If less than 30% time remains:
@@ -11,6 +11,7 @@ import tr.edu.ku.comp302.domain.models.monsters.WizardMonster;
  *  - Then the wizard disappears immediately.
  */
 public class WizardLowTimeStrategy implements WizardStrategy {
+    private static final long serialVersionUID = 1L;
 
     @Override
     public void updateBehavior(

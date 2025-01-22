@@ -33,16 +33,13 @@ public class PlayModeView extends JPanel implements Runnable {
 
     private static final String SAVES_DIRECTORY = "saves";
 
+
+
     // Eski constructor (no JSON)
     public PlayModeView(NavigationController navigationController, JFrame parentFrame, HallType hallType, Player player) {
         this(navigationController, parentFrame, null, hallType, player);
         // "null" diyerek alt constructor'a yönlendiriyoruz
     }
-    /* 
-    // Daha eski Constructor
-    public PlayModeView(NavigationController navigationController, JFrame frame) {
-        this(navigationController, frame, null, null);
-    }*/
 
     /**
      * Yeni constructor: BuildMode’dan gelen JSON data’sını alır.
@@ -63,7 +60,7 @@ public class PlayModeView extends JPanel implements Runnable {
         playModeController.setPlayModeView(this);
 
         // Timer
-        playModeController.startGameTimer(
+        playModeController.startTimerForNewGame(
                 time -> SwingUtilities.invokeLater(() -> {
                     parentFrame.revalidate();
                     parentFrame.repaint();
@@ -229,6 +226,34 @@ public class PlayModeView extends JPanel implements Runnable {
                         int result = JOptionPane.showConfirmDialog(this, "Do you really want to save and exit the current game session?", "Warning", dialogButton);
                         if(result == JOptionPane.YES_OPTION){
                             boolean isSuccessful = false;
+                            try {
+                                // 1) Create a snapshot of the current game
+                                GameState gs = playModeController.createGameState();
+
+                                // 2) Prompt for a save name, or you could auto-generate one
+                                String saveName = JOptionPane.showInputDialog(
+                                        this,
+                                        "Enter a name for your save file (without extension):",
+                                        "Save Current Game",
+                                        JOptionPane.PLAIN_MESSAGE
+                                );
+                                if (saveName == null || saveName.isBlank()) {
+                                    JOptionPane.showMessageDialog(this,
+                                            "Save cancelled.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                                    // Return to game
+                                    keyHandler.escPressed = !keyHandler.escPressed;
+                                    pauseMenuShown = false;
+                                    this.requestFocusInWindow();
+                                    playModeController.resumeGameTimer();
+                                    return;
+                                }
+
+                                // 3) Use SaveLoadController
+                                isSuccessful = SaveLoadController.saveGame(gs, saveName.trim());
+
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
                             //
                             //
                             //
@@ -237,6 +262,7 @@ public class PlayModeView extends JPanel implements Runnable {
                             //
                             //
                             //
+
                             if(isSuccessful){
                                 JOptionPane.showMessageDialog(this, "Successfully saved!");
                                 keyHandler.resetKeys();

@@ -1,22 +1,17 @@
 package tr.edu.ku.comp302.domain.controllers;
 
 import tr.edu.ku.comp302.config.GameConfig;
-import tr.edu.ku.comp302.domain.models.BuildObject;
-import tr.edu.ku.comp302.domain.models.GameState;
-import tr.edu.ku.comp302.domain.models.HallType;
-import tr.edu.ku.comp302.domain.models.Player;
-import tr.edu.ku.comp302.domain.models.Tile;
-import tr.edu.ku.comp302.domain.models.TileData;
+import tr.edu.ku.comp302.domain.models.*;
 import tr.edu.ku.comp302.domain.models.enchantments.Enchantment;
 import tr.edu.ku.comp302.domain.models.enchantments.EnchantmentType;
 import tr.edu.ku.comp302.ui.PlayModeView;
 
 import java.awt.*;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -68,14 +63,16 @@ public class PlayModeController {
         this.buildObjectController = new BuildObjectController(hallType);
         this.buildObjectController.loadWorldFromJson(jsonData);
 
+
         buildObjectController.getWorldObjectsMap()
-            .forEach((h, list) -> {
-                if(h==hallType){
-                    for (BuildObject obj : list) {
-                        tilesController.setTransparentTileAt(obj.getX(), obj.getY());
+                .forEach((h, list) -> {
+                    if (h == hallType) {
+                        for (BuildObject obj : list) {
+                            tilesController.setTransparentTileAt(obj.getX(), obj.getY());
+                        }
                     }
-                }
-            });
+                });
+
 
         // Initialize PlayerController
         this.playerController = new PlayerController(player, this.tilesController, this.keyHandler);
@@ -88,7 +85,40 @@ public class PlayModeController {
         initializePlayerLocation();
     }
 
-    public void initializePlayerLocation(){
+    public PlayModeController(KeyHandler keyHandler,
+                              MouseHandler mouseHandler,
+                              GameState loadedState,
+                              Player dummyPlayer) {
+        this.keyHandler = keyHandler;
+        this.hallType = loadedState.getCurrentHall();
+        this.jsonData = null; // not using JSON
+        this.mouseHandler = mouseHandler;
+        this.player = dummyPlayer;
+        this.random = new Random();
+
+        // 1) Tile system
+        this.tilesController = new TilesController();
+        this.tilesController.loadTiles(HallType.EARTH);
+
+        // 2) BuildObjectController (we do *not* load from JSON, just init the empty map)
+        this.buildObjectController = new BuildObjectController(this.hallType);
+
+        // 3) Player, Monster, Enchant
+        this.playerController = new PlayerController(dummyPlayer, this.tilesController, this.keyHandler);
+        this.monsterController = new MonsterController(this.tilesController, buildObjectController, initialTime);
+        this.enchantmentController = new EnchantmentController(this.tilesController);
+        monsterController.setEnchantmentController(enchantmentController);
+
+        // 4) We do *not* call initializePlayerLocation() because we want to
+        // restore the old player position from .ser
+        // We'll do that in restoreFromGameState(...).
+
+        // 5) Actually restore everything
+        restoreFromGameState(loadedState);
+    }
+
+
+    public void initializePlayerLocation() {
         int tileSize = GameConfig.TILE_SIZE;
         int mapWidth = GameConfig.NUM_HALL_COLS;
         int mapHeight = GameConfig.NUM_HALL_ROWS;
@@ -98,11 +128,11 @@ public class PlayModeController {
             int col = random.nextInt(mapWidth);
             int row = random.nextInt(mapHeight);
 
-            Tile tile = tilesController.getTileAt(col+GameConfig.KAFES_STARTING_X, row+GameConfig.KAFES_STARTING_Y);
+            Tile tile = tilesController.getTileAt(col + GameConfig.KAFES_STARTING_X, row + GameConfig.KAFES_STARTING_Y);
             if (tile != null && !tile.isCollidable && enchantmentController.isLocationAvailable(col, row)) {
                 //
                 playerController.setLocation((col + GameConfig.KAFES_STARTING_X) * tileSize, (row + GameConfig.KAFES_STARTING_Y) * tileSize);
-            } else{
+            } else {
                 //System.out.println("Unsuccesful location: " + col + " " + row);
             }
         }
@@ -139,7 +169,7 @@ public class PlayModeController {
             }
 
             // 8) Check if rune is collected
-            if (playerController.getEntity().getInventory().hasRune()){
+            if (playerController.getEntity().getInventory().hasRune()) {
                 onGameComplete();
             }
 
@@ -168,19 +198,19 @@ public class PlayModeController {
         buildObjectController.draw(g2, true);
 
         // If player has reveal active, you might highlight a 4x4 area around the rune
-        if (playerController.getEntity().isRevealActive() && buildObjectController.getRuneHolder()!=null) {
-            
-            int width = GameConfig.TILE_SIZE*4;
-            
-            int objectX = buildObjectController.getRuneHolder().getX()*GameConfig.TILE_SIZE-buildObjectController.getRuneHolder().getOffset();
-            int objectY = buildObjectController.getRuneHolder().getY()*GameConfig.TILE_SIZE-buildObjectController.getRuneHolder().getOffset();
+        if (playerController.getEntity().isRevealActive() && buildObjectController.getRuneHolder() != null) {
+
+            int width = GameConfig.TILE_SIZE * 4;
+
+            int objectX = buildObjectController.getRuneHolder().getX() * GameConfig.TILE_SIZE - buildObjectController.getRuneHolder().getOffset();
+            int objectY = buildObjectController.getRuneHolder().getY() * GameConfig.TILE_SIZE - buildObjectController.getRuneHolder().getOffset();
 
             g2.setColor(new Color(255, 0, 0, 80));
             g2.fillRect(objectX, objectY, width, width);
         }
     }
 
-    private void checkEnchantmentUsage(){
+    private void checkEnchantmentUsage() {
         if (keyHandler.isRPressed()) {
             playerController.getEntity().useReveal();
             keyHandler.r = false; // reset
@@ -223,53 +253,53 @@ public class PlayModeController {
         gameOver = true;
         pauseGameTimer();
         SwingUtilities.invokeLater(() -> {
-        // Create a dialog with a message and button
-        int result = JOptionPane.showOptionDialog(
-            null,
-            "Hall is completed! Ready for the next challenge?",
-            "Game Completed",
-            JOptionPane.DEFAULT_OPTION,
-            JOptionPane.INFORMATION_MESSAGE,
-            null,
-            new String[]{"Next"}, // Button text
-            "Next"
-        );
+            // Create a dialog with a message and button
+            int result = JOptionPane.showOptionDialog(
+                    null,
+                    "Hall is completed! Ready for the next challenge?",
+                    "Game Completed",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE,
+                    null,
+                    new String[]{"Next"}, // Button text
+                    "Next"
+            );
 
-        // Handle button click
-        if (result == JOptionPane.OK_OPTION) {
-            switch (hallType) {
-                case EARTH:
-                    // Navigate to AIR hall
-                    Enchantment e1 = player.getInventory().getEnchantmentByType(EnchantmentType.RUNE);
-                    player.getInventory().removeItem(e1);
-                    player.resetEffects();
-                    navigationController.startNewPlayModeFromJson(jsonData, HallType.AIR);
-                    break;
-                case AIR:
-                    // Navigate to WATER hall
-                    Enchantment e2 = player.getInventory().getEnchantmentByType(EnchantmentType.RUNE);
-                    player.getInventory().removeItem(e2);
-                    player.resetEffects();
-                    navigationController.startNewPlayModeFromJson(jsonData, HallType.WATER);
-                    break;
-                case WATER:
-                    // Navigate to FIRE hall
-                    Enchantment e3 = player.getInventory().getEnchantmentByType(EnchantmentType.RUNE);
-                    player.getInventory().removeItem(e3);
-                    player.resetEffects();
-                    navigationController.startNewPlayModeFromJson(jsonData, HallType.FIRE);
-                    break;
-                case FIRE:
-                default:
-                    // End the game and show the main menu
-                    Enchantment e4 = player.getInventory().getEnchantmentByType(EnchantmentType.RUNE);
-                    player.getInventory().removeItem(e4);
-                    player.resetEffects();
-                    navigationController.endGameAndShowMainMenu("Congratulations! You have completed the game.");
-                    break;
+            // Handle button click
+            if (result == JOptionPane.OK_OPTION) {
+                switch (hallType) {
+                    case EARTH:
+                        // Navigate to AIR hall
+                        Enchantment e1 = player.getInventory().getEnchantmentByType(EnchantmentType.RUNE);
+                        player.getInventory().removeItem(e1);
+                        player.resetEffects();
+                        navigationController.startNewPlayModeFromJson(jsonData, HallType.AIR);
+                        break;
+                    case AIR:
+                        // Navigate to WATER hall
+                        Enchantment e2 = player.getInventory().getEnchantmentByType(EnchantmentType.RUNE);
+                        player.getInventory().removeItem(e2);
+                        player.resetEffects();
+                        navigationController.startNewPlayModeFromJson(jsonData, HallType.WATER);
+                        break;
+                    case WATER:
+                        // Navigate to FIRE hall
+                        Enchantment e3 = player.getInventory().getEnchantmentByType(EnchantmentType.RUNE);
+                        player.getInventory().removeItem(e3);
+                        player.resetEffects();
+                        navigationController.startNewPlayModeFromJson(jsonData, HallType.FIRE);
+                        break;
+                    case FIRE:
+                    default:
+                        // End the game and show the main menu
+                        Enchantment e4 = player.getInventory().getEnchantmentByType(EnchantmentType.RUNE);
+                        player.getInventory().removeItem(e4);
+                        player.resetEffects();
+                        navigationController.endGameAndShowMainMenu("Congratulations! You have completed the game.");
+                        break;
+                }
             }
-        }
-    });
+        });
     }
 
     public boolean isPaused() {
@@ -287,12 +317,11 @@ public class PlayModeController {
                     monsterController.tick(timePassed, timeRemaining, player);
                     enchantmentController.tick(timePassed);
                     onTick.accept(time);
-                    },
+                },
                 onTimeUp
         );
         gameTimerController.start(initialTime);
     }
-
     public void startTimerForNewGame(Consumer<Integer> onTick, Runnable onTimeUp) {
         // We want to start from the full initialTime
         gameTimerController = new GameTimerController(
@@ -324,6 +353,7 @@ public class PlayModeController {
         // Start from leftover timeRemaining
         gameTimerController.start(timeRemaining);
     }
+
 
     private void onTimeUp() {
         System.out.println("Süre doldu! Oyun bitti.");
@@ -363,7 +393,7 @@ public class PlayModeController {
         return this.monsterController;
     }
 
-    public EnchantmentController getEnchantmentController(){
+    public EnchantmentController getEnchantmentController() {
         return this.enchantmentController;
     }
 
